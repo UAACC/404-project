@@ -39,10 +39,10 @@ class Newpost extends React.Component {
       headers: {
         "Authorization": `Token ${token}`,
         'X-CSRFToken': csrftoken,
-        "Content-type": "application/json",
+        'Content-Type': 'application/json',
       }
     }
-    const doc = await axios.post("/api/posts/create/", {title, description}, config);
+    const doc = await axios.post("/api/posts/create/", { title, description }, config);
     if (doc.data) {
       window.location = `/posts/${doc.data.id}/`
     }
