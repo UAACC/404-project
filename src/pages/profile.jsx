@@ -10,6 +10,7 @@ import PostsScroll from "../components/PostsScroll";
 class ProfilePage extends React.Component {
   render() {
     const { token } = this.props.currentUser;
+    const user = this.props.currentUser;
     console.log(token);
     return (
       <div>
@@ -31,7 +32,7 @@ class ProfilePage extends React.Component {
             </Grid>
             <Grid item xs={4}>
               <Paper>
-                <ProfileComponent></ProfileComponent>
+                <ProfileComponent user={user}></ProfileComponent>      
               </Paper>
             </Grid>
           </Grid>

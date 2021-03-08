@@ -4,6 +4,7 @@ import Posting from "./Posting.jsx";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Profile from "./ProfileComponent.jsx";
+import CommentCard from "./commentCard.jsx";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
@@ -48,8 +49,9 @@ class PostsScroll extends React.Component {
             </Typography>
           </center>
         )}
-        <Grid item xs={3}></Grid>
+
       </div>
+
     );
   }
 }
