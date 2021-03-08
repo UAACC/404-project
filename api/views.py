@@ -37,7 +37,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
-    # authentication_classes = (TokenAuthentication, )
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
     def create(self, request):
@@ -71,7 +71,7 @@ class LikeViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    # authentication_classes = (TokenAuthentication, )
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
     def create(self, request):
@@ -97,40 +97,34 @@ class PostCreate(generics.CreateAPIView):
     queryset = Post.postobjects.all()
     serializer_class = PostCreateSerializer
     # authentication_classes = (TokenAuthentication, )
-    # permission_classes = (IsAuthenticated, )
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
     
     def perform_create(self, serializer):
-        print("!!!!!!!!!!!!!", self.request.user)
         serializer.save(author=self.request.user)
 
 class PostDetail(generics.RetrieveAPIView):
     queryset = Post.postobjects.all()
     serializer_class = PostSerializer
     # authentication_classes = (TokenAuthentication, )
-    # permission_classes = (IsAuthenticated, )
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
 
 class UpdatePost(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.postobjects.all()
     serializer_class = UpdateSerializer
     
-    # permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
 class DeletePost(generics.DestroyAPIView):
     queryset = Post.postobjects.all()
     serializer_class = PostSerializer
-    # permission_classes = (IsAuthenticated, )
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
     
 
 class CategoryList(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # permission_classes = (IsAuthenticatedOrReadOnly, )
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -138,8 +132,7 @@ class CategoryList(generics.ListCreateAPIView):
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = PostSerializer
-    # permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
 # Friend Request
