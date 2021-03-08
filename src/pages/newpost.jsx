@@ -114,65 +114,6 @@ class Newpost extends React.Component {
                       label="category"
                       variant="filled"
                     />
-
-                    {/*
-                  <ChipInput
-                    style={{
-                      marginLeft: "3%",
-                      marginRight: "3%",
-                      marginTop: "3%",
-                      width: "94%",
-                    }}
-                    defaultValue={["foo", "bar"]}
-                    onChange={(chips) => this.handleChange(chips)}
-                  />
-                 
-                  <FormControl
-                    component="fieldset"
-                    style={{
-                      marginLeft: "3%",
-                      marginRight: "3%",
-                      marginTop: "3%",
-                      width: "94%",
-                    }}
-                  >
-                   
-                    <FormLabel component="legend">Share with</FormLabel>
-                    <RadioGroup
-                      row
-                      aria-label="visible"
-                      name="visible"
-                      value={this.state.visibility}
-                      onChange={this.handlevisibility}
-                    >
-                      <FormControlLabel
-                        value="public"
-                        control={<Radio />}
-                        label="public"
-                      />
-                      <FormControlLabel
-                        value="friends"
-                        control={<Radio />}
-                        label="friends circle"
-                      />
-                      <FormControlLabel
-                        value="specifiedprivate"
-                        control={<Radio />}
-                        label="private to specified friends"
-                      />
-                      <FormControlLabel
-                        value="specifiedvisible"
-                        control={<Radio />}
-                        label="visible to specified friends"
-                      />
-                      <FormControlLabel
-                        value="onlyme"
-                        control={<Radio />}
-                        label="only me"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                  */}
                     <FormControl
                       component="fieldset"
                       style={{

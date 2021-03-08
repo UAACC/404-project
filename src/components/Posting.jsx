@@ -13,9 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import EditIcon from "@material-ui/icons/Edit";
 import ShareIcon from "@material-ui/icons/Share";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { CardActionArea, requirePropFactory } from "@material-ui/core";
 
@@ -66,11 +64,6 @@ export default function RecipeReviewCard(props) {
         title={props.post.title}
         subheader={props.post.published}
       />
-      {/* <CardMedia
-        className={classes.media}
-        image="http://www.xinhuanet.com/ent/2018-11/29/1123782546_15434527871911n.jpg"
-        title="Paella dish"
-      /> */}
       <CardActionArea onClick={() => props.handleClick()}>
         <CardMedia
           className={classes.media}
@@ -83,13 +76,7 @@ export default function RecipeReviewCard(props) {
           </Typography>
         </CardContent>
       </CardActionArea>
-      {/* <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          {props.post.description}
-        </Typography>
-      </CardContent> */}
-
-      <CardActions disableSpacing>
+      {/* <CardActions disableSpacing>
         <IconButton aria-label="like">
           <FavoriteIcon />
         </IconButton>
@@ -106,7 +93,7 @@ export default function RecipeReviewCard(props) {
         >
           <CommentIcon />
         </IconButton>
-      </CardActions>
+      </CardActions> */}
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Typography paragraph> {props.post.comment}</Typography>

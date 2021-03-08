@@ -31,7 +31,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function OutlinedCard() {
+export default function OutlinedCard(props) {
   const classes = useStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
@@ -45,19 +45,19 @@ export default function OutlinedCard() {
             gutterBottom
           >
             <AccountBoxIcon fontSize="large"></AccountBoxIcon>
-            User Profile
+            {props.user.username}
           </Typography>
           <Typography variant="body1" component="h4">
-            Displayname：
+            Displayname ---- {props.user.username}
           </Typography>
           <Typography variant="body1" component="h4">
-            Username：
+            userId ---- {props.user.id}
           </Typography>
           <Typography variant="body1" component="h4">
-            Useremail：
+            Useremail ---- not added yet
           </Typography>
           <Typography variant="body1" component="h4">
-            GitHub:
+            GitHub ---- not added yet
           </Typography>
           <div className="row">
             <Typography variant="body1" component="h4">
