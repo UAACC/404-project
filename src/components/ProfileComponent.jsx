@@ -53,6 +53,39 @@ class ProfileCard extends React.Component {
     }
   }
 
+  handleAddFriend = async () => {
+    const {  id } = this.state;
+    const { currentUser } = this.props;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+    const doc = await axios.post("/api/friendrequest/", {from_user: currentUser.id, to_user: id}, config);
+    if (doc.data) {
+      window.alert(doc.data);
+    }
+  }
+
+  handleDeleteFriend = async () => {
+    const {  id } = this.state;
+    const { currentUser } = this.props;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+    const doc = await axios.patch("/api/friendrequest/delete", {from_user: currentUser.id, to_user: id}, config);
+    if (doc.data) {
+      window.alert(doc.data);
+    }
+  }
+
+  
 
   render(){
     const { editOpen, username, email, password, bio, github} = this.state;
@@ -123,7 +156,10 @@ class ProfileCard extends React.Component {
                 Edit
               </Button>
               :
-              null
+              <div>
+                <Button color="primary" variant="contained" onClick={this.handleAddFriend}>Add</Button>
+                <Button color="secondary" variant="contained" style={{marginLeft: 15}} onClick={this.handleDeleteFriend}>Delete</Button>
+              </div>
             }
           </CardActions>
         </Card>

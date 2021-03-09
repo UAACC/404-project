@@ -10,12 +10,13 @@ import axios from "axios";
 class ProfilePage extends React.Component {
   constructor(props){
     super(props);
-    this.state = {id: null}
+    this.state = {id: null, user: null}
   }
 
   componentDidMount = async () => {
     const doc = await axios.get("/api/authors/"+this.props.match.params.id+"/");
     if (doc) {
+      console.log(doc.data);
       this.setState({user: doc.data});
     }
   }

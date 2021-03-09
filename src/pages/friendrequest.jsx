@@ -1,20 +1,10 @@
 import React from "react";
 import "./style/common.css";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-
-import DeleteIcon from "@material-ui/icons/Delete";
-import AddIcon from "@material-ui/icons/Add";
-
+import { CardActions,CardContent, Card, Typography, Button} from "@material-ui/core";
 import axios from "axios";
 import { connect } from "react-redux";
+import Cookies from "js-cookie";
+
 
 class FriendsRequest extends React.Component {
   constructor(props) {
@@ -24,46 +14,85 @@ class FriendsRequest extends React.Component {
     };
   }
 
-  /*
   componentDidMount = async () => {
-    const doc = await axios.get("http://127.0.0.1:8000/api/");
-    this.setState({ requests: doc.data });
+    const doc = await axios.get("/api/friendrequest/");
+    const { currentUser } = this.props;
+    const api_requests  = [];
+    for (let request of doc.data) {
+      if (request.status === "R" && request.to_user === currentUser.id) {
+        api_requests.push(axios.get("/api/authors/"+request.from_user+"/"));
+      }
+    }
+    const requests = await Promise.all(api_requests);
+    this.setState({ requests });
   };
-    */
+
+  handleAccept = async (from_user) => {
+    const { id } = this.props.currentUser;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+    const doc = await axios.patch("/api/friendrequest/accept/", {from_user, to_user: id}, config);
+    if (doc.data) {
+      await window.alert(doc.data);
+      this.componentDidMount();
+    }
+    
+  }
+
+  handleReject = async (from_user) => {
+    const { id } = this.props.currentUser;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+    const doc = await axios.patch("/api/friendrequest/decline/", {from_user, to_user: id}, config);
+    if (doc.data) {
+      await window.alert(doc.data);
+      this.componentDidMount();
+    }
+  }
+
   render() {
     const { requests } = this.state;
     return (
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
-          <Grid
-            container
-            spacing={4}
-            direction="horizenol"
-            justify="center"
-            alignItems="flex-start"
-          >
-            <Grid item xs={10}>
-              <Paper style={{ height: "710px" }}>
-                <List>
-                  <ListItem>
-                    <ListItemAvatar>
-                      <Avatar>T</Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary="test" />
-                    <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="add">
-                        <AddIcon />
-                      </IconButton>
-                      <IconButton edge="end" aria-label="delete">
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-              </Paper>
-            </Grid>
-          </Grid>
+            {
+              requests.length !== 0 ?
+              requests.map(doc => (
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="h2" gutterBottom>
+                      User Name: {doc.data.username}
+                    </Typography>
+                    <Typography color="textSecondary" >
+                      Email: {doc.data.email}
+                    </Typography>
+                    <Typography color="textSecondary">
+                      Bio: {doc.data.bio}
+                    </Typography>
+                    <Typography variant="body2" component="p">
+                      Github: {doc.data.github}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small" color="primary" variant="contianed" onClick={() => this.handleAccept(doc.data.id)}>Accept</Button>
+                    <Button size="small" color="secondary" variant="contianed" onClick={() => this.handleReject(doc.data.id)}>Reject</Button>
+                  </CardActions>
+                </Card>
+              ))
+              :
+              <h3>You have not had any friend requests yet!</h3>
+            }
         </div>
     );
   }
