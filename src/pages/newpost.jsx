@@ -1,6 +1,5 @@
 import React from "react";
 import "./style/common.css";
-import Header from "../components/Header";
 import Radio from "@material-ui/core/Radio";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -10,7 +9,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
-import ChipInput from "material-ui-chip-input";
 import { connect } from "react-redux";
 import Cookies from 'js-cookie'
 import axios from "axios";
@@ -42,16 +40,15 @@ class Newpost extends React.Component {
         'Content-Type': 'application/json',
       }
     }
-    const doc = await axios.post("/api/posts/create/", { title, description }, config);
+    const doc = await axios.post("/api/posts/", { title, description }, config);
     if (doc.data) {
-      window.location = `/posts/${doc.data.id}/`
+      window.location = `/posts/${doc.data}/`
     }
   };
 
   render() {
     return (
       <div>
-        <Header></Header>
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >

@@ -8,7 +8,6 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
-import Header from "../components/Header";
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import DescriptionIcon from '@material-ui/icons/Description';
 import EventNoteIcon from '@material-ui/icons/EventNote';
@@ -19,7 +18,7 @@ import CommentIcon from "@material-ui/icons/Comment";
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import IconButton from '@material-ui/core/IconButton';
 import ChatIcon from '@material-ui/icons/Chat';
-import { Container } from "@material-ui/core";
+import { Container, TextField } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 
 import { connect } from "react-redux";
@@ -33,6 +32,10 @@ class PostDetail extends React.Component {
       authorName: null,
       comments:[],
       authorsList: [],
+      title: "",
+      description: "",
+      commentOpen: false,
+      editOpen: false
     };
   }
 
@@ -41,7 +44,7 @@ class PostDetail extends React.Component {
     const doc = await axios.get(
       "/api/posts/" + this.props.match.params.id + "/"
     );
-    this.setState({ post: doc.data });
+    this.setState({ post: doc.data, title: doc.data.title, description: doc.data.description });
     //match user's id with the postid to fetch author's username
     const authorDoc = await axios.get("/api/authors/");
     const authorList = authorDoc.data;
@@ -57,12 +60,13 @@ class PostDetail extends React.Component {
     // this.setState({comments:comments});
     console.log(comments);
     return (
-      <Container>
+      <Container style={{marginLeft: "10%"}}>
         {
           comments.length !== 0 ? (
           comments.map((comment) => (
             <CommentCard 
-              comment = {comment}
+              comment={comment}
+              handleClick={this.componentDidMount}
             />
           ))
           )
@@ -84,8 +88,8 @@ class PostDetail extends React.Component {
       }
     }
     var post = post.id;
-    const doc = await axios.post("/api/likes/", { post }, config);
-    window.location = "/posts/" + post;
+    await axios.post("/api/likes/", { post }, config);
+    this.componentDidMount();
   }
 
   renderLike = () => {
@@ -116,70 +120,79 @@ class PostDetail extends React.Component {
     }
   }
 
-  // this.state = {
-  //   post: [],
-  //   authorName: null,
-  //   comments:[],
-  //   authorsList: [],
-  // };
+  handleEdit = () => {
+    const { post } = this.state;
+    const { id } = this.props.currentUser;
+    if (id === post.author) {
+      this.setState({editOpen: !this.state.editOpen});
+    }
+  }
 
-  handleEdit = async() => {
-    var {post} = this.state;
-    const {id} = this.props.currentUser;
-    if(id === post.author){
-      const { token } = this.props.currentUser;
-      const csrftoken = Cookies.get('csrftoken');
-      const config = {
+  handleSubmitEdit = async () => {
+    const { post, title, description } = this.state;
+    const { token } = this.props.currentUser;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
       headers: {
         "Authorization": `Token ${token}`,
         'X-CSRFToken': csrftoken,
         'Content-Type': 'application/json'
       }
     }
-    var postid = post.id;
-    const doc = await axios.post("/api/posts/"+postid+"/edit", { title:post.title,description:post.content,publicity:true,image:null,category:null }, config);
-    window.location = "/posts/edit/" + postid;
-    }
+    await axios.patch("/api/posts/" + post.id + "/", { title, description }, config);
+    this.componentDidMount();
+  }
 
+  handleDelete = async () => {
+    const { post } = this.state;
+    const { token } = this.props.currentUser;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        "Authorization": `Token ${token}`,
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+    await axios.delete("/api/posts/" + post.id + "/", config);
+    window.location = "/posts/";
   }
 
   render() {
-    const { post } = this.state;
+    const { post, title, description, editOpen, commentOpen } = this.state;
+    const { currentUser } = this.props;
     return (
       <div>
-        <Header></Header>
         {post.length !== 0 ? (
 
-          <Paper style={{ overflow: "auto" }}>
-            {/* <center> */}
-            <div style = {{marginLeft:"40%"}}>
-
-            <Typography variant="h3">POST DETAIL of</Typography>
-            <Typography variant="h5">{post.title}</Typography>
+          <Paper style={{ overflow: "auto", marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>
+            <div style = {{marginLeft:"20%", marginTop: "5%"}}>
+              {
+                editOpen ? 
+                <TextField label="Titile" value={title} onChange={(e) => this.setState({title: e.target.value}) }/>
+                :
+                <Typography variant="h3">{post.title}</Typography>
+              }
             <img src = "http://www.xinhuanet.com/ent/2018-11/29/1123782546_15434527871911n.jpg"></img>
-            {/* <Typography>
-                  <PermIdentityIcon fontSize="medium" style = {{marginRight:"2%"}}></PermIdentityIcon>
-                  {post.author}
-              </Typography> */}
             <Typography>
                   <DescriptionIcon fontSize="medium" style = {{marginRight:"2%"}}></DescriptionIcon>
-                  {post.description}
-              </Typography>
-            <Typography>
-                  <EventNoteIcon fontSize="medium" style = {{marginRight:"2%"}}></EventNoteIcon>
-                  {post.published}
-              </Typography>
-              <Typography>
-                  <AccountBoxIcon fontSize="medium" style = {{marginRight:"2%"}}></AccountBoxIcon>
                   {this.state.authorName}
               </Typography>
-                 
-              {/* <Typography>
-                  <ArrowUpwardIcon fontSize="medium" style = {{marginRight:"2%"}}></ArrowUpwardIcon>
-                  click to check his/her profile
-                  handleClick={() => (window.location = "/profile/" + user.id)}
-              </Typography> */}
+              {
+                editOpen ? 
+                <TextField label="Description" value={description} onChange={(e) => this.setState({description: e.target.value}) }/>
+                :
+                <Typography>
+                  <EventNoteIcon fontSize="medium" style = {{marginRight:"2%"}}></EventNoteIcon>
+                  {post.description}
+                </Typography>
+              }
+              <Typography>
+                  <AccountBoxIcon fontSize="medium" style = {{marginRight:"2%"}}></AccountBoxIcon>
+                  {post.published.split("T")[0]}
+              </Typography>
             </div>
+            <br /><br />
           </Paper>
         ) : (
           <center> 
@@ -195,17 +208,42 @@ class PostDetail extends React.Component {
         {
           post.length !== 0 ? (
             <div style = {{marginTop:"20px"}}>
-                <IconButton style = {{marginRight:"15%",marginLeft:"10%"}} onClick = {this.handleLike}>
-                  {this.renderLike()}
-                  <div>{post.likes.length}</div>
+              <IconButton style = {{marginLeft:"10%"}} onClick = {this.handleLike}>
+                {this.renderLike()}
+                <div>{post.likes.length}</div>
+              </IconButton>
+              <ShareIcon style = {{marginLeft:"10%"}}></ShareIcon>
+              <IconButton style = {{marginLeft:"10%"}} onClick={() => this.setState({commentOpen: !this.state.commentOpen})}>
+                <CommentIcon></CommentIcon>
+              </IconButton>
+              {
+                currentUser && currentUser.id === post.author ? 
+                editOpen ? 
+                <IconButton style = {{marginLeft:"10%", color: "green"}} onClick={this.handleSubmitEdit}>
+                  V
                 </IconButton>
-                <ShareIcon style = {{marginRight:"15%"}}></ShareIcon>
-                <CommentIcon style = {{marginRight:"15%"}}></CommentIcon>
-                <IconButton style = {{marginRight:"15%"}} onClick = {this.handleEdit}>
+                :
+                <IconButton style = {{marginLeft:"10%"}} onClick={this.handleEdit}>
                   {this.renderEdit()}
-                </IconButton>
-                  <CommentForm post={post}></CommentForm>
-                  {this.getAllComments()}          
+                </IconButton> : null
+              }
+              {
+                currentUser && currentUser.id === post.author ? 
+                  <IconButton style = {{marginLeft:"10%", color: "red"}} onClick={this.handleDelete}>
+                    X
+                  </IconButton> 
+                : 
+                null
+              }
+              {
+                commentOpen ?
+                <div style={{marginLeft: "10%"}}>
+                  <CommentForm post={post} handleClick={this.componentDidMount} />
+                </div>
+                : null
+              }
+              {this.getAllComments()}    
+              <br />< br/>      
         </div>
           ):
           <div>rendering</div>

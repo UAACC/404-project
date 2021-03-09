@@ -1,6 +1,5 @@
 import React from "react";
 import "./style/common.css";
-import Header from "../components/Header";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
@@ -34,8 +33,6 @@ class FriendsRequest extends React.Component {
   render() {
     const { requests } = this.state;
     return (
-      <div>
-        <Header></Header>
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
@@ -68,7 +65,6 @@ class FriendsRequest extends React.Component {
             </Grid>
           </Grid>
         </div>
-      </div>
     );
   }
 }
