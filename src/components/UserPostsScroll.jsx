@@ -3,11 +3,13 @@ import React from "react";
 import Posting from "./Posting.jsx";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import Profile from "./ProfileComponent.jsx";
 import CommentCard from "./commentCard.jsx";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
+import { connect } from "react-redux";
 
 class PostsScroll extends React.Component {
   constructor(props) {
@@ -19,17 +21,24 @@ class PostsScroll extends React.Component {
 
   componentDidMount = async () => {
     const doc = await axios.get("/api/posts/");
-    this.setState({ posts: doc.data });
+    const posts = [];
+    const { currentUser } = this.props;
+    for (let post of doc.data) {
+      if (post.author === currentUser.id) {
+        posts.push(post);
+      }
+    }
+    this.setState({ posts });
   };
 
   render() {
     const { posts } = this.state;
-    console.log(posts);
+    const { user, currentUser } = this.props;
     return (
       <div className="row">
         {posts.length !== 0 ? (
           posts.map((post) => (
-            <Grid item xm={12} sm={6}>
+            <Grid item xm={12} sm={12}>
               <Paper style={{ overflow: "auto", marginTop: "2%" }}>
                 <Posting
                   post={post}
@@ -44,9 +53,21 @@ class PostsScroll extends React.Component {
               fontSize="large"
               style={{ marginTop: 20 }}
             ></HourglassEmptyIcon>
-            <Typography variant="h3" style={{ marginLeft: 20 }}>
-              processing ...
-            </Typography>
+            {
+              user && currentUser && user.id === currentUser.id ?
+              <div>
+                <Typography variant="h3" style={{ marginLeft: 20 }}>
+                  You have not posted any content yet, let's post!
+                </Typography>
+                <br />
+                <Button color="primary" size="large" variant="contained" onClick={() => window.location = "/newpost/"}>Post</Button>
+              </div>
+              :  
+              <Typography variant="h3" style={{ marginLeft: 20 }}>
+                This author has not posted any content yet!
+              </Typography>
+            }
+            
           </center>
         )}
 
@@ -56,4 +77,8 @@ class PostsScroll extends React.Component {
   }
 }
 
-export default PostsScroll;
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser,
+});
+
+export default connect(mapStateToProps)(PostsScroll);

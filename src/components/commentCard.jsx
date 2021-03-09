@@ -42,41 +42,42 @@ class CommentCard extends React.Component {
 
   handleDelete = async() => {
     const { comment } = this.state;
-    console.log("----printout",this.props.currentUser);
-    if(this.props.currentUser.id === comment.author){
-      const { token } = this.props.currentUser;
-      console.log("----",token);
-      //const { comment } = this.state;
-      const csrftoken = Cookies.get('csrftoken');
-      const config = {
+    const { token } = this.props.currentUser;
+    console.log("----",token);
+    //const { comment } = this.state;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
       headers: {
         "Authorization": `Token ${token}`,
         'X-CSRFToken': csrftoken,
         'Content-Type': 'application/json',
       }
-      }
-      await axios.delete('/api/comments/'+ comment.id,config);
-      window.location = "/posts/" + comment.post;
-    } 
+    }
+    await axios.delete('/api/comments/'+ comment.id,config);
+    this.props.handleClick();
   }
 
   render(){
     const { author, comment } = this.state;
     return (
-      <Paper style={{ overflow: "auto",marginRight:"20%" }}>
+      <Paper style={{ overflow: "auto", marginRight:"20%", marginTop: '2%' }}>
         <Card>
           <CardContent width={1}>
             <Typography variant="body1" component="h4">
-              {author ? author.username : "Loading ... "}
+              User Name: <b>{author ? author.username : "Loading ... "}</b>
             </Typography>
             <Typography variant="body1" component="h4">
-              description:{comment ? comment.content : "Loading ... "}
+              Content: {comment ? comment.content : "Loading ... "}
             </Typography>
-            {/* <DeleteForeverIcon style={{marginLeft:"94%"}}></DeleteForeverIcon> */}
-            <Button variant="contained" color="secondary" style={{marginLeft:"80%"}} onClick={this.handleDelete}>
-              {/* <a className="navbar-brand" href="/user">Delete</a> */}
-              Delete
-            </Button>
+            {
+              this.props.currentUser && this.props.currentUser.id === comment.author ?
+              <div>
+                <Button variant="contained" color="secondary" style={{marginLeft:"80%"}} onClick={this.handleDelete}>
+                  Delete
+                </Button>
+              </div>
+              : null
+            }
           </CardContent>
         </Card>
       </Paper>

@@ -81,44 +81,56 @@ class CommentViewSet(viewsets.ModelViewSet):
         Comment.objects.create(author=author, post=post, content=content)
         return HttpResponse('Good request, comment created!')
 
-
-# Post
-class PostList(generics.ListAPIView):
-    
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
+    authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
-    def get_queryset(self):
-        #import pdb; pdb.set_trace()
-        public_posts = Post.postobjects.filter(publicity = True)
-        return public_posts
+    def create(self, request):
+        author = Author.objects.get(username=request.user)
+        title = request.data['title']
+        description = request.data['description']
+        post = Post.objects.create(author=author, title=title, description=description)
+        return HttpResponse(post.id)
 
-class PostCreate(generics.CreateAPIView):
-    queryset = Post.postobjects.all()
-    serializer_class = PostCreateSerializer
-    # authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+# Post
+# class PostList(generics.ListAPIView):
     
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+#     serializer_class = PostSerializer
+#     permission_classes = (AllowAny, )
 
-class PostDetail(generics.RetrieveAPIView):
-    queryset = Post.postobjects.all()
-    serializer_class = PostSerializer
-    # authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+#     def get_queryset(self):
+#         #import pdb; pdb.set_trace()
+#         public_posts = Post.postobjects.filter(publicity = True)
+#         return public_posts
 
-class UpdatePost(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.postobjects.all()
-    serializer_class = UpdateSerializer
+# class PostCreate(generics.CreateAPIView):
+#     queryset = Post.postobjects.all()
+#     serializer_class = PostCreateSerializer
+#     # authentication_classes = (TokenAuthentication, )
+#     permission_classes = (IsAuthenticated, )
     
-    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+#     def perform_create(self, serializer):
+#         serializer.save(author=self.request.user)
+
+# class PostDetail(generics.RetrieveAPIView):
+#     queryset = Post.postobjects.all()
+#     serializer_class = PostSerializer
+#     # authentication_classes = (TokenAuthentication, )
+#     permission_classes = (IsAuthenticated, )
+
+# class UpdatePost(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Post.postobjects.all()
+#     serializer_class = UpdateSerializer
+    
+#     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
-class DeletePost(generics.DestroyAPIView):
-    queryset = Post.postobjects.all()
-    serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated, )
+# class DeletePost(generics.DestroyAPIView):
+#     queryset = Post.postobjects.all()
+#     serializer_class = PostSerializer
+#     permission_classes = (IsAuthenticated, )
     
 
 class CategoryList(generics.ListCreateAPIView):

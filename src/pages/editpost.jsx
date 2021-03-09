@@ -1,6 +1,5 @@
 import React from "react";
 import "./style/common.css";
-import Header from "../components/Header";
 import Radio from "@material-ui/core/Radio";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -10,7 +9,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
-import ChipInput from "material-ui-chip-input";
 import axios from "axios";
 import { connect } from "react-redux";
 import Cookies from "js-cookie"
@@ -60,8 +58,6 @@ class Editpost extends React.Component {
 
   render() {
     return (
-      <div>
-        <Header></Header>
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
@@ -240,7 +236,6 @@ class Editpost extends React.Component {
             </Grid>
           </form>
         </div>
-      </div>
     );
   }
 }

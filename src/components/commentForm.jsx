@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "../components/Header";
 import Radio from "@material-ui/core/Radio";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -9,7 +8,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
-import ChipInput from "material-ui-chip-input";
 import { connect } from "react-redux";
 import Cookies from 'js-cookie'
 import axios from "axios";
@@ -49,7 +47,7 @@ class CommentForm extends React.Component {
     }
     const doc = await axios.post("/api/comments/", { post,content }, config);
     if (doc.data) {
-      window.location = `/posts/${post}/`
+      this.props.handleClick();
     }
   };
 

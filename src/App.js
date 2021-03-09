@@ -24,13 +24,14 @@ class App extends React.Component {
   render() {
     return (
       <BrowserRouter>
+      <Header />
         <Switch>
           <Route exact path="/" component={Main} />
           <Route exact path="/signin" component={SignIn} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/friendrequest" component={Friendrequest} />
           <Route exact path="/newpost" component={Newpost} />
-          <Route exact path="/profile" component={ProfilePage} />
+          <Route path="/authors/:id" component={ProfilePage} />
           <Route exact path="/posts" component={Main} />
           <Route path="/posts/edit/:id" component={Editpost} />
           <Route path="/posts/:id" component={PostDetail} />

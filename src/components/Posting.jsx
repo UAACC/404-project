@@ -12,8 +12,6 @@ import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import ShareIcon from "@material-ui/icons/Share";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { CardActionArea, requirePropFactory } from "@material-ui/core";
 
@@ -53,7 +51,6 @@ export default function RecipeReviewCard(props) {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            R
           </Avatar>
         }
         action={
@@ -62,7 +59,7 @@ export default function RecipeReviewCard(props) {
           </IconButton>
         }
         title={props.post.title}
-        subheader={props.post.published}
+        subheader={props.post.published.split("T")[0]}
       />
       <CardActionArea onClick={() => props.handleClick()}>
         <CardMedia
@@ -76,24 +73,6 @@ export default function RecipeReviewCard(props) {
           </Typography>
         </CardContent>
       </CardActionArea>
-      {/* <CardActions disableSpacing>
-        <IconButton aria-label="like">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="comment">
-          <ShareIcon />
-        </IconButton>
-        <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded,
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="comment"
-        >
-          <CommentIcon />
-        </IconButton>
-      </CardActions> */}
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Typography paragraph> {props.post.comment}</Typography>

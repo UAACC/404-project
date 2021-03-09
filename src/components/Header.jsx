@@ -1,12 +1,35 @@
 import React from "react";
-import Profile from "./ProfileComponent.jsx";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
+import axios from "axios";
 
 class Header extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      search: ""
+    }
+  }
+  
+
   handleLogOut = () => {
     this.props.setCurrentUser(false);
   };
+
+  handleSearch = async (e) => {
+    e.preventDefault();
+    const { search } = this.state;
+    const doc = await axios.get("/api/authors/");
+    let searched = false;
+    for (let author of doc.data) {
+      console.log(author);
+      if (search === author.username){
+        searched = true;
+        window.location = "/authors/" + author.id + "/";
+      }
+    }
+    if (!searched) window.alert("No author found!");
+  }
 
   renderHeader = () => {
     const { currentUser } = this.props;
@@ -16,7 +39,7 @@ class Header extends React.Component {
       case false:
         return (
           <li className="nav-item">
-            <a className="nav-link active" aria-current="page" href="/signin">
+            <a className="nav-link active" aria-current="page" onMouseOver="cursor" href="/signin">
               sign in
             </a>
           </li>
@@ -27,6 +50,7 @@ class Header extends React.Component {
             <a
               className="nav-link active"
               aria-current="page"
+              onMouseOver="cursor"
               onClick={this.handleLogOut}
             >
               log out
@@ -37,6 +61,8 @@ class Header extends React.Component {
   };
 
   render() {
+    const { search } = this.state;
+    const { currentUser } = this.props;
     return (
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
         <div className="container-fluid">
@@ -57,11 +83,6 @@ class Header extends React.Component {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="/">
-                  public
-                </a>
-              </li>
-              <li className="nav-item">
                 <a
                   className="nav-link active"
                   aria-current="/post/create"
@@ -70,15 +91,19 @@ class Header extends React.Component {
                   create post
                 </a>
               </li>
-              <li className="nav-item">
+              {
+                currentUser ? 
+                <li className="nav-item">
                 <a
                   className="nav-link active"
                   aria-current="page"
-                  href="/profile"
+                  href={"/authors/" + currentUser.id + "/"}
                 >
                   my profile
                 </a>
               </li>
+              : null
+              }
               <li className="nav-item">
                 <a
                   className="nav-link active"
@@ -96,8 +121,10 @@ class Header extends React.Component {
                 type="search"
                 placeholder="search author"
                 aria-label="Search"
+                value={search}
+                onChange={e=>this.setState({search: e.target.value})}
               ></input>
-              <button className="btn btn-outline-light" type="submit">
+              <button className="btn btn-outline-light" type="submit" onClick={this.handleSearch}>
                 search author
               </button>
             </form>
