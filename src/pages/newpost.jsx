@@ -30,19 +30,23 @@ class Newpost extends React.Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { token } = this.props.currentUser;
+    const { currentUser } = this.props;
     const { title, description } = this.state;
     const csrftoken = Cookies.get('csrftoken');
-    const config = {
-      headers: {
-        "Authorization": `Token ${token}`,
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json',
+    if (currentUser) {
+      const config = {
+        headers: {
+          "Authorization": `Token ${currentUser.token}`,
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        }
       }
-    }
-    const doc = await axios.post("/api/posts/", { title, description }, config);
-    if (doc.data) {
-      window.location = `/posts/${doc.data}/`
+      const doc = await axios.post("/api/posts/", { title, description }, config);
+      if (doc.data) {
+        window.location = `/posts/${doc.data}/`
+      }
+    } else {
+     window.alert("You need to login!"); 
     }
   };
 
