@@ -7,7 +7,7 @@ cd 404-project
 npm install
 npm run start
 // open another terminal and go into the 404-project
-pip3 freeze > requirements.txt
+pip3 install -r requirements.txt
 python3 manage.py migrate
 python3 manage.py migrate --run-syncdb
 python3 manage.py runserver
