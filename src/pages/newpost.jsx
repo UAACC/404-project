@@ -1,0 +1,175 @@
+import React from "react";
+import "./style/common.css";
+import Radio from "@material-ui/core/Radio";
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
+import { Button } from "@material-ui/core";
+import { connect } from "react-redux";
+import axios from "axios";
+
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+
+class Newpost extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      autherID: "",
+      title: "",
+      description: "",
+      category: "",
+      published: "",
+      format: "",
+      image: "",
+      status: "",
+    };
+  }
+
+  handleSubmit = async (event) => {
+    event.preventDefault();
+    const { title, description } = this.state;
+
+    const doc = await axios.post("/api/posts/", { title, description });
+    if (doc.data) {
+      window.location = `/posts/${doc.data}/`
+    }
+  };
+
+  render() {
+    return (
+      <div>
+        <div
+          style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
+        >
+          <form>
+            <Grid
+              container
+              spacing={4}
+              direction="horizenol"
+              justify="center"
+              alignItems="flex-start"
+            >
+              <Grid item xs={10}>
+                <Paper style={{ height: "710px" }}>
+                  <TextField
+                    onChange={(e) => {
+                      this.setState({ title: e.target.value });
+                    }}
+                    id="title"
+                    name="title"
+                    style={{
+                      marginLeft: "3%",
+                      marginRight: "3%",
+                      marginTop: "3%",
+                      width: "94%",
+                    }}
+                    label="Post title"
+                    multiline
+                    rows={1}
+                    variant="outlined"
+                  ></TextField>
+                  <div>
+                    <TextField
+                      onChange={(e) => {
+                        this.setState({ description: e.target.value });
+                      }}
+                      id="description"
+                      name="description"
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      label="Post Content"
+                      multiline
+                      rows={6}
+                      variant="outlined"
+                    ></TextField>
+                    <TextField
+                      onChange={(e) => {
+                        this.setState({ category: e.target.value });
+                      }}
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      id="category"
+                      label="category"
+                      variant="filled"
+                    />
+                    <FormControl
+                      component="fieldset"
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      onChange={(e) => {
+                        this.setState({ format: e.target.value });
+                      }}
+                    >
+                      <FormLabel component="legend">Format</FormLabel>
+                      <RadioGroup row aria-label="visible" name="visible">
+                        <FormControlLabel
+                          value="plaintext"
+                          control={<Radio />}
+                          label="Plain Text"
+                        />
+                        <FormControlLabel
+                          value="markdown"
+                          control={<Radio />}
+                          label="Markdown"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                    <Button
+                      onClick={() => {
+                        this.setState({ PopupImageUpload: true });
+                      }}
+                      variant="outlined"
+                      color="primary"
+                      style={{
+                        marginLeft: "3%",
+                        marginTop: "3%",
+                      }}
+                    >
+                      Upload Image
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      onClick={this.handleSubmit}
+                      variant="contained"
+                      color="primary"
+                      style={{
+                        marginLeft: "3%",
+                        marginTop: "3%",
+                      }}
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                </Paper>
+              </Grid>
+            </Grid>
+          </form>
+        </div>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser,
+});
+
+export default connect(mapStateToProps)(Newpost);
