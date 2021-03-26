@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import AbstractUser
 import uuid
+from django.utils import timezone
 
 class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
