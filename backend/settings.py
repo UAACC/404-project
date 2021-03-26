@@ -143,11 +143,16 @@ USE_TZ = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'backend')
 
-STATICFILES_DIRS = [
+if DEBUG:
+    STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static')
 ]
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
+
+
+
 STATIC_URL = '/static/'
 
 
