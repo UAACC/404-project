@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 import django_heroku
-import django_heroku
 import dotenv
 import dj_database_url
 django_heroku.settings(locals())
