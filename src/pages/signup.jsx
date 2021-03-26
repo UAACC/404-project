@@ -1,19 +1,19 @@
 import React from "react";
-/*import SignInForm from "../components/signin/signin-form";*/
 import axios from "axios";
 import "./style/signin.css";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { TextField } from "@material-ui/core";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
+import { connect } from "react-redux";
+import { setCurrentUser } from "../redux/user/useractions";
+import Cookies from 'js-cookie'
 
 class SignUpPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
       username: "",
       password: "",
       loginError: "",
@@ -28,20 +28,22 @@ class SignUpPage extends React.Component {
     });
   }
   handleSubmit = async (event) => {
-    const { email, username, password } = this.state;
-    axios
-      .post("/api/users/", {
-        email: email,
-        username: username,
-        password: password,
-      })
-      .then((response) => {
-        console.log("res from login", response);
-      })
-      .catch((error) => {
-        console.log("login error", error);
-      });
     event.preventDefault();
+    const { username, password } = this.state;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+    const doc = await axios.post("/api/authors/", { username, password }, config);
+    if (!doc.data) {
+      window.alert("Wrong crendentials");
+    } else {
+      await this.props.setCurrentUser(doc.data);
+      window.location = "/";
+    }
   };
 
   render() {
@@ -51,18 +53,6 @@ class SignUpPage extends React.Component {
           <h2>Create account</h2>
           <form className="form" onSubmit={this.handleSubmit}>
             <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="E-mail"
-                  name="email"
-                  value={this.state.email}
-                  onChange={this.handleChange}
-                />
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
@@ -121,4 +111,12 @@ class SignUpPage extends React.Component {
     );
   }
 }
-export default SignUpPage;
+
+
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+});
+
+export default connect(null, mapDispatchToProps)(SignUpPage);
+
+

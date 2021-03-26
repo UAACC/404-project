@@ -9,29 +9,19 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
-import axios from "axios";
 import { connect } from "react-redux";
-import Cookies from "js-cookie"
+import Cookies from 'js-cookie'
+import axios from "axios";
 
-const emptyPost = {
-  value: "",
-  postTitle: "",
-  postContent: "",
-  postImage: "",
-  sharewith: [],
-  visibility: "public",
-  categories: [],
-};
-
-class Editpost extends React.Component {
+class Newpost extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       autherID: "",
       title: "",
       description: "",
-      published: "",
       category: "",
+      published: "",
       format: "",
       image: "",
       status: "",
@@ -40,24 +30,29 @@ class Editpost extends React.Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { token } = this.props.currentUser;
+    const { currentUser } = this.props;
     const { title, description } = this.state;
     const csrftoken = Cookies.get('csrftoken');
-    const config = {
-      headers: {
-        "Authorization": `Token ${token}`,
-        'X-CSRFToken': csrftoken,
-        "Content-type": "application/json",
+    if (currentUser) {
+      const config = {
+        headers: {
+          "Authorization": `Token ${currentUser.token}`,
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        }
       }
-    }
-    const doc = await axios.post(`/api/posts/${this.props.match.params.id}/edit`, { title, description }, config);
-    if (doc.data) {
-      window.location = `/posts/${this.props.match.params.id}/`
+      const doc = await axios.post("/api/posts/", { title, description }, config);
+      if (doc.data) {
+        window.location = `/posts/${doc.data}/`
+      }
+    } else {
+     window.alert("You need to login!"); 
     }
   };
 
   render() {
     return (
+      <div>
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
@@ -71,24 +66,24 @@ class Editpost extends React.Component {
             >
               <Grid item xs={10}>
                 <Paper style={{ height: "710px" }}>
+                  <TextField
+                    onChange={(e) => {
+                      this.setState({ title: e.target.value });
+                    }}
+                    id="title"
+                    name="title"
+                    style={{
+                      marginLeft: "3%",
+                      marginRight: "3%",
+                      marginTop: "3%",
+                      width: "94%",
+                    }}
+                    label="Post title"
+                    multiline
+                    rows={1}
+                    variant="outlined"
+                  ></TextField>
                   <div>
-                    <TextField
-                      onChange={(e) => {
-                        this.setState({ title: e.target.value });
-                      }}
-                      id="title"
-                      name="title"
-                      style={{
-                        marginLeft: "3%",
-                        marginRight: "3%",
-                        marginTop: "3%",
-                        width: "94%",
-                      }}
-                      label="Post title"
-                      multiline
-                      rows={1}
-                      variant="outlined"
-                    ></TextField>
                     <TextField
                       onChange={(e) => {
                         this.setState({ description: e.target.value });
@@ -120,64 +115,6 @@ class Editpost extends React.Component {
                       label="category"
                       variant="filled"
                     />
-                    {/*
-                  <ChipInput
-                    style={{
-                      marginLeft: "3%",
-                      marginRight: "3%",
-                      marginTop: "3%",
-                      width: "94%",
-                    }}
-                    defaultValue={["foo", "bar"]}
-                    onChange={(chips) => this.handleChange(chips)}
-                  />
-                 
-                  <FormControl
-                    component="fieldset"
-                    style={{
-                      marginLeft: "3%",
-                      marginRight: "3%",
-                      marginTop: "3%",
-                      width: "94%",
-                    }}
-                  >
-                   
-                    <FormLabel component="legend">Share with</FormLabel>
-                    <RadioGroup
-                      row
-                      aria-label="visible"
-                      name="visible"
-                      value={this.state.visibility}
-                      onChange={this.handlevisibility}
-                    >
-                      <FormControlLabel
-                        value="public"
-                        control={<Radio />}
-                        label="public"
-                      />
-                      <FormControlLabel
-                        value="friends"
-                        control={<Radio />}
-                        label="friends circle"
-                      />
-                      <FormControlLabel
-                        value="specifiedprivate"
-                        control={<Radio />}
-                        label="private to specified friends"
-                      />
-                      <FormControlLabel
-                        value="specifiedvisible"
-                        control={<Radio />}
-                        label="visible to specified friends"
-                      />
-                      <FormControlLabel
-                        value="onlyme"
-                        control={<Radio />}
-                        label="only me"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                  */}
                     <FormControl
                       component="fieldset"
                       style={{
@@ -228,7 +165,7 @@ class Editpost extends React.Component {
                         marginTop: "3%",
                       }}
                     >
-                      Update
+                      Submit
                     </Button>
                   </div>
                 </Paper>
@@ -236,6 +173,7 @@ class Editpost extends React.Component {
             </Grid>
           </form>
         </div>
+      </div>
     );
   }
 }
@@ -244,4 +182,4 @@ const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
 });
 
-export default connect(mapStateToProps)(Editpost);
+export default connect(mapStateToProps)(Newpost);

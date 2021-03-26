@@ -2,8 +2,8 @@ import React from "react";
 // redux
 import { connect } from "react-redux";
 import "./style/common.css";
-import Header from "../components/Header";
-import Gridsturc from "../components/Gridsturc";
+import PostsScroll from "../components/PostsScroll";
+import { Grid } from "@material-ui/core";
 
 class MainPage extends React.Component {
   /*componentDidMount = () => {
@@ -13,8 +13,13 @@ class MainPage extends React.Component {
   render() {
     return (
       <div>
-        <Header></Header>
-        <Gridsturc></Gridsturc>
+        <div
+          style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
+        >
+          <Grid item xs={9}>
+            <PostsScroll />
+          </Grid>
+        </div>
       </div>
     );
   }

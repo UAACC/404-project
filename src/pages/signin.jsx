@@ -1,5 +1,4 @@
 import React from "react";
-/*import SignInForm from "../components/signin/signin-form";*/
 import axios from "axios";
 import "./style/signin.css";
 import Grid from "@material-ui/core/Grid";
@@ -8,6 +7,9 @@ import { TextField } from "@material-ui/core";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
+import { connect } from "react-redux";
+import { setCurrentUser } from "../redux/user/useractions";
+import Cookies from 'js-cookie'
 
 class SignInPage extends React.Component {
   constructor(props) {
@@ -27,16 +29,22 @@ class SignInPage extends React.Component {
     });
   }
   handleSubmit = async (event) => {
-    const { username, password } = this.state;
-    axios
-      .post("/auth/", { username: username, password: password })
-      .then((response) => {
-        console.log("res from login", response);
-      })
-      .catch((error) => {
-        console.log("login error", error);
-      });
     event.preventDefault();
+    const { username, password } = this.state;
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+    const doc = await axios.post("/api/authors/", { username, password }, config);
+    if (!doc.data) {
+      window.alert("Wrong crendentials");
+    } else {
+      await this.props.setCurrentUser(doc.data);
+      window.location = "/";
+    }
   };
 
   render() {
@@ -85,6 +93,7 @@ class SignInPage extends React.Component {
               className="submit"
               size="large"
               style={{ marginTop: 20 }}
+              onClick={this.handleSignIn}
             >
               Log in
             </Button>
@@ -108,4 +117,10 @@ class SignInPage extends React.Component {
     );
   }
 }
-export default SignInPage;
+
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+});
+
+export default connect(null, mapDispatchToProps)(SignInPage);
+
