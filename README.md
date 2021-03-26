@@ -1,17 +1,17 @@
 # 404-project
 
 ## RUN LOCALLY?
-// download node.js first, then open one terminal)
-git clone https://github.com/UAACC/404-project.git
-cd 404-project
-npm install
-npm run start
-// open another terminal and go into the 404-project
-pip3 install -r requirements.txt
-python3 manage.py migrate
-python3 manage.py migrate --run-syncdb
-python3 manage.py runserver
-// open http://localhost:3000
+- // download node.js first, then open one terminal)
+- git clone https://github.com/UAACC/404-project.git
+- cd 404-project
+- npm install
+- npm run start
+- // open another terminal and go into the 404-project
+- pip3 install -r requirements.txt
+- python3 manage.py migrate
+- python3 manage.py migrate --run-syncdb
+- python3 manage.py runserver
+- // open http://localhost:3000
 
 ## RUN ONLINE?
 https://social-distribution-app.herokuapp.com
