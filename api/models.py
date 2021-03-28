@@ -5,8 +5,8 @@ import uuid
 
 class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=50)
+    username = models.CharField(max_length=500, unique=True)
+    password = models.CharField(max_length=500)
     email = models.EmailField(null=True, blank=True)
     github = models.URLField(null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
@@ -32,7 +32,7 @@ class Post(models.Model):
     description = models.CharField(max_length=256, default="")
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="posts")
     published = models.DateTimeField(default=timezone.now)
-    # image = models.ImageField(null = True, blank = True, upload_to= "images/")
+    #image = models.ImageField(null = True, blank = True, upload_to= "images/")
     # status = models.CharField(max_length = 10, choices = options, default = 'public')
     publicity = models.BooleanField(default=True)
     

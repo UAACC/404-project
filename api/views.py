@@ -11,6 +11,7 @@ from .serializers import FriendRequestSerializer
 from django.http import JsonResponse, HttpResponse
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django.shortcuts import get_object_or_404
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
@@ -93,6 +94,11 @@ class PostViewSet(viewsets.ModelViewSet):
         description = request.data['description']
         post = Post.objects.create(author=author, title=title, description=description)
         return HttpResponse(post.id)
+
+#    @action(detail = True, methods=['POST'])
+#    def rate_post(self,request,pk=None):
+#       response = {'message': 'its working'}
+#        return Response(response,status = status.HTTP_200_OK)
 
 # Post
 # class PostList(generics.ListAPIView):
