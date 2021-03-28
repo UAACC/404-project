@@ -24,14 +24,26 @@ class Newpost extends React.Component {
       published: "",
       format: "",
       image: "",
-      status: "",
+      visibility: "",
     };
+  }
+
+  checkValidation = () => {
+    const {  title, description, visibility } = this.state;
+    if (!title || !description || !visibility) {
+      return false;
+    }
+    return true;
   }
 
   handleSubmit = async (event) => {
     event.preventDefault();
+    if (!this.checkValidation()) {
+      return window.alert('You have not filed the form completely.')
+    }
+
     const { token } = this.props.currentUser;
-    const { title, description } = this.state;
+    const { title, description, visibility } = this.state;
     const csrftoken = Cookies.get('csrftoken');
     const config = {
       headers: {
@@ -40,7 +52,7 @@ class Newpost extends React.Component {
         'Content-Type': 'application/json',
       }
     }
-    const doc = await axios.post("/api/posts/", { title, description }, config);
+    const doc = await axios.post("/api/posts/", { title, description, visibility }, config);
     if (doc.data) {
       window.location = `/posts/${doc.data}/`
     }
@@ -62,24 +74,54 @@ class Newpost extends React.Component {
             >
               <Grid item xs={10}>
                 <Paper style={{ height: "710px" }}>
-                  <TextField
-                    onChange={(e) => {
-                      this.setState({ title: e.target.value });
-                    }}
-                    id="title"
-                    name="title"
-                    style={{
-                      marginLeft: "3%",
-                      marginRight: "3%",
-                      marginTop: "3%",
-                      width: "94%",
-                    }}
-                    label="Post title"
-                    multiline
-                    rows={1}
-                    variant="outlined"
-                  ></TextField>
-                  <div>
+                  <div id="title">
+                    <TextField
+                      onChange={(e) => {
+                        this.setState({ title: e.target.value });
+                      }}
+                      id="title"
+                      name="title"
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      label="Post title"
+                      multiline
+                      rows={1}
+                      variant="outlined"
+                    />
+                  </div>
+                  <div id="format">
+                    <FormControl
+                      component="fieldset"
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      onChange={(e) => {
+                        this.setState({ format: e.target.value });
+                      }}
+                    >
+                      <FormLabel component="legend">How do you want to format the content?</FormLabel>
+                      <RadioGroup row aria-label="visible" name="visible">
+                        <FormControlLabel
+                          value="plaintext"
+                          control={<Radio />}
+                          label="Plain Text"
+                        />
+                        <FormControlLabel
+                          value="markdown"
+                          control={<Radio />}
+                          label="Markdown"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                  <div id="content">
                     <TextField
                       onChange={(e) => {
                         this.setState({ description: e.target.value });
@@ -96,7 +138,9 @@ class Newpost extends React.Component {
                       multiline
                       rows={6}
                       variant="outlined"
-                    ></TextField>
+                    />
+                  </div>
+                  <div id="category">
                     <TextField
                       onChange={(e) => {
                         this.setState({ category: e.target.value });
@@ -111,32 +155,8 @@ class Newpost extends React.Component {
                       label="category"
                       variant="filled"
                     />
-                    <FormControl
-                      component="fieldset"
-                      style={{
-                        marginLeft: "3%",
-                        marginRight: "3%",
-                        marginTop: "3%",
-                        width: "94%",
-                      }}
-                      onChange={(e) => {
-                        this.setState({ format: e.target.value });
-                      }}
-                    >
-                      <FormLabel component="legend">Format</FormLabel>
-                      <RadioGroup row aria-label="visible" name="visible">
-                        <FormControlLabel
-                          value="plaintext"
-                          control={<Radio />}
-                          label="Plain Text"
-                        />
-                        <FormControlLabel
-                          value="markdown"
-                          control={<Radio />}
-                          label="Markdown"
-                        />
-                      </RadioGroup>
-                    </FormControl>
+                  </div>
+                  <div id="image">  
                     <Button
                       onClick={() => {
                         this.setState({ PopupImageUpload: true });
@@ -151,7 +171,40 @@ class Newpost extends React.Component {
                       Upload Image
                     </Button>
                   </div>
-                  <div>
+                  <div id="visibility">
+                    <FormControl
+                      component="fieldset"
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      onChange={(e) => {
+                        this.setState({ visibility: e.target.value });
+                      }}
+                    >
+                      <FormLabel component="legend">Who can see this post?</FormLabel>
+                      <RadioGroup row aria-label="visible" name="visible">
+                        <FormControlLabel
+                          value="public"
+                          control={<Radio />}
+                          label="Public"
+                        />
+                        <FormControlLabel
+                          value="friends"
+                          control={<Radio />}
+                          label="Only for friends"
+                        />
+                        <FormControlLabel
+                          value="private"
+                          control={<Radio />}
+                          label="Private"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                  <div id="button">
                     <Button
                       onClick={this.handleSubmit}
                       variant="contained"

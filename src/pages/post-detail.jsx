@@ -28,7 +28,7 @@ class PostDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      post: [],
+      post: null,
       authorName: null,
       comments:[],
       authorsList: [],
@@ -41,10 +41,19 @@ class PostDetail extends React.Component {
 
   componentDidMount = async () => {
     //set post's information in state
+    const { currentUser } = this.props;
     const doc = await axios.get(
       "/api/posts/" + this.props.match.params.id + "/"
     );
-    this.setState({ post: doc.data, title: doc.data.title, description: doc.data.description });
+    console.log("friends: ", currentUser.friends);
+    const post = doc.data;
+    if ( post.visibility === "public"
+      || (post.visibility === "private" && post.author === currentUser?.id)
+      // || (post.visibility === "friends" && currentUser.friends.includes(post.author))
+    ) {
+      this.setState({ post, title: post.title, description: post.description });
+    }
+    
     //match user's id with the postid to fetch author's username
     const authorDoc = await axios.get("/api/authors/");
     const authorList = authorDoc.data;
@@ -55,7 +64,6 @@ class PostDetail extends React.Component {
   getAllComments = () => {
     const {post} = this.state;
     var {comments} = this.state;
-    console.log(this.props.currentUser);
     comments = post.comments;
     // this.setState({comments:comments});
     console.log(comments);
@@ -163,7 +171,7 @@ class PostDetail extends React.Component {
     const { currentUser } = this.props;
     return (
       <div>
-        {post.length !== 0 ? (
+        { post ? (
 
           <Paper style={{ overflow: "auto", marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>
             <div style = {{marginLeft:"20%", marginTop: "5%"}}>
@@ -200,13 +208,13 @@ class PostDetail extends React.Component {
               fontSize="large"
               style={{ marginTop: 20 }}
             ></HourglassEmptyIcon>
-            <Typography variant="h3" style={{ marginLeft: 20 }}>
-              processing ...
+            <Typography variant="h5" style={{ marginLeft: 20 }}>
+              The post does not exit OR You do not have the permission to see this post!
             </Typography>
           </center>
         )}
         {
-          post.length !== 0 ? (
+          post ? (
             <div style = {{marginTop:"20px"}}>
               <IconButton style = {{marginLeft:"10%"}} onClick = {this.handleLike}>
                 {this.renderLike()}
@@ -245,8 +253,7 @@ class PostDetail extends React.Component {
               {this.getAllComments()}    
               <br />< br/>      
         </div>
-          ):
-          <div>rendering</div>
+          ): null
         }                  
       </div>
 

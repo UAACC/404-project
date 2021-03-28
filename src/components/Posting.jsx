@@ -59,7 +59,7 @@ export default function RecipeReviewCard(props) {
           </IconButton>
         }
         title={props.post.title}
-        subheader={props.post.published.split("T")[0]}
+        // subheader={props.post.published.split("T")[0]}
       />
       <CardActionArea onClick={() => props.handleClick()}>
         <CardMedia

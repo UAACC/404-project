@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 import uuid
 
+
 class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     username = models.CharField(max_length=50, unique=True)
@@ -23,21 +24,14 @@ class Category(models.Model):
 
 
 class Post(models.Model):
-
-    class PostObjects(models.Manager):
-        def get_queryset(self):
-            return super().get_queryset().all()
-
     title = models.CharField(max_length=256)
     description = models.CharField(max_length=256, default="")
+    visibility = models.CharField(max_length=100, blank=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="posts")
     published = models.DateTimeField(default=timezone.now)
-    # image = models.ImageField(null = True, blank = True, upload_to= "images/")
-    # status = models.CharField(max_length = 10, choices = options, default = 'public')
-    publicity = models.BooleanField(default=True)
     
-    objects= models.Manager() #defaut
-    postobjects = PostObjects()
+    # image = models.ImageField(null = True, blank = True, upload_to= "images/")
+
 
     def __str__(self):
         return self.title +' | ' + str(self.id)

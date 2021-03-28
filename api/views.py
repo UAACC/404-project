@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
-from .serializers import AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer,UpdateSerializer,PostCreateSerializer,CategorySerializer
+from .serializers import AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer, CategorySerializer
 from .models import Author, Post, Category, Like, Comment, FriendRequest
 from .serializers import FriendRequestSerializer
 from django.http import JsonResponse, HttpResponse
@@ -67,7 +67,6 @@ class LikeViewSet(viewsets.ModelViewSet):
                 return HttpResponse('Bad request')
 
 
-
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -81,6 +80,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         Comment.objects.create(author=author, post=post, content=content)
         return HttpResponse('Good request, comment created!')
 
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -91,47 +91,10 @@ class PostViewSet(viewsets.ModelViewSet):
         author = Author.objects.get(username=request.user)
         title = request.data['title']
         description = request.data['description']
-        post = Post.objects.create(author=author, title=title, description=description)
+        visibility = request.data['visibility']
+        post = Post.objects.create(author=author, title=title, description=description, visibility=visibility)
         return HttpResponse(post.id)
 
-# Post
-# class PostList(generics.ListAPIView):
-    
-#     serializer_class = PostSerializer
-#     permission_classes = (AllowAny, )
-
-#     def get_queryset(self):
-#         #import pdb; pdb.set_trace()
-#         public_posts = Post.postobjects.filter(publicity = True)
-#         return public_posts
-
-# class PostCreate(generics.CreateAPIView):
-#     queryset = Post.postobjects.all()
-#     serializer_class = PostCreateSerializer
-#     # authentication_classes = (TokenAuthentication, )
-#     permission_classes = (IsAuthenticated, )
-    
-#     def perform_create(self, serializer):
-#         serializer.save(author=self.request.user)
-
-# class PostDetail(generics.RetrieveAPIView):
-#     queryset = Post.postobjects.all()
-#     serializer_class = PostSerializer
-#     # authentication_classes = (TokenAuthentication, )
-#     permission_classes = (IsAuthenticated, )
-
-# class UpdatePost(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Post.postobjects.all()
-#     serializer_class = UpdateSerializer
-    
-#     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
-
-
-# class DeletePost(generics.DestroyAPIView):
-#     queryset = Post.postobjects.all()
-#     serializer_class = PostSerializer
-#     permission_classes = (IsAuthenticated, )
-    
 
 class CategoryList(generics.ListCreateAPIView):
     queryset = Category.objects.all()
@@ -140,6 +103,7 @@ class CategoryList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
 
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
@@ -187,9 +151,10 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             return Response("Successfully create the friend request!")
         
     def accept_incoming_request(self, request, *args, **kwargs):
-    # accept incoming friend request
+        # accept incoming friend request
         request_from_user_id = Author.objects.get(id=request.data["from_user"])
         current_user_id = Author.objects.get(id=request.data["to_user"])
+
         if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
         # Check if the request has already been accepted
             return Response("Unable to accept, because you had already accepted it!")
@@ -204,7 +169,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             return Response("Unable to accept because this request does not exist.")
         
     def decline_incoming_request(self, request, *args, **kwargs):
-    # decline incoming friend request
+        # decline incoming friend request
         request_from_user_id = Author.objects.get(id=request.data["from_user"])
         current_user_id = Author.objects.get(id=request.data["to_user"])
         if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
@@ -222,7 +187,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             return Response("Unable to decline because this request does not exist.")
     
     def delete(self, request, *args, **kwargs):
-    # delete friend(only available when the status of request is 'Accepted')
+        # delete friend(only available when the status of request is 'Accepted')
         user_1 = Author.objects.get(id=request.data["from_user"])
         user_2 = Author.objects.get(id=request.data["to_user"])
         if FriendRequest.objects.filter(from_user=user_1, to_user=user_2, status='A').exists():

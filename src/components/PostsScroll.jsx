@@ -19,7 +19,9 @@ class PostsScroll extends React.Component {
 
   componentDidMount = async () => {
     const doc = await axios.get("/api/posts/");
-    this.setState({ posts: doc.data });
+    const allPosts = doc.data;
+    const publicPosts = allPosts.filter(post => post.visibility === "public");
+    this.setState({ posts: publicPosts });
   };
 
   render() {
