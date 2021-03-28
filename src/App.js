@@ -9,7 +9,7 @@ import Newpost from "./pages/newpost";
 import Editpost from "./pages/editpost";
 import Friendrequest from "./pages/friendrequest";
 import ProfilePage from "./pages/profile";
-import PostDetail from "./pages/postdetail";
+import PostDetail from "./pages/post-detail";
 class App extends React.Component {
   constructor(props) {
     super(props);
