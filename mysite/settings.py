@@ -27,7 +27,7 @@ SECRET_KEY = 'pmkbeepo#g1__ys#^ce^%6h_=j6g)ky=5)#=h660z$h97l&n4t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"] if DEBUG else ['nofun.herokuapp.com']
+ALLOWED_HOSTS = ["*"] if DEBUG else ['p404t20.herokuapp.com']
 
 # Application definition
 
@@ -88,10 +88,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dhecsfqo68s57',
-        'USER': 'dyysvpgdiuflid', 
-        'PASSWORD': '95636bd5a43faa43f2e085ee32cc4d9124e612f6a511c8b72b9069ee35946ba2', 
-        'HOST': 'ec2-52-44-31-100.compute-1.amazonaws.com', 
+        'NAME': 'd8niabfchisdrv',
+        'USER': 'dtvwdcbtwrnhxn', 
+        'PASSWORD': 'e9d201055036d1bdce7acac87b630c17f36168fb91c2d5f920c4208cd3fdd577', 
+        'HOST': 'ec2-3-211-37-117.compute-1.amazonaws.com', 
         'PORT': '5432',  
     }
 }
@@ -99,10 +99,10 @@ DATABASES = {
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': {
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
         'rest_framework.permissions.IsAuthenticated',
-    }
+    )
 }
 
 # Password validation
