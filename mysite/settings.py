@@ -88,10 +88,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dhecsfqo68s57',
-        'USER': 'dyysvpgdiuflid', 
-        'PASSWORD': '95636bd5a43faa43f2e085ee32cc4d9124e612f6a511c8b72b9069ee35946ba2', 
-        'HOST': 'ec2-52-44-31-100.compute-1.amazonaws.com', 
+        'NAME': 'test2',
+        'USER': 'postgres', 
+        'PASSWORD': 'Lq321918', 
+        'HOST': 'localhost', 
         'PORT': '5432',  
     }
 }
@@ -99,10 +99,10 @@ DATABASES = {
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': {
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
         'rest_framework.permissions.IsAuthenticated',
-    }
+    )
 }
 
 # Password validation

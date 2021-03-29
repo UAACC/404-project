@@ -10,8 +10,8 @@ class Node(models.Model):
 
 class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=50)
+    username = models.CharField(max_length=300, unique=True)
+    password = models.CharField(max_length=300)
     email = models.EmailField(null=True, blank=True)
     github = models.URLField(null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
