@@ -61,7 +61,7 @@ class PostDetail extends React.Component {
     }
     
     //match user's id with the postid to fetch author's username
-    const authorDoc = await axios.get("/authors/");
+    const authorDoc = await axios.get("https://nofun.herokuapp.com/author/");
     const authorList = authorDoc.data;
     const the_author_matched = authorList.filter((singleAuthor) => singleAuthor.id == doc.data.author);
     this.setState({authorName: the_author_matched[0].username});

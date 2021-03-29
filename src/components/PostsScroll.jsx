@@ -46,12 +46,11 @@ class PostsScroll extends React.Component {
       <div className="row">
         {posts.length !== 0 ? (
           posts.map((post) => {
-            const postId = post.id.split("/")[4];
             return <Grid item xm={12} sm={6}>
               <Paper style={{ overflow: "auto", marginTop: "2%" }}>
                 <Posting
                   post={post}
-                  handleClick={() => (window.location = "/posts/" + postId + "/")}
+                  handleClick={() => (window.location = "/posts/" + post.id + "/")}
                 ></Posting>
               </Paper>
             </Grid>
