@@ -8,16 +8,19 @@ import CommentCard from "./commentCard.jsx";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
+import { connect } from "react-redux";
 
 class PostsScroll extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
+      local: true
     };
   }
 
   componentDidMount = async () => {
+    const { local } = this.state;
     let posts = [];
     // const requests = this.props.domains?.map(domain => {
     //   if (domain === "https://c404-w2021-t1-social-distribut.herokuapp.com/") {
@@ -26,10 +29,17 @@ class PostsScroll extends React.Component {
     //     return axios.get(domain + '/posts/')
     //   }
     // });
-    const doc1 = await axios.get("https://c404-w2021-t1-social-distribut.herokuapp.com/post-list/");
-    const doc2 = await axios.get("https://nofun.herokuapp.com/posts/");
-    posts = posts.concat(doc1.data);
-    posts = posts.concat(doc2.data);
+
+    if (this.props.domains.length !== 0) {
+      const doc1 = await axios.get("https://nofun.herokuapp.com/posts/");
+      const doc2 = await axios.get("https://c404-w2021-t1-social-distribut.herokuapp.com/post-list/");
+      posts = posts.concat(doc1.data);
+      posts = posts.concat(doc2.data);
+    } else {
+      const doc = await axios.get("https://nofun.herokuapp.com/posts/");
+      posts = posts.concat(doc.data);
+    }
+    
     // const resArray = await Promise.all(requests);
     // console.log(resArray);
     // resArray.map(doc => {
@@ -38,6 +48,11 @@ class PostsScroll extends React.Component {
     const publicPosts = posts.filter(post => post.visibility === "public" || post.visibility === "PUBLIC");
     this.setState({ posts: publicPosts });
   };
+
+  handleLocal = () => {
+    const { local } = this.state;
+    this.setState({ local: !local }, () => this.componentDidMount());
+  }
 
   render() {
     const { posts } = this.state;
@@ -66,11 +81,14 @@ class PostsScroll extends React.Component {
             </Typography>
           </center>
         )}
-
       </div>
 
     );
   }
 }
 
-export default PostsScroll;
+const mapStateToProps = (state) => ({
+  domains: state.domain.domains
+});
+
+export default connect(mapStateToProps)(PostsScroll);
