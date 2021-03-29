@@ -20,7 +20,6 @@ class PostsScroll extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { local } = this.state;
     let posts = [];
     // const requests = this.props.domains?.map(domain => {
     //   if (domain === "https://c404-w2021-t1-social-distribut.herokuapp.com/") {

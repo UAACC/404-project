@@ -7,7 +7,7 @@ import domainReducer from "./domain/domain-reducer";
 const persistConfig = {
   key: "root", // from root
   storage,
-  whitelist: ["user", "domainReducer"], // which reducer to persist
+  whitelist: ["user", "domain"], // which reducer to persist
 };
 
 const rootReducer = combineReducers({
