@@ -23,7 +23,7 @@ urlpatterns = [
     # path('posts/create/', PostCreate.as_view()),
     # path('posts/<int:pk>/delete/', DeletePost.as_view()),
     # path('posts/', PostList.as_view()),
-    #path('posts/search', PostSearchList.as_view()),
+    # path('posts/search', PostSearchList.as_view()),
     path('categories/<int:pk>/', CategoryDetail.as_view()),
     path('categories/', CategoryList.as_view()),
 
