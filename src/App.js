@@ -50,6 +50,7 @@ class App extends React.Component {
           <Route exact path="/posts" component={Main} />
           <Route path="/posts/edit/:id" component={Editpost} />
           <Route path="/posts/:id" component={PostDetail} />
+          {/* <Route path="/remoteposts/:id" component={PostDetail} /> */}
         </Switch>
       </BrowserRouter>
     );
