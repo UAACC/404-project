@@ -1,0 +1,11 @@
+psycopg2
+PyMySQL
+Django==3.1.7
+djangorestframework
+django-cors-headers
+django-heroku
+gunicorn
+Pillow==8.0.1
+
+
+
