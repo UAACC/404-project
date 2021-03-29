@@ -27,7 +27,7 @@ SECRET_KEY = 'pmkbeepo#g1__ys#^ce^%6h_=j6g)ky=5)#=h660z$h97l&n4t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"] if DEBUG else ['nofun.herokuapp.com']
+ALLOWED_HOSTS = ["*"] if DEBUG else ['p404t20.herokuapp.com']
 
 # Application definition
 
