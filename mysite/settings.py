@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dfqaqutb6pfai0',
+        'USER': 'ishtisxqtptpal', 
+        'PASSWORD': '20fd6336b79460ce7ada2e87d0ddb7f7baabfec0c7b3797ffef1e3fb36674318', 
+        'HOST': 'ec2-54-196-33-23.compute-1.amazonaws.com', 
+        'PORT': '5432',  
     }
 }
 
@@ -126,6 +130,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
+#PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))#
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mysite')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
