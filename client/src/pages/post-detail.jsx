@@ -187,7 +187,7 @@ class PostDetail extends React.Component {
                 :
                 <Typography variant="h3">{post.title}</Typography>
               }
-            <img src = "http://www.xinhuanet.com/ent/2018-11/29/1123782546_15434527871911n.jpg"></img>
+            <img src = "https://mentorphiledotcom.files.wordpress.com/2018/09/livedemo-1.png"></img>
             <Typography>
                   <DescriptionIcon fontSize="medium" style = {{marginRight:"2%"}}></DescriptionIcon>
                   {this.state.authorName}
