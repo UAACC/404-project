@@ -52,7 +52,7 @@ class Newpost extends React.Component {
         'Content-Type': 'application/json',
       }
     }
-    const doc = await axios.post("/api/posts/", { title, description, visibility }, config);
+    const doc = await axios.post("https://nofun.herokuapp.com/posts/", { title, description, visibility }, config);
     if (doc.data) {
       window.location = `/posts/${doc.data}/`
     }

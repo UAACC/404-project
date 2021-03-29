@@ -32,9 +32,10 @@ class CommentCard extends React.Component {
 
   componentDidMount = async() => {
     const { comment } = this.state;
-    console.log(comment);
+
     if (comment) {
-      const doc = await axios.get('/api/authors/'+this.state.comment.author+'/');
+      const doc = await axios.get('https://nofun.herokuapp.com/author/'+this.state.comment.author+'/');
+      // const doc = await axios.get('http://localhost:8000/author/'+this.state.comment.author+'/');
     this.setState({author: doc.data});
     }
     
@@ -43,8 +44,7 @@ class CommentCard extends React.Component {
   handleDelete = async() => {
     const { comment } = this.state;
     const { token } = this.props.currentUser;
-    console.log("----",token);
-    //const { comment } = this.state;
+
     const csrftoken = Cookies.get('csrftoken');
     const config = {
       headers: {
@@ -53,7 +53,8 @@ class CommentCard extends React.Component {
         'Content-Type': 'application/json',
       }
     }
-    await axios.delete('/api/comments/'+ comment.id,config);
+    await axios.delete('https://nofun.herokuapp.com' + '/comments/'+ comment.id,config);
+    // await axios.delete('http://localhost:8000' + '/comments/'+ comment.id,config);
     this.props.handleClick();
   }
 

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Author, Post, Comment, Like, FriendRequest
+from .models import Node, Author, Post, Comment, Like, FriendRequest
+admin.site.register(Node)
 admin.site.register(Author)
 admin.site.register(Post)
 admin.site.register(Comment)

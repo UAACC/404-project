@@ -50,7 +50,7 @@ class Editpost extends React.Component {
         "Content-type": "application/json",
       }
     }
-    const doc = await axios.post(`/api/posts/${this.props.match.params.id}/edit`, { title, description }, config);
+    const doc = await axios.post(`https://nofun.herokuapp.com/posts/${this.props.match.params.id}/edit`, { title, description }, config);
     if (doc.data) {
       window.location = `/posts/${this.props.match.params.id}/`
     }

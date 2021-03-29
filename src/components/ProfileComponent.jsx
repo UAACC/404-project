@@ -45,7 +45,8 @@ class ProfileCard extends React.Component {
         "Content-type": "application/json",
       }
     }
-    const doc = await axios.patch(`/api/authors/${id}/`, { email, github, bio, password }, config);
+    
+    let doc = await axios.patch(`https://nofun.herokuapp.com/author/${id}/`, { email, github, bio, password }, config);
 
     if (doc.data) {
       // await this.props.setCurrentUser(doc.data);
@@ -63,7 +64,7 @@ class ProfileCard extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.post("/api/friendrequest/", {from_user: currentUser.id, to_user: id}, config);
+    const doc = await axios.post("https://nofun.herokuapp.com/friendrequest/", {from_user: currentUser.id, to_user: id}, config);
     if (doc.data) {
       window.alert(doc.data);
     }
@@ -79,7 +80,7 @@ class ProfileCard extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.patch("/api/friendrequest/delete", {from_user: currentUser.id, to_user: id}, config);
+    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/delete", {from_user: currentUser.id, to_user: id}, config);
     if (doc.data) {
       window.alert(doc.data);
     }

@@ -15,12 +15,12 @@ class FriendsRequest extends React.Component {
   }
 
   componentDidMount = async () => {
-    const doc = await axios.get("/api/friendrequest/");
+    const doc = await axios.get("https://nofun.herokuapp.com/friendrequest/");
     const { currentUser } = this.props;
     const api_requests  = [];
     for (let request of doc.data) {
       if (request.status === "R" && request.to_user === currentUser.id) {
-        api_requests.push(axios.get("/api/authors/"+request.from_user+"/"));
+        api_requests.push(axios.get("https://nofun.herokuapp.com/author/"+request.from_user+"/"));
       }
     }
     const requests = await Promise.all(api_requests);
@@ -36,7 +36,7 @@ class FriendsRequest extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.patch("/api/friendrequest/accept/", {from_user, to_user: id}, config);
+    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/accept/", {from_user, to_user: id}, config);
     if (doc.data) {
       await window.alert(doc.data);
       this.componentDidMount();
@@ -53,7 +53,7 @@ class FriendsRequest extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.patch("/api/friendrequest/decline/", {from_user, to_user: id}, config);
+    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/decline/", {from_user, to_user: id}, config);
     if (doc.data) {
       await window.alert(doc.data);
       this.componentDidMount();

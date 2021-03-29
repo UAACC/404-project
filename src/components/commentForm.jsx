@@ -28,7 +28,8 @@ class CommentForm extends React.Component {
     console.log("----inside commentform",this.state.post);
     const { comment } = this.state;
     if (comment) {
-      const doc = await axios.get('/api/authors/'+this.state.comment.author+'/');
+      const doc = await axios.get('https://nofun.herokuapp.com/author/'+this.state.comment.author+'/');
+      // const doc = await axios.get('http://localhost:8000/author/'+this.state.comment.author+'/');
       this.setState({author: doc.data});
     }
   }
@@ -45,7 +46,7 @@ class CommentForm extends React.Component {
         'Content-Type': 'application/json',
       }
     }
-    const doc = await axios.post("/api/comments/", { post,content }, config);
+    const doc = await axios.post("https://nofun.herokuapp.com/comments/", { post,content }, config);
     if (doc.data) {
       this.props.handleClick();
     }

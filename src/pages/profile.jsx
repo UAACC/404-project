@@ -14,11 +14,13 @@ class ProfilePage extends React.Component {
   }
 
   componentDidMount = async () => {
-    const doc = await axios.get("/api/authors/"+this.props.match.params.id+"/");
-    if (doc) {
-      console.log(doc.data);
-      this.setState({user: doc.data});
+    let doc = null;
+    try {
+      doc = await axios.get("https://nofun.herokuapp.com/author/"+this.props.match.params.id+"/");
+    } catch {
+      doc = await axios.get("https://c404-w2021-t1-social-distribut.herokuapp.com/author/"+this.props.match.params.id+"/");
     }
+    this.setState({ user: doc.data });
   }
 
   render() {

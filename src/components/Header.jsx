@@ -19,13 +19,27 @@ class Header extends React.Component {
   handleSearch = async (e) => {
     e.preventDefault();
     const { search } = this.state;
-    const doc = await axios.get("/api/authors/");
+
+    let authors = [];
+    // const requests = this.props.domains?.map(domain => axios.get(domain + '/author/'));
+    // const resArray = Promise.all(requests);
+    // resArray.map(doc => {
+    //   authors = authors.concat(doc.data);
+    // })
+    const doc1 = await axios.get("https://c404-w2021-t1-social-distribut.herokuapp.com/author/");
+    const doc2 = await axios.get("https://nofun.herokuapp.com/author/");
+    authors = authors.concat(doc1.data);
+    authors = authors.concat(doc2.data);
+
     let searched = false;
-    for (let author of doc.data) {
-      console.log(author);
-      if (search === author.username){
+    for (let author of authors) {
+      if (search === author.username || search === author.displayName){
         searched = true;
-        window.location = "/authors/" + author.id + "/";
+        let authorId = author.id;
+        if (author.host === "https://c404-w2021-t1-social-distribut.herokuapp.com") {
+          authorId = authorId.split("/")[4];
+        }
+        window.location = "/authors/" + authorId + "/";
       }
     }
     if (!searched) window.alert("No author found!");
@@ -137,6 +151,7 @@ class Header extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 
 const mapDispatchToProps = (dispatch) => ({

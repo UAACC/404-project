@@ -42,9 +42,15 @@ class PostDetail extends React.Component {
   componentDidMount = async () => {
     //set post's information in state
     const { currentUser } = this.props;
-    const doc = await axios.get(
-      "/api/posts/" + this.props.match.params.id + "/"
-    );
+    let doc =  null;
+    try {
+      doc = await axios.get(
+        "https://nofun.herokuapp.com/posts/" + this.props.match.params.id + "/"
+      );
+    } catch {
+      return window.alert("Post from other node.")
+    }
+  
     console.log("friends: ", currentUser.friends);
     const post = doc.data;
     if ( post.visibility === "public"
@@ -55,7 +61,7 @@ class PostDetail extends React.Component {
     }
     
     //match user's id with the postid to fetch author's username
-    const authorDoc = await axios.get("/api/authors/");
+    const authorDoc = await axios.get("/authors/");
     const authorList = authorDoc.data;
     const the_author_matched = authorList.filter((singleAuthor) => singleAuthor.id == doc.data.author);
     this.setState({authorName: the_author_matched[0].username});
@@ -96,7 +102,7 @@ class PostDetail extends React.Component {
       }
     }
     var post = post.id;
-    await axios.post("/api/likes/", { post }, config);
+    await axios.post("https://nofun.herokuapp.com/likes/", { post }, config);
     this.componentDidMount();
   }
 
@@ -147,7 +153,7 @@ class PostDetail extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    await axios.patch("/api/posts/" + post.id + "/", { title, description }, config);
+    await axios.patch("https://nofun.herokuapp.com/posts/" + post.id + "/", { title, description }, config);
     this.componentDidMount();
   }
 
@@ -162,7 +168,7 @@ class PostDetail extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    await axios.delete("/api/posts/" + post.id + "/", config);
+    await axios.delete("https://nofun.herokuapp.com/posts/" + post.id + "/", config);
     window.location = "/posts/";
   }
 

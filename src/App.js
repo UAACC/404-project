@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, BrowserRouter, Switch } from "react-router-dom";
-import { connect } from "react-redux";
 import Main from "./pages/main";
 import SignIn from "./pages/signin";
 import SignUp from "./pages/signup";
@@ -10,10 +9,26 @@ import Editpost from "./pages/editpost";
 import Friendrequest from "./pages/friendrequest";
 import ProfilePage from "./pages/profile";
 import PostDetail from "./pages/post-detail";
+import axios from "axios";
+import { connect } from "react-redux";
+import { setCurrentDomain } from "./redux/domain/domain-actions";
+
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount = async () => {
+    const doc = await axios.get("https://nofun.herokuapp.com/nodes/");
+    if (doc) {
+      const domains = [];
+      doc.data.map(res => {
+        domains.push(res.domain);
+      })
+      this.props.setCurrentDomain(domains);
+    }
   }
 
   beforeunload = (e) => {
@@ -41,4 +56,9 @@ class App extends React.Component {
   }
 }
 
-export default App;
+
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentDomain: (domain) => dispatch(setCurrentDomain(domain)),
+});
+
+export default connect(null, mapDispatchToProps)(App);

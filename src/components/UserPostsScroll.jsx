@@ -20,7 +20,7 @@ class PostsScroll extends React.Component {
   }
 
   componentDidMount = async () => {
-    const doc = await axios.get("/api/posts/");
+    const doc = await axios.get("https://nofun.herokuapp.com/posts/");
     const posts = [];
     const { currentUser } = this.props;
     for (let post of doc.data) {

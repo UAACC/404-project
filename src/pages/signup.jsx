@@ -37,7 +37,7 @@ class SignUpPage extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.post("/api/authors/", { username, password }, config);
+    const doc = await axios.post("https://nofun.herokuapp.com/author/", { username, password }, config);
     if (!doc.data) {
       window.alert("Wrong crendentials");
     } else {

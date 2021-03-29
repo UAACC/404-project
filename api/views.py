@@ -5,12 +5,18 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
-from .serializers import AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer, CategorySerializer
-from .models import Author, Post, Category, Like, Comment, FriendRequest
+from .serializers import NodeSerializer, AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer, CategorySerializer
+from .models import Node, Author, Post, Category, Like, Comment, FriendRequest
 from .serializers import FriendRequestSerializer
 from django.http import JsonResponse, HttpResponse
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
+
+
+class NodeViewSet(viewsets.ModelViewSet):
+    queryset = Node.objects.all()
+    serializer_class = NodeSerializer
+    permission_classes = (AllowAny, )
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
