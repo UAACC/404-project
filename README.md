@@ -18,6 +18,7 @@ Django
 library: Django REST framework
 
 ### API:
+[API Documentation](https://github.com/UAACC/404-project/wiki/API-Documentation)
 #### Author:
 <img src="https://miscellaneous-kay.s3.ca-central-1.amazonaws.com/Author.png" />
 
