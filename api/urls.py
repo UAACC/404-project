@@ -29,26 +29,12 @@ urlpatterns = [
     path('categories/', CategoryList.as_view()),
 
 
-    # Friend
-    # 1. Create Friend Request(from_user --> to_user)
-    # Example: Request: localhost:8000/api/friendrequest/  Method: POST
-    #          Body: Key1: from_user, Value1: <user_id>, key2: to_user, Value2: <user_id>
-    path("friendrequest", FriendRequestViewSet.as_view({"post": "create"})),
-    # 2. Accept incoming friend request
-    # Example: Request: localhost:8000/api/friendrequest/accept  Method: PATCH
-    #          Body: Key1: from_user, Value1: <user_id>, key2: to_user, Value2: <user_id>
-    #          from_user is the user send request, to_user is the current login user
-    path("friendrequest/accept",
-         FriendRequestViewSet.as_view({"patch": "accept_incoming_request"})),
-    # 3. Decline incoming friend request
-    # Example: Request: localhost:8000/api/friendrequest/decline  Method: PATCH
-    #          Body: Key1: from_user, Value1: <user_id>, key2: to_user, Value2: <user_id>
-    #          from_user is the user send request, to_user is the current login user
-    path("friendrequest/decline",
-         FriendRequestViewSet.as_view({"patch": "decline_incoming_request"})),
-    # 4. Delete friend
-    # Example: Request: localhost:8000/api/friendrequest/delete  Method: PATCH
-    #          Body: Key1: from_user or to_user, Value1: <user_id>, key2: to_user or from_user, Value2: <user_id>
-    path("friendrequest/delete",
-         FriendRequestViewSet.as_view({"patch": "delete"}))
+     # Friend Request and Followers URL
+     path("friendrequest", FriendRequestViewSet.as_view({"post": "create"})),
+     path("friendrequest/accept", FriendRequestViewSet.as_view({"patch": "accept_incoming_request"})),
+     path("friendrequest/decline", FriendRequestViewSet.as_view({"patch": "decline_incoming_request"})),
+     path("friendrequest/delete", FriendRequestViewSet.as_view({"patch": "delete"})),
+     path("author/<str:author_id>/followers/", views.getFollowers),
+     path("author/<str:author_id>/followers/<str:foreign_author_id>/", views.operateFollowers),
+     path("author/<str:author_id>/friend-list/", views.friendList)
 ]
