@@ -25,6 +25,8 @@ class PostsScroll extends React.Component {
       return axios.get("https://" + domain + '/post-list/')
     });
     
+
+
     const resArray = await Promise.all(requests);
     console.log(resArray);
     resArray.map(doc => {
@@ -33,6 +35,7 @@ class PostsScroll extends React.Component {
     const publicPosts = posts.filter(post => post.visibility === "PUBLIC");
 
     this.setState({ posts: publicPosts });
+    console.log("---in posting",posts[3].content);
   };
 
   handleLocal = () => {
@@ -42,16 +45,19 @@ class PostsScroll extends React.Component {
 
   render() {
     const { posts } = this.state;
-
+    
     return (
       <div className="row">
         {posts.length !== 0 ? (
           posts.map((post) => {
+            const linksplit = post.id.split("/");
+            //const linkOffset = "author/" + linksplit[4] + "/posts/" + linksplit[6];
             return <Grid item xm={12} sm={6}>
               <Paper style={{ overflow: "auto", marginTop: "2%" }}>
                 <Posting
                   post={post}
-                  handleClick={() => (window.location = "/posts/" + post.id + "/")}
+                  
+                  handleClick={() => (window.location = "/remotepostdetail/" + linksplit[6] + "/")}
                 ></Posting>
               </Paper>
             </Grid>

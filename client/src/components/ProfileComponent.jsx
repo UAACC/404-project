@@ -31,6 +31,8 @@ class ProfileCard extends React.Component {
       github: props.user.github,
       bio: props.user.bio,
       password: props.user.password,
+      host: props.user.host,
+      displayName: props.user.displayName
     }
   }
 
@@ -64,7 +66,12 @@ class ProfileCard extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.post("https://nofun.herokuapp.com/friendrequest/", {from_user: currentUser.id, to_user: id}, config);
+    try {
+      var doc = await axios.post("https://nofun.herokuapp.com/friendrequest/", {from_user: currentUser.id, to_user: id}, config);
+    } catch {
+      var doc = await axios.post("https://c404-w2021-t1-social-distribut.herokuapp.com/friend-request/",{actor:"https://c404-w2021-t1-social-distribut.herokuapp.com/author/1516b2d1c820493a99d4e3ea428111f0", object:"https://c404-w2021-t1-social-distribut.herokuapp.com/author/f3fd3ec4987d4e8a86538e55ace952bb","summary": "yoyoyoyoyo"});
+    }
+    
     if (doc.data) {
       window.alert(doc.data);
     }
@@ -89,7 +96,7 @@ class ProfileCard extends React.Component {
   
 
   render(){
-    const { editOpen, username, email, password, bio, github} = this.state;
+    const { editOpen, displayName, email, password, bio, github, host} = this.state;
     const { currentUser } = this.props;
     return (
       <Paper style={{ overflow: "auto" }}>
@@ -100,7 +107,7 @@ class ProfileCard extends React.Component {
               gutterBottom
             >
               <AccountBoxIcon fontSize="large"></AccountBoxIcon>
-              <b>{username}</b>
+              <b>{displayName}</b>
             </Typography>
             {
               editOpen ?
@@ -116,6 +123,9 @@ class ProfileCard extends React.Component {
                 </Typography>
                 <Typography variant="body1" component="h4">
                   Github: {github}
+                </Typography>
+                <Typography variant="body1" component="h4">
+                  Host: {host}
                 </Typography>
                 <div className="row">
                   <Typography variant="body1" component="h4">

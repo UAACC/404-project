@@ -21,6 +21,7 @@ class ProfilePage extends React.Component {
       doc = await axios.get("https://c404-w2021-t1-social-distribut.herokuapp.com/author/"+this.props.match.params.id+"/");
     }
     this.setState({ user: doc.data });
+    console.log("----",this.state.user);
   }
 
   render() {

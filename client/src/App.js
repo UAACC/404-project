@@ -9,6 +9,7 @@ import Editpost from "./pages/editpost";
 import Friendrequest from "./pages/friendrequest";
 import ProfilePage from "./pages/profile";
 import PostDetail from "./pages/post-detail";
+import RemotePostDetail from "./pages/remote-post-detail";
 import axios from "axios";
 import { connect } from "react-redux";
 import { setCurrentDomain } from "./redux/domain/domain-actions";
@@ -50,6 +51,7 @@ class App extends React.Component {
           <Route exact path="/posts" component={Main} />
           <Route path="/posts/edit/:id" component={Editpost} />
           <Route path="/posts/:id" component={PostDetail} />
+          <Route path="/remotepostdetail/:id" component={RemotePostDetail} />
         </Switch>
       </BrowserRouter>
     );
