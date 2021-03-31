@@ -2,15 +2,17 @@ import React from "react";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
 import axios from "axios";
+import "./style/header.css";
+import { colors } from "@material-ui/core";
+import { grey } from "@material-ui/core/colors";
 
 class Header extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      search: ""
-    }
+      search: "",
+    };
   }
-  
 
   handleLogOut = () => {
     this.props.setCurrentUser(false);
@@ -26,24 +28,28 @@ class Header extends React.Component {
     // resArray.map(doc => {
     //   authors = authors.concat(doc.data);
     // })
-    const doc1 = await axios.get("https://c404-w2021-t1-social-distribut.herokuapp.com/author/");
+    const doc1 = await axios.get(
+      "https://c404-w2021-t1-social-distribut.herokuapp.com/author/"
+    );
     const doc2 = await axios.get("https://nofun.herokuapp.com/author/");
     authors = authors.concat(doc1.data);
     authors = authors.concat(doc2.data);
 
     let searched = false;
     for (let author of authors) {
-      if (search === author.username || search === author.displayName){
+      if (search === author.username || search === author.displayName) {
         searched = true;
         let authorId = author.id;
-        if (author.host === "https://c404-w2021-t1-social-distribut.herokuapp.com") {
+        if (
+          author.host === "https://c404-w2021-t1-social-distribut.herokuapp.com"
+        ) {
           authorId = authorId.split("/")[4];
         }
         window.location = "/authors/" + authorId + "/";
       }
     }
     if (!searched) window.alert("No author found!");
-  }
+  };
 
   renderHeader = () => {
     const { currentUser } = this.props;
@@ -53,7 +59,12 @@ class Header extends React.Component {
       case false:
         return (
           <li className="nav-item">
-            <a className="nav-link active" aria-current="page" onMouseOver="cursor" href="/signin">
+            <a
+              className="nav-link active"
+              aria-current="page"
+              onMouseOver="cursor"
+              href="/signin"
+            >
               sign in
             </a>
           </li>
@@ -78,9 +89,9 @@ class Header extends React.Component {
     const { search } = this.state;
     const { currentUser } = this.props;
     return (
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div className="container-fluid">
-          <a className="navbar-brand" href="/">
+      <div className="container-fluid shadow p-2 mb-4">
+        <nav class="navbar navbar-expand-lg navbar-light">
+          <a className="navbar-brand" href="#">
             Socialdistribution
           </a>
           <button
@@ -95,32 +106,30 @@ class Header extends React.Component {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav mr-auto">
               <li className="nav-item">
                 <a
-                  className="nav-link active"
+                  className="nav-link"
                   aria-current="/post/create"
                   href="/newpost"
                 >
-                  create post
+                  Create post
                 </a>
               </li>
-              {
-                currentUser ? 
+              {currentUser ? (
                 <li className="nav-item">
-                <a
-                  className="nav-link active"
-                  aria-current="page"
-                  href={"/authors/" + currentUser.id + "/"}
-                >
-                  my profile
-                </a>
-              </li>
-              : null
-              }
+                  <a
+                    className="nav-link"
+                    aria-current="page"
+                    href={"/authors/" + currentUser.id + "/"}
+                  >
+                    My profile
+                  </a>
+                </li>
+              ) : null}
               <li className="nav-item">
                 <a
-                  className="nav-link active"
+                  className="nav-link"
                   aria-current="page"
                   href="/friendrequest"
                 >
@@ -129,29 +138,33 @@ class Header extends React.Component {
               </li>
               {this.renderHeader()}
             </ul>
-            <form className="d-flex">
+            <form class="d-flex ms-auto">
               <input
-                className="form-control me-2"
+                class="form-control me-2"
                 type="search"
                 placeholder="search author"
                 aria-label="Search"
                 value={search}
-                onChange={e=>this.setState({search: e.target.value})}
+                onChange={(e) => this.setState({ search: e.target.value })}
               ></input>
-              <button className="btn btn-outline-light" type="submit" onClick={this.handleSearch}>
-                search author
+              <button
+                class="btn btn-outline-success "
+                type="submit"
+                onClick={this.handleSearch}
+              >
+                Search
               </button>
             </form>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 
 const mapDispatchToProps = (dispatch) => ({

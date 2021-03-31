@@ -10,8 +10,9 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 import axios from "axios";
+import Header from "../components/Header";
 
 class Newpost extends React.Component {
   constructor(props) {
@@ -29,38 +30,43 @@ class Newpost extends React.Component {
   }
 
   checkValidation = () => {
-    const {  title, description, visibility } = this.state;
+    const { title, description, visibility } = this.state;
     if (!title || !description || !visibility) {
       return false;
     }
     return true;
-  }
+  };
 
   handleSubmit = async (event) => {
     event.preventDefault();
     if (!this.checkValidation()) {
-      return window.alert('You have not filed the form completely.')
+      return window.alert("You have not filed the form completely.");
     }
 
     const { token } = this.props.currentUser;
     const { title, description, visibility } = this.state;
-    const csrftoken = Cookies.get('csrftoken');
+    const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        "Authorization": `Token ${token}`,
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json',
-      }
-    }
-    const doc = await axios.post("https://nofun.herokuapp.com/posts/", { title, description, visibility }, config);
+        Authorization: `Token ${token}`,
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+    };
+    const doc = await axios.post(
+      "https://nofun.herokuapp.com/posts/",
+      { title, description, visibility },
+      config
+    );
     if (doc.data) {
-      window.location = `/posts/${doc.data}/`
+      window.location = `/posts/${doc.data}/`;
     }
   };
 
   render() {
     return (
       <div>
+        <Header />
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
@@ -106,7 +112,9 @@ class Newpost extends React.Component {
                         this.setState({ format: e.target.value });
                       }}
                     >
-                      <FormLabel component="legend">How do you want to format the content?</FormLabel>
+                      <FormLabel component="legend">
+                        How do you want to format the content?
+                      </FormLabel>
                       <RadioGroup row aria-label="visible" name="visible">
                         <FormControlLabel
                           value="plaintext"
@@ -156,7 +164,7 @@ class Newpost extends React.Component {
                       variant="filled"
                     />
                   </div>
-                  <div id="image">  
+                  <div id="image">
                     <Button
                       onClick={() => {
                         this.setState({ PopupImageUpload: true });
@@ -184,7 +192,9 @@ class Newpost extends React.Component {
                         this.setState({ visibility: e.target.value });
                       }}
                     >
-                      <FormLabel component="legend">Who can see this post?</FormLabel>
+                      <FormLabel component="legend">
+                        Who can see this post?
+                      </FormLabel>
                       <RadioGroup row aria-label="visible" name="visible">
                         <FormControlLabel
                           value="public"

@@ -9,10 +9,10 @@ import Editpost from "./pages/editpost";
 import Friendrequest from "./pages/friendrequest";
 import ProfilePage from "./pages/profile";
 import PostDetail from "./pages/post-detail";
+import RemotePostDetail from "./pages/remote-post-detail";
 import axios from "axios";
 import { connect } from "react-redux";
 import { setCurrentDomain } from "./redux/domain/domain-actions";
-
 
 class App extends React.Component {
   constructor(props) {
@@ -24,12 +24,12 @@ class App extends React.Component {
     const doc = await axios.get("https://nofun.herokuapp.com/nodes/");
     if (doc) {
       const domains = [];
-      doc.data.map(res => {
+      doc.data.map((res) => {
         domains.push(res.domain);
-      })
+      });
       this.props.setCurrentDomain(domains);
     }
-  }
+  };
 
   beforeunload = (e) => {
     e.preventDefault();
@@ -39,7 +39,6 @@ class App extends React.Component {
   render() {
     return (
       <BrowserRouter>
-      <Header />
         <Switch>
           <Route exact path="/" component={Main} />
           <Route exact path="/signin" component={SignIn} />
@@ -50,12 +49,12 @@ class App extends React.Component {
           <Route exact path="/posts" component={Main} />
           <Route path="/posts/edit/:id" component={Editpost} />
           <Route path="/posts/:id" component={PostDetail} />
+          <Route path="/remotepostdetail/:id" component={RemotePostDetail} />
         </Switch>
       </BrowserRouter>
     );
   }
 }
-
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentDomain: (domain) => dispatch(setCurrentDomain(domain)),

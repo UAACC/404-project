@@ -9,7 +9,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 class SignInPage extends React.Component {
   constructor(props) {
@@ -31,14 +32,18 @@ class SignInPage extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
     const { username, password } = this.state;
-    const csrftoken = Cookies.get('csrftoken');
+    const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json'
-      }
-    }
-    const doc = await axios.post("https://nofun.herokuapp.com/author/", { username, password }, config);
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+    };
+    const doc = await axios.post(
+      "https://nofun.herokuapp.com/author/",
+      { username, password },
+      config
+    );
     if (!doc.data) {
       window.alert("Wrong crendentials");
     } else {
@@ -49,71 +54,79 @@ class SignInPage extends React.Component {
 
   render() {
     return (
-      <div className="login">
-        <section className="content">
-          <h2>Log in</h2>
-          <form className="form" onSubmit={this.handleSubmit}>
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="username"
-                  label="User Name"
-                  name="username"
-                  value={this.state.username}
-                  onChange={this.handleChange}
+      <Grid container component="main">
+        <CssBaseline />
+        <Grid item xs={false} md={7}>
+          <div className="image"></div>
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <div className="login">
+            <section className="content">
+              <h2>Log in</h2>
+              <form className="form" onSubmit={this.handleSubmit}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="username"
+                      label="User Name"
+                      name="username"
+                      value={this.state.username}
+                      onChange={this.handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      style={{ marginTop: 5 }}
+                      id="password"
+                      label="Password"
+                      name="password"
+                      type="password"
+                      value={this.state.password}
+                      onChange={this.handleChange}
+                    />
+                  </Grid>
+                </Grid>
+                <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
+                <Button
+                  type="Log in"
                   fullWidth
-                  style={{ marginTop: 5 }}
-                  id="password"
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={this.state.password}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-            </Grid>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="Log in"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className="submit"
-              size="large"
-              style={{ marginTop: 20 }}
-              onClick={this.handleSignIn}
-            >
-              Log in
-            </Button>
-            <Grid
-              container
-              alignItems="center"
-              justify="center"
-              spacing={0}
-              direction="column"
-              style={{ minHeight: "5vh", marginTop: 10 }}
-            >
-              <Grid item xs>
-                <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
-        </section>
-      </div>
+                  variant="contained"
+                  color="primary"
+                  className="submit"
+                  size="large"
+                  style={{ marginTop: 20 }}
+                  onClick={this.handleSignIn}
+                >
+                  Log in
+                </Button>
+                <Grid
+                  container
+                  alignItems="center"
+                  justify="center"
+                  spacing={0}
+                  direction="column"
+                  style={{ minHeight: "5vh", marginTop: 10 }}
+                >
+                  <Grid item xs>
+                    <Link href="/signup" variant="body2">
+                      {"Don't have an account? Sign Up"}
+                    </Link>
+                  </Grid>
+                </Grid>
+              </form>
+            </section>
+          </div>
+        </Grid>
+      </Grid>
     );
   }
 }
@@ -123,4 +136,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(null, mapDispatchToProps)(SignInPage);
-

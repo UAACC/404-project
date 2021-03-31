@@ -64,7 +64,8 @@ export default function RecipeReviewCard(props) {
       <CardActionArea onClick={() => props.handleClick()}>
         <CardMedia
           className={classes.media}
-          image="https://mentorphiledotcom.files.wordpress.com/2018/09/livedemo-1.png"
+          // image="https://mentorphiledotcom.files.wordpress.com/2018/09/livedemo-1.png"
+          image={props.post.content}
           title="Paella dish"
         />
         <CardContent>

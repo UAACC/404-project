@@ -39,10 +39,12 @@ class PostsScroll extends React.Component {
         {posts.length !== 0 ? (
           posts.map((post) => (
             <Grid item xm={12} sm={12}>
-              <Paper style={{ overflow: "auto", marginTop: "2%" }}>
+              <Paper style={{ overflow: "auto" }}>
                 <Posting
                   post={post}
-                  handleClick={() => (window.location = "/posts/" + post.id + "/")}
+                  handleClick={() =>
+                    (window.location = "/posts/" + post.id + "/")
+                  }
                 ></Posting>
               </Paper>
             </Grid>
@@ -50,29 +52,33 @@ class PostsScroll extends React.Component {
         ) : (
           <center>
             <HourglassEmptyIcon
-              fontSize="large"
-              style={{ marginTop: 20 }}
+              fontSize="small"
+              style={{ marginTop: 50 }}
             ></HourglassEmptyIcon>
-            {
-              user && currentUser && user.id === currentUser.id ?
+            {user && currentUser && user.id === currentUser.id ? (
               <div>
-                <Typography variant="h3" style={{ marginLeft: 20 }}>
+                <Typography variant="h7" style={{ marginTop: 30 }}>
                   You have not posted any content yet, let's post!
                 </Typography>
                 <br />
-                <Button color="primary" size="large" variant="contained" onClick={() => window.location = "/newpost/"}>Post</Button>
+                <Button
+                  color="primary"
+                  size="large"
+                  variant="contained"
+                  style={{ marginTop: 20 }}
+                  onClick={() => (window.location = "/newpost/")}
+                >
+                  Post
+                </Button>
               </div>
-              :  
-              <Typography variant="h3" style={{ marginLeft: 20 }}>
+            ) : (
+              <Typography variant="h7" style={{ marginLeft: 20 }}>
                 This author has not posted any content yet!
               </Typography>
-            }
-            
+            )}
           </center>
         )}
-
       </div>
-
     );
   }
 }

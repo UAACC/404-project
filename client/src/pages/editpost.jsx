@@ -11,7 +11,8 @@ import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
 import axios from "axios";
 import { connect } from "react-redux";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
+import Header from "../components/Header";
 
 const emptyPost = {
   value: "",
@@ -42,22 +43,28 @@ class Editpost extends React.Component {
     event.preventDefault();
     const { token } = this.props.currentUser;
     const { title, description } = this.state;
-    const csrftoken = Cookies.get('csrftoken');
+    const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        "Authorization": `Token ${token}`,
-        'X-CSRFToken': csrftoken,
+        Authorization: `Token ${token}`,
+        "X-CSRFToken": csrftoken,
         "Content-type": "application/json",
-      }
-    }
-    const doc = await axios.post(`https://nofun.herokuapp.com/posts/${this.props.match.params.id}/edit`, { title, description }, config);
+      },
+    };
+    const doc = await axios.post(
+      `https://nofun.herokuapp.com/posts/${this.props.match.params.id}/edit`,
+      { title, description },
+      config
+    );
     if (doc.data) {
-      window.location = `/posts/${this.props.match.params.id}/`
+      window.location = `/posts/${this.props.match.params.id}/`;
     }
   };
 
   render() {
     return (
+      <div>
+        <Header />
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
@@ -236,6 +243,7 @@ class Editpost extends React.Component {
             </Grid>
           </form>
         </div>
+      </div>
     );
   }
 }
