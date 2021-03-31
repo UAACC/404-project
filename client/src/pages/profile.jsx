@@ -28,13 +28,8 @@ class ProfilePage extends React.Component {
       );
     }
     this.setState({ user: doc.data });
-<<<<<<< HEAD
+    console.log("----", this.state.user);
   };
-=======
-    console.log("----",this.state.user);
-  }
->>>>>>> 58caed9f1f8f74ec2ca6deba1b4b773f60c12c4e
-
   render() {
     const { user } = this.state;
     return (

@@ -24,11 +24,6 @@ class PostsScroll extends React.Component {
     const requests = this.props.domains?.map((domain) => {
       return axios.get("https://" + domain + "/post-list/");
     });
-<<<<<<< HEAD
-=======
-    
-
->>>>>>> 58caed9f1f8f74ec2ca6deba1b4b773f60c12c4e
 
     const resArray = await Promise.all(requests);
     console.log(resArray);
@@ -38,7 +33,7 @@ class PostsScroll extends React.Component {
     const publicPosts = posts.filter((post) => post.visibility === "PUBLIC");
 
     this.setState({ posts: publicPosts });
-    console.log("---in posting",posts[3].content);
+    console.log("---in posting", posts[3].content);
   };
 
   handleLocal = () => {
@@ -48,37 +43,26 @@ class PostsScroll extends React.Component {
 
   render() {
     const { posts } = this.state;
-    
+
     return (
       <div className="row">
         {posts.length !== 0 ? (
           posts.map((post) => {
-<<<<<<< HEAD
+            const linksplit = post.id.split("/");
+            //const linkOffset = "author/" + linksplit[4] + "/posts/" + linksplit[6];
             return (
               <Grid item xm={12} sm={6}>
-                <Paper style={{ overflow: "auto" }}>
+                <Paper style={{ overflow: "auto", marginTop: "2%" }}>
                   <Posting
                     post={post}
                     handleClick={() =>
-                      (window.location = "/posts/" + post.id + "/")
+                      (window.location =
+                        "/remotepostdetail/" + linksplit[6] + "/")
                     }
                   ></Posting>
                 </Paper>
               </Grid>
             );
-=======
-            const linksplit = post.id.split("/");
-            //const linkOffset = "author/" + linksplit[4] + "/posts/" + linksplit[6];
-            return <Grid item xm={12} sm={6}>
-              <Paper style={{ overflow: "auto", marginTop: "2%" }}>
-                <Posting
-                  post={post}
-                  
-                  handleClick={() => (window.location = "/remotepostdetail/" + linksplit[6] + "/")}
-                ></Posting>
-              </Paper>
-            </Grid>
->>>>>>> 58caed9f1f8f74ec2ca6deba1b4b773f60c12c4e
           })
         ) : (
           <center>
