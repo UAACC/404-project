@@ -105,6 +105,15 @@ class PostViewSet(viewsets.ModelViewSet):
             author=author, title=title, description=description, visibility=visibility)
         return HttpResponse(post.id)
 
+class friendRequestViewSet(viewsets.ModelViewSet):##############################################################
+    queryset = FriendRequest.objects.all()
+    serializer_class = PostSerializer
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (AllowAny, )
+
+    def create(self, request):
+        
+        return HttpResponse()
 
 class CategoryList(generics.ListCreateAPIView):
     queryset = Category.objects.all()
