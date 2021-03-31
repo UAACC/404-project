@@ -21,30 +21,17 @@ class PostsScroll extends React.Component {
 
   componentDidMount = async () => {
     let posts = [];
-    // const requests = this.props.domains?.map(domain => {
-    //   if (domain === "https://c404-w2021-t1-social-distribut.herokuapp.com/") {
-    //     return axios.get(domain + '/post-list/')
-    //   } else {
-    //     return axios.get(domain + '/posts/')
-    //   }
-    // });
-
-    if (this.props.domains.length !== 0) {
-      const doc1 = await axios.get("https://nofun.herokuapp.com/posts/");
-      const doc2 = await axios.get("https://c404-w2021-t1-social-distribut.herokuapp.com/post-list/");
-      posts = posts.concat(doc1.data);
-      posts = posts.concat(doc2.data);
-    } else {
-      const doc = await axios.get("https://nofun.herokuapp.com/posts/");
-      posts = posts.concat(doc.data);
-    }
+    const requests = this.props.domains?.map(domain => {
+      return axios.get("https://" + domain + '/post-list/')
+    });
     
-    // const resArray = await Promise.all(requests);
-    // console.log(resArray);
-    // resArray.map(doc => {
-    //   posts = posts.concat(doc.data);
-    // })
-    const publicPosts = posts.filter(post => post.visibility === "public" || post.visibility === "PUBLIC");
+    const resArray = await Promise.all(requests);
+    console.log(resArray);
+    resArray.map(doc => {
+      posts = posts.concat(doc.data);
+    });
+    const publicPosts = posts.filter(post => post.visibility === "PUBLIC");
+
     this.setState({ posts: publicPosts });
   };
 
