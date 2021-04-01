@@ -9,7 +9,11 @@ class Node(models.Model):
 
 
 class Author(AbstractUser):
+    type = "author"
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    host = models.URLField(max_length=256,default='')
+    url = models.URLField(max_length=256,default='')
+    displayName = models.CharField(max_length=55,default='')
     username = models.CharField(max_length=300, unique=True)
     password = models.CharField(max_length=300)
     email = models.EmailField(null=True, blank=True)
@@ -28,14 +32,27 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'categories'
 
-
+def default_list():
+    return []
 class Post(models.Model):
+    type = "post"
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=256)
-    description = models.CharField(max_length=256, default="")
+    source = models.URLField(max_length=256, default = '')
+    origin = models.URLField(max_length=256, default = '')
+    description = models.CharField(max_length=256, default='')
+    contentType = models.CharField(max_length=55,default = '')
+    content = models.TextField(blank=True)
     visibility = models.CharField(max_length=100, blank=False)
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="posts")
     published = models.DateTimeField(default=timezone.now)
+    comment = models.URLField(max_length=256, default = '')
+    categorie = models.JSONField(default=default_list)#team1 suggestion
+    count = models.IntegerField(default=0)
+    size = models.IntegerField(default=0)
+    unlisted = models.BooleanField(default = True)
+
 
     # image = models.ImageField(null = True, blank = True, upload_to= "images/")
 

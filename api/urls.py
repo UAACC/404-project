@@ -25,6 +25,11 @@ urlpatterns = [
     # path('posts/<int:pk>/delete/', DeletePost.as_view()),
     # path('posts/', PostList.as_view()),
     #path('posts/search', PostSearchList.as_view()),
+    path('author/', AuthorViewSet.as_view({'post':'create_1'})),
+    path('author/<str:author_id>/posts/',
+         PostViewSet.as_view({'get': 'post_list','post':'create_1'})),
+    path('author/<str:author_id>/posts/<str:post_id>/',
+         PostViewSet.as_view({'get': 'retrieve', 'put': 'edit', 'post': 'create'})),
     path('categories/<int:pk>/', CategoryDetail.as_view()),
     path('categories/', CategoryList.as_view()),
 

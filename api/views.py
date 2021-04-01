@@ -13,18 +13,52 @@ from .permissions import IsOwnerOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-
+import uuid
 
 class NodeViewSet(viewsets.ModelViewSet):
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
     permission_classes = (AllowAny, )
 
-
+#URL: ://service/author/{AUTHOR_ID}/
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = (AllowAny, )
+
+    def retrieve(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_id = request_str.split("/")[2]
+        queryset = Author.objects.get(id=author_id)
+        serializer = AuthorSerializer(queryset)
+        return Response(serializer.data)
+
+    def create_1(self, request, *args, **kwargs):
+        display_name = request.data.get('displayName', None)
+        github = request.data.get('github', None)
+        if not github:
+            github = "https://github.com/changeme"
+
+        author_uid = str(uuid.uuid4().hex)
+        host = 'https://nofun.herokuapp.com'
+        author_id= f'{host}/author/{author_uid}'
+        url = author_id
+        email = request.data.get('email', None)
+        username = request.data.get('username')
+        password = request.data.get('password')
+        author_data = {'id': author_id, 'host': host, 'url': url,
+                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password}
+        serializer = self.serializer_class(data=author_data)
+        if serializer.is_valid():
+            serializer.save()
+        
+        
+        
+
+
+        
+
+
 
     def create(self, request):
         try:
@@ -91,12 +125,64 @@ class CommentViewSet(viewsets.ModelViewSet):
         Comment.objects.create(author=author, post=post, content=content)
         return HttpResponse('Good request, comment created!')
 
-
+#URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
+
+    def getFullname(self, author_id, post_id, *args, **kwargs):
+        host = 'https://nofun.herokuapp.com'#自家服務器
+        full_name = f'{host}/author/{author_id}/posts/{post_id}'
+        return full_name
+
+
+    def post_list(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_id = request_str.split("/")[2]
+        queryset = Post.objects.filter(author=author_id)
+        return Response(PostSerializer(queryset, many=True).data)
+    
+    def post_list_id(self, request, *args, **kwargs):
+        request_str = str(request)
+        post_id = request_str.split("/")[-1]
+        queryset = Post.objects.filter(id=post_id)
+        serializer = PostSerializer(queryset)
+        return Response(serializer.data)
+
+
+    def create_1(self, request, *args, **kwargs):
+        request_data = request.data.copy()
+        request_str = str(request)
+        author_id = request_str.split("/")[2]
+        
+        title = request_data.get('title', None)
+        source = request_data.get('source', None)
+        origin = request_data.get('origin', None)
+        description = request_data.get('description', None)
+        contentType = request_data.get('contentType', None)
+        content = request_data.get('content', None)
+        categories = request_data.get('categories', None)
+        count = request_data.get('count', None)
+        size = request_data.get('size', None)
+        comments = request_data.get('comments', None)
+        visibility = request_data.get('visibility', None)
+        unlisted = request_data.get('unlisted', False)
+
+       
+        post_data = {'title': title,'source': source,
+                     'origin': origin, 'description': description, 'contentType': contentType,
+                     'content': content, 'author': author_id, 'categories': categories,
+                     'count': count, 'size': size, 'comments': comments,
+                     'visibility': visibility, 'unlisted': unlisted}
+
+        serializer = self.serializer_class(data=post_data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data)
+        
+
 
     def create(self, request):
         author = Author.objects.get(username=request.user)
@@ -106,6 +192,9 @@ class PostViewSet(viewsets.ModelViewSet):
         post = Post.objects.create(
             author=author, title=title, description=description, visibility=visibility)
         return HttpResponse(post.id)
+
+
+
 
 
 class CategoryList(generics.ListCreateAPIView):
