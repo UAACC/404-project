@@ -60,8 +60,11 @@ class PostDetail extends React.Component {
       post.visibility === "PUBLIC" ||
       (post.visibility === "PUBLIC" && post.author === currentUser?.id)
     ) {
-      this.setState({ post, title: post.title, description: post.description });
+      this.setState({ post, title: post.title, content: post.content });
     }
+
+    const doc2 = await axios.get(post.comments, config);
+    this.setState({comments: doc2.data});
 
     //match user's id with the postid to fetch author's username
     const authorDoc = await axios.get("https://" + domain + "/author/" + authorId + "/", config);
@@ -71,10 +74,8 @@ class PostDetail extends React.Component {
   };
 
   getAllComments = () => {
-    const { post } = this.state;
+    const { comments } = this.state;
     const { domain, authorId, postId } = this.state;
-
-    const comments = post.comments;
 
     return (
       <Container style={{ marginLeft: "10%" }}>
@@ -131,7 +132,7 @@ class PostDetail extends React.Component {
   };
 
   handleSubmitEdit = async () => {
-    const { post, title, description } = this.state;
+    const { post, title, content } = this.state;
     const { token } = this.props.currentUser;
     const csrftoken = Cookies.get("csrftoken");
     const config = {
@@ -142,8 +143,8 @@ class PostDetail extends React.Component {
       },
     };
     await axios.patch(
-      "https://nofun.herokuapp.com/posts/" + post.id + "/",
-      { title, description },
+      post.id + "/",
+      { title, content },
       config
     );
     this.componentDidMount();
@@ -161,7 +162,7 @@ class PostDetail extends React.Component {
       },
     };
     await axios.delete(
-      "https://nofun.herokuapp.com/posts/" + post.id + "/",
+      post.id + "/",
       config
     );
     window.location = "/posts/";

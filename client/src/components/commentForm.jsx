@@ -31,15 +31,13 @@ class CommentForm extends React.Component {
         'Content-Type': 'application/json',
       }
     }
-    const doc = await axios.get(post.id + "/comments/", {
-       type:"comment", comment, author: id, contentType: "text/plain"
-      
+    const doc = await axios.post(post.id + "/comments/", {
+       type:"comment", comment, author: id, post: post.id, contentType: "text/plain"
       }, config);
     if (doc.data) {
       this.props.handleClick();
     }
   };
-
 
   render(){
     const { comment } = this.state;

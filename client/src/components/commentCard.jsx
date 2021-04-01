@@ -40,7 +40,7 @@ class CommentCard extends React.Component {
   }
 
   handleLike = async () => {
-    var { comment} = this.state;
+    var { comment } = this.state;
     const { token } = this.props.currentUser;
     const csrftoken = Cookies.get("csrftoken");
     const config = {
@@ -68,7 +68,7 @@ class CommentCard extends React.Component {
       }
     }
 
-    await axios.delete("https://" + domain + "/author/" + authorId + "/posts/" + postId + "/comments/", config);
+    await axios.delete(comment.id, config);
 
     this.props.handleClick();
   }
@@ -80,27 +80,33 @@ class CommentCard extends React.Component {
       <Paper style={{ overflow: "auto", marginRight:"20%", marginTop: '2%' }}>
         <Card>
           <CardContent width={1}>
+          <div className="row">
+            <div className="col-9">
             <Typography variant="body1" component="h4">
               User Name: <b>{author ? author.displayName : "Loading ... "}</b>
             </Typography>
             <Typography variant="body1" component="h4">
               Content: {comment ? comment.comment : "Loading ... "}
             </Typography>
-            {
-              currentUser && currentUser.id === comment.author ?
-              <div>
-                <IconButton
-                  style={{ marginLeft: "10%" }}
-                  onClick={this.handleLike}
-                >
-                  <FavoriteIcon color="secondary" size="large" />
-                </IconButton>
-                <Button variant="contained" color="secondary" style={{marginLeft:"80%"}} onClick={this.handleDelete}>
-                  Delete
-                </Button>
-              </div>
-              : null
-            }
+            </div>
+            <div className="col-3">
+            <IconButton
+                style={{ marginLeft: "10%", width: "40px", htight: "40px" }}
+                onClick={this.handleLike}
+              >
+                <FavoriteIcon color="secondary" size="large" />
+              </IconButton>
+              {
+                currentUser && currentUser.id === comment.author ?
+                <div>
+                  <Button variant="contained" color="secondary" style={{marginLeft:"80%"}} onClick={this.handleDelete}>
+                    Delete
+                  </Button>
+                </div>
+                : null
+              }
+            </div>
+            </div>
           </CardContent>
         </Card>
       </Paper>
