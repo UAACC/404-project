@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'test3',
+        'NAME': 'data8',
         'USER': 'postgres', 
         'PASSWORD': 'Lq321918', #xutong 測試自己改密碼
         'HOST': 'localhost', 

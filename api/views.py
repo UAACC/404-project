@@ -5,14 +5,15 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
-from .serializers import NodeSerializer, AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer, CategorySerializer
-from .models import Node, Author, Post, Category, Like, Comment, FriendRequest
+from .serializers import NodeSerializer, AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer
+from .models import Node, Author, Post, Like, Comment, FriendRequest
 from .serializers import FriendRequestSerializer
 from django.http import JsonResponse, HttpResponse
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from django.shortcuts import get_list_or_404, get_object_or_404
 import uuid
 
 class NodeViewSet(viewsets.ModelViewSet):
@@ -25,40 +26,70 @@ class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = (AllowAny, )
+    #static_author_id = ''
 
     def all_users(self, request, *args, **kwargs):
-        return Response(AuthorSerializer(self.queryset, many=True).data)
+        queryset = Author.objects.all()
+        serializer = AuthorSerializer(queryset,many = True)
+        return Response(serializer.data)
 
-    def retrieve(self, request, *args, **kwargs):
-        request_str = str(request)
-        author_id = request_str.split("/")[2]
+    def retrive(self, request, author_id=None, *args, **kwargs):
+        #request_str = str(request)
+        #author_id = request_str.split("/")[2]
+        #print(author_id)
+        #self.static_author_id = author_id#give global to use
         queryset = Author.objects.get(id=author_id)
+        
         serializer = AuthorSerializer(queryset)
         return Response(serializer.data)
 
     def create_1(self, request, *args, **kwargs):
-        display_name = request.data.get('displayName', None)
-        github = request.data.get('github', None)
-        if not github:
-            github = "https://github.com/changeme"
+        display_name = request.data.get('displayName')
+        github = request.data.get('github')
+        
+
 
         author_uid = str(uuid.uuid4().hex)
         host = 'https://nofun.herokuapp.com'
         author_id= f'{host}/author/{author_uid}'
         url = author_id
-        email = request.data.get('email', None)
+        email = request.data.get('email')
         username = request.data.get('username')
         password = request.data.get('password')
-        author_data = {'id': author_id, 'host': host, 'url': url,
+        author_data = {'id': author_uid, 'host': host, 'url': url,
                        'displayName': display_name, 'github': github,'email':email,'username':username,'password':password}
-        serializer = self.serializer_class(data=author_data)
-        if serializer.is_valid():
-            serializer.save()
-        
-        
+
+        Author.objects.create(
+                id = author_uid,
+                host = host,
+                url = url,
+                email = email,
+                username=username,
+                password=password,
+                displayName = display_name,
+                github = github
+                
+
+                )
 
 
-        
+            #authentication:
+
+
+
+        return JsonResponse(author_data)
+
+    def update(self, request, author_id=None, *args, **kwargs):
+        author = Author.objects.get(id=author_id)
+        #print(author.id)
+        name = request.data.get('displayName', None)
+        github = request.data.get('github', None)
+        author.displayName = name   
+        author.github = github
+        author.save()
+
+        return Response('Author updated successfully', 204)
+
 
 
 
@@ -134,88 +165,192 @@ class PostViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
-    def getFullname(self, author_id, post_id, *args, **kwargs):
-        host = 'https://nofun.herokuapp.com'#自家服務器
-        full_name = f'{host}/author/{author_id}/posts/{post_id}'
-        return full_name
+    
 
     def all_posts(self, request, *args, **kwargs):
-        return Response(PostSerializer(self.queryset, many=True).data)
-
-    
-
-    def post_list(self, request, *args, **kwargs):
-        request_str = str(request)
-        author_id = request_str.split("/")[2]
-        queryset = Post.objects.filter(author=author_id)
-        return Response(PostSerializer(queryset, many=True).data)
-    
-    def post_list_id(self, request, *args, **kwargs):
-        request_str = str(request)
-        post_id = request_str.split("/")[-1]
-        queryset = Post.objects.filter(id=post_id)
-        serializer = PostSerializer(queryset)
+        queryset = Post.objects.all()
+        serializer = PostSerializer(queryset,many = True)
         return Response(serializer.data)
 
+    
 
-    def create_1(self, request, *args, **kwargs):
-        request_data = request.data.copy()
-        request_str = str(request)
-        author_id = request_str.split("/")[2]
+    def post_list(self, request, author_id=None, *args, **kwargs):
         
-        title = request_data.get('title', None)
-        source = request_data.get('source', None)
-        origin = request_data.get('origin', None)
-        description = request_data.get('description', None)
-        contentType = request_data.get('contentType', None)
-        content = request_data.get('content', None)
-        categories = request_data.get('categories', None)
-        count = request_data.get('count', None)
-        size = request_data.get('size', None)
-        comments = request_data.get('comments', None)
-        visibility = request_data.get('visibility', None)
-        unlisted = request_data.get('unlisted', False)
+        
+        return Response(Post.objects.filter(author=author_id).values())
+        
 
-       
+        
+    
+    def post_list_id(self, request, author_id=None,  post_id = None,*args, **kwargs):
+        host = 'https://nofun.herokuapp.com'
+        post_id = f'{host}/author/{author_id}/posts/{post_id}'
+        return Response(Post.objects.filter(author=author_id, id = post_id).values())
+    # DELETE a single post using post_id
+    # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
+    def delete(self, request, author_id=None,  post_id = None, *args, **kwargs):
+        host = 'https://nofun.herokuapp.com'
+        post_id = f'{host}/author/{author_id}/posts/{post_id}'
+        post = get_object_or_404(Post, id=post_id)
+        
+        try:
+            post.delete()
+        except ValueError:
+            return Response("No such a post. Deletion fails.", 500)
+        return Response("Delete successful")
+    
+
+
+    def create_1(self, request, author_id=None,  *args, **kwargs):
+        
+        post_uid = str(uuid.uuid4().hex)
+        host = 'https://nofun.herokuapp.com'
+        #author_id = f'{host}/author/{author_id}'
+        post_id= f'{host}/author/{author_id}/posts/{post_uid}'
+        title = request.data.get('title')
+        source = request.data.get('source')
+        origin = request.data.get('origin')
+        description = request.data.get('description')
+        contentType = request.data.get('contentType')
+        content = request.data.get('content')
+        categories = request.data.get('categorie')
+        count = request.data.get('count')
+        published = request.data.get('published')
+        size = request.data.get('size')
+        comments = post_id
+        visibility = request.data.get('visibility')
+        unlisted = request.data.get('unlisted',False)
+
+        Post.objects.create(
+            id= post_id,
+            title = title,
+            source = post_id,#fix this 
+            origin = post_id,#fix this
+            description = description,
+            contentType = contentType,
+            content = content,
+            count = count,
+            size = size,
+            categorie = categories,
+            comment = comments,
+            visibility = visibility,
+            published = published,
+            unlisted = unlisted,
+            author = Author.objects.get(id=author_id)
+        )
+
+       #return response
         post_data = {'title': title,'source': source,
                      'origin': origin, 'description': description, 'contentType': contentType,
                      'content': content, 'author': author_id, 'categories': categories,
                      'count': count, 'size': size, 'comments': comments,
                      'visibility': visibility, 'unlisted': unlisted}
 
-        serializer = self.serializer_class(data=post_data)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(serializer.data)
+        
+        return Response(post_data)
+        
+    def edit(self, request, author_id=None,  post_id = None,*args, **kwargs):
+        host = 'https://nofun.herokuapp.com'
+        post_id = f'{host}/author/{author_id}/posts/{post_id}'
+        #post = Post.objects.get(id=post_id,author = author_id)
+        post = get_object_or_404(Post, id=post_id)
+        print('correct',post.title)
+
+        title = request.data.get('title'),
+        source = request.data.get('source',None)
+        origin = request.data.get('origin')
+        description = request.data.get('description')
+        contentType = request.data.get('contentType')
+        content = request.data.get('content')
+        categories = request.data.get('categorie')
+        count = request.data.get('count')
+        size = request.data.get('size')
+        comments = post_id
+        visibility = request.data.get('visibility')
+        unlisted = post.unlisted
+        print('t666666666', post.title)
+
+        post_data = {'title': title,'source': source,
+                    'origin': origin, 'description': description, 'contentType': contentType,
+                    'content': content, 'author': author_id, 'categories': categories,
+                    'count': count, 'size': size, 'comments': comments,
+                    'visibility': visibility, 'unlisted': unlisted}
+
+        
+        
+        
+
+        if title:
+            post.title = title
+        
+        post.source = post_id,#fix this 
+        post.origin = post_id,#fix this
+        post.description = description,
+        post.contentType = contentType,
+        post.content = content,
+        if count:
+            post.count = count
+        if size:
+            post.size = size
+        post.categorie = categories,
+        post.comment = comments,
+        post.visibility = visibility,
+        post.author = Author.objects.get(id=author_id)
+        post.save()
+        return Response(post_data)
+         
+
+        #return Response('Author updated successfully', 204)
+
         
 
 
-    def create(self, request):
-        author = Author.objects.get(username=request.user)
-        title = request.data['title']
-        description = request.data['description']
-        visibility = request.data['visibility']
-        post = Post.objects.create(
-            author=author, title=title, description=description, visibility=visibility)
-        return HttpResponse(post.id)
+    def create_2(self, request, author_id=None,  post_id = None,*args, **kwargs):
+        host = 'https://nofun.herokuapp.com'
+        #author_id = f'{host}/author/{author_id}'
+        post_id= f'{host}/author/{author_id}/posts/{post_id}'
+        title = request.data.get('title')
+        source = request.data.get('source')
+        origin = request.data.get('origin')
+        description = request.data.get('description')
+        contentType = request.data.get('contentType')
+        content = request.data.get('content')
+        categories = request.data.get('categorie')
+        count = request.data.get('count')
+        published = request.data.get('published')
+        size = request.data.get('size')
+        comments = post_id
+        visibility = request.data.get('visibility')
+        unlisted = request.data.get('unlisted',False)
+
+        Post.objects.create(
+            title = title,
+            source = post_id,#fix this 
+            origin = post_id,#fix this
+            description = description,
+            contentType = contentType,
+            content = content,
+            count = count,
+            size = size,
+            categorie = categories,
+            comment = comments,
+            visibility = visibility,
+            published = published,
+            unlisted = unlisted,
+            author = Author.objects.get(id=author_id)
+        )
+
+       #return response
+        post_data = {'title': title,'source': source,
+                     'origin': origin, 'description': description, 'contentType': contentType,
+                     'content': content, 'author': author_id, 'categories': categories,
+                     'count': count, 'size': size, 'comments': comments,
+                     'visibility': visibility, 'unlisted': unlisted}
+
+        
+        return Response(post_data)
 
 
-
-
-
-class CategoryList(generics.ListCreateAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-
-class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
 

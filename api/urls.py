@@ -3,13 +3,13 @@ from rest_framework import routers
 from django.conf.urls import include
 from .views import NodeViewSet, AuthorViewSet, CommentViewSet, LikeViewSet, PostViewSet
 # from .views import PostList, PostDetail, UpdatePost, PostCreate, DeletePost
-from .views import CategoryDetail, CategoryList  # PostSearchList
+# PostSearchList
 from .views import FriendRequestViewSet
 from . import views
 
 router = routers.DefaultRouter()
 router.register('nodes', NodeViewSet)
-router.register('author', AuthorViewSet)
+#router.register('author', AuthorViewSet)
 router.register('posts', PostViewSet)
 router.register('comments', CommentViewSet)
 router.register('likes', LikeViewSet)
@@ -27,13 +27,13 @@ urlpatterns = [
     #path('posts/search', PostSearchList.as_view()),
     path('all-authors/',AuthorViewSet.as_view({'get':'all_users'})),
     path('post-list/',PostViewSet.as_view({'get':"all_posts"})),
-    path('author/', AuthorViewSet.as_view({'post':'create_1'})),
+    path('author/', AuthorViewSet.as_view({'post':'create_1', 'get':"all_users"})),
+    path('author/<str:author_id>', AuthorViewSet.as_view({'get':'retrive', 'put':'update'})),
     path('author/<str:author_id>/posts/',
          PostViewSet.as_view({'get': 'post_list','post':'create_1'})),
     path('author/<str:author_id>/posts/<str:post_id>/',
-         PostViewSet.as_view({'get': 'retrieve', 'put': 'edit', 'post': 'create'})),
-    path('categories/<int:pk>/', CategoryDetail.as_view()),
-    path('categories/', CategoryList.as_view()),
+         PostViewSet.as_view({'get': 'post_list_id','put':'edit','delete':'delete','post':'create_2'})),
+
 
 
      # Comments URL

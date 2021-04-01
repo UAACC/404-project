@@ -10,7 +10,7 @@ class Node(models.Model):
 
 class Author(AbstractUser):
     type = "author"
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = models.URLField(primary_key=True, max_length=256)
     host = models.URLField(max_length=256,default='')
     url = models.URLField(max_length=256,default='')
     displayName = models.CharField(max_length=55,default='')
@@ -22,36 +22,43 @@ class Author(AbstractUser):
     is_approved = models.BooleanField(default=False)
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=100, blank=False, default='')
-    owner = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name='categories')
-    posts = models.ManyToManyField(
-        'Post', related_name='categories', blank=True)
 
-    class Meta:
-        verbose_name_plural = 'categories'
 
-def default_list():
-    return []
+
 class Post(models.Model):
+
+
+    CATE_CHOICES = (
+    ('WEB', 'web'),
+    ('TUTORIAL', 'tutorial'),
+)
+    VISIBILITY_CHOICES = (
+    ('PUBLIC', 'public'),
+    ('PRIVATE', 'private'),
+)
     type = "post"
-    id = models.AutoField(primary_key=True)
+
+
+    id = models.URLField(primary_key=True, max_length=256)
     title = models.CharField(max_length=256)
     source = models.URLField(max_length=256, default = '')
     origin = models.URLField(max_length=256, default = '')
     description = models.CharField(max_length=256, default='')
     contentType = models.CharField(max_length=55,default = '')
     content = models.TextField(blank=True)
-    visibility = models.CharField(max_length=100, blank=False)
+    visibility = models.CharField(max_length=256,
+                  choices=VISIBILITY_CHOICES,
+                  default="PUBLIC")
     author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="posts")
+        Author, on_delete=models.CASCADE, related_name="posts",max_length=256)
     published = models.DateTimeField(default=timezone.now)
     comment = models.URLField(max_length=256, default = '')
-    categorie = models.JSONField(default=default_list)#team1 suggestion
-    count = models.IntegerField(default=0)
+    categorie = models.CharField(max_length=256,
+                  choices=CATE_CHOICES,
+                  default="WEB")#team1 suggestion
+    count = models.IntegerField(default=0,blank=True)
     size = models.IntegerField(default=0)
-    unlisted = models.BooleanField(default = True)
+    unlisted = models.BooleanField(default = False)
 
 
     # image = models.ImageField(null = True, blank = True, upload_to= "images/")

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Node, Author, Post, Comment, Like, Category, FriendRequest
+from .models import Node, Author, Post, Comment, Like, FriendRequest
 
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -25,23 +25,8 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'content', 'author', 'post', 'likes', 'published']
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='Author.username')
-    posts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'owner', 'posts']
 
 
-class PostSerializer(serializers.ModelSerializer):
-
-    comments = CommentSerializer(many=True, required=False)
-    #likes = LikeSerializer(many=True, required=False)
-#sadasda
-    class Meta:
-        model = Post
-        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'size','comments' , 'published', 'visibility', 'unlisted']
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -52,8 +37,16 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['type', 'id', 'host', 'displayName', 'url', 'github','email','username','password']
+        fields = ('id','type', 'host', 'displayName', 'url', 'github','email','username','password')
+        
+class PostSerializer(serializers.ModelSerializer):
 
+    comments = CommentSerializer(many=True, required=False)
+    #likes = LikeSerializer(many=True, required=False)
+    author = AuthorSerializer(many = True)
+    class Meta:
+        model = Post
+        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categorie', 'count', 'size','comments' , 'published', 'visibility', 'unlisted']
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
