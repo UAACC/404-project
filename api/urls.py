@@ -36,7 +36,9 @@ urlpatterns = [
      # Likes URL
      path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes/", views.commentLike),
      path("author/<str:author_id>/post/<str:post_id>/likes", views.postLike),
+
      # Liked URL
+     path("author/<str:author_id>/liked/", views.likedList),
 
      # Friend Request
      path("friendrequest", FriendRequestViewSet.as_view({"post": "create"})),

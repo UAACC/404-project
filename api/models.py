@@ -58,7 +58,7 @@ class Like(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name="likes", null=True)
     comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, related_name="likes", null=True)
+        Comment, on_delete=models.CASCADE, related_name="likes", null=True, blank=True)
     published = models.DateTimeField(default=timezone.now)
 
 

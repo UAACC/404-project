@@ -158,14 +158,39 @@ def comment(request, *args, **kwargs):
 
 @api_view(['GET'])
 def postLike(request, *args, **kwargs):
-    pass
+    request_str = str(request)
+    # author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
+    response_body = []
+    if Like.objects.filter(post=Post.objects.get(id=post_id)).exists():
+        item =  Like.objects.filter(post=Post.objects.get(id=post_id)).values()
+        response_body.append(item)
+        return Response(response_body)
+    return Response("No like for this post")
 
 
 @api_view(['GET'])
 def commentLike(request, *args, **kwargs):
-    pass
+    request_str = str(request)
+    # author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
+    comment_id = request_str.split("/")[6]
+    response_body = []
+    if Like.objects.filter(post=Post.objects.get(id=post_id), comment=Comment.objects.get(id=comment_id)).exists():
+        item =  Like.objects.filter(post=Post.objects.get(id=post_id), comment=Comment.objects.get(id=comment_id)).values()
+        response_body.append(item)
+        return Response(response_body)
+    return Response("No like for this post")
 
 
+@api_view(['GET'])
+def likedList(request, *args, **kwargs):
+    request_str = str(request)
+    author_id = request_str.split("/")[2]
+    if Like.objects.filter(author_id=Author.objects.get(id=author_id)).exists():
+        item = Like.objects.filter(author_id=Author.objects.get(id=author_id)).values()
+        return Response(item)
+    return Response("You have not liked any posts. ")
 
 # Friend Request
 class FriendRequestViewSet(viewsets.ModelViewSet):
