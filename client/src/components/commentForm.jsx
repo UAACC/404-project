@@ -1,43 +1,28 @@
 import React from "react";
-import Radio from "@material-ui/core/Radio";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
 import Cookies from 'js-cookie'
 import axios from "axios";
 
 
-
 class CommentForm extends React.Component {
-
   constructor(props){
     super(props);
     this.state = {
-      post: this.props.post.id,
-      content: null,
-    }
-  }
-
-  componentDidMount = async() => {
-    console.log("----inside commentform",this.state.post);
-    const { comment } = this.state;
-    if (comment) {
-      const doc = await axios.get('https://nofun.herokuapp.com/author/'+this.state.comment.author+'/');
-      // const doc = await axios.get('http://localhost:8000/author/'+this.state.comment.author+'/');
-      this.setState({author: doc.data});
+      comment: "",
+      post: props.post
     }
   }
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { token } = this.props.currentUser;
-    const { post,content } = this.state;
+
+    const { token, id } = this.props.currentUser;
+    const { comment, post } = this.state;
+
     const csrftoken = Cookies.get('csrftoken');
     const config = {
       headers: {
@@ -46,7 +31,10 @@ class CommentForm extends React.Component {
         'Content-Type': 'application/json',
       }
     }
-    const doc = await axios.post("https://nofun.herokuapp.com/comments/", { post,content }, config);
+    const doc = await axios.get(post.id + "/comments/", {
+       type:"comment", comment, author: id, contentType: "text/plain"
+      
+      }, config);
     if (doc.data) {
       this.props.handleClick();
     }
@@ -54,7 +42,7 @@ class CommentForm extends React.Component {
 
 
   render(){
-    const { author, comment } = this.state;
+    const { comment } = this.state;
     return (
         <div
         style={{ marginLeft: "5%", marginRight: "10%", marginTop: "15px" }}
@@ -65,7 +53,7 @@ class CommentForm extends React.Component {
                 <div>
                   <TextField
                     onChange={(e) => {
-                      this.setState({ content: e.target.value });
+                      this.setState({ comment: e.target.value });
                     }}
                     id="description"
                     name="description"
@@ -78,6 +66,7 @@ class CommentForm extends React.Component {
                     label="comment section"
                     multiline
                     rows={3}
+                    value={comment}
                     variant="outlined"
                   ></TextField>
                 </div>

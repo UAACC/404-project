@@ -14,16 +14,15 @@ import EventNoteIcon from "@material-ui/icons/EventNote";
 import ClosedCaptionIcon from "@material-ui/icons/ClosedCaption";
 import ShareIcon from "@material-ui/icons/Share";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import CommentIcon from "@material-ui/icons/Comment";
-import PermIdentityIcon from "@material-ui/icons/PermIdentity";
 import IconButton from "@material-ui/core/IconButton";
-import ChatIcon from "@material-ui/icons/Chat";
+import CommentIcon from "@material-ui/icons/Comment";
 import { Container, TextField, Avatar } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Header from "../components/Header";
 
 import { connect } from "react-redux";
 import Cookies from "js-cookie";
+
 
 class PostDetail extends React.Component {
   constructor(props) {
@@ -37,16 +36,16 @@ class PostDetail extends React.Component {
       content: "",
       commentOpen: false,
       editOpen: false,
+      domain: props.match.params.domain,
+      authorId: props.match.params.authorId,
+      postId: props.match.params.postId
     };
   }
 
   componentDidMount = async () => {
     //set post's information in state
     const { currentUser } = this.props;
-
-    const domain = this.props.match.params.domain;
-    const authorId = this.props.match.params.authorId;
-    const postId = this.props.match.params.postId;
+    const { domain, authorId, postId } = this.state;
 
     const config = {
       headers: {
@@ -56,7 +55,7 @@ class PostDetail extends React.Component {
 
     const doc = await axios.get("https://" + domain + "/author/" + authorId + "/posts/" + postId + "/", config);
     const post = doc.data;
-    console.log(post);
+
     if (
       post.visibility === "PUBLIC" ||
       (post.visibility === "PUBLIC" && post.author === currentUser?.id)
@@ -73,16 +72,17 @@ class PostDetail extends React.Component {
 
   getAllComments = () => {
     const { post } = this.state;
-    var { comments } = this.state;
-    comments = post.comments;
-    // this.setState({comments:comments});
-    console.log(comments);
+    const { domain, authorId, postId } = this.state;
+
+    const comments = post.comments;
+
     return (
       <Container style={{ marginLeft: "10%" }}>
         {comments.length !== 0 ? (
           comments.map((comment) => (
             <CommentCard
               comment={comment}
+              domain={domain} authorId={authorId} postId={postId}
               handleClick={this.componentDidMount}
             />
           ))
@@ -104,22 +104,9 @@ class PostDetail extends React.Component {
         "Content-Type": "application/json",
       },
     };
-    var post = post.id;
-    await axios.post("https://nofun.herokuapp.com/likes/", { post }, config);
-    this.componentDidMount();
-  };
 
-  renderLike = () => {
-    const { post } = this.state;
-    const user = this.props.currentUser;
-    const likesToPost = post.likes;
-    //看当前user有没有喜欢这个post
-    const currentLike = likesToPost.filter((like) => like.author === user.id);
-    if (currentLike.length != 0) {
-      return <FavoriteIcon color="secondary" size="large" />;
-    } else {
-      return <FavoriteIcon />;
-    }
+    await axios.post(post.id + "/likes/", config);
+    this.componentDidMount();
   };
 
   renderEdit = () => {
@@ -181,6 +168,7 @@ class PostDetail extends React.Component {
   };
 
   render() {
+    const { domain, authorId, postId } = this.state;
     const { post, title, content, editOpen, commentOpen, author } = this.state;
     const { currentUser } = this.props;
     return (
@@ -260,8 +248,7 @@ class PostDetail extends React.Component {
                 style={{ marginLeft: "10%" }}
                 onClick={this.handleLike}
               >
-                {/* {this.renderLike()} */}
-                {/* <div>{post.likes.length}</div> */}
+                <FavoriteIcon color="secondary" size="large" />
               </IconButton>
               <IconButton
                 style={{ marginLeft: "3%" }}
@@ -306,7 +293,7 @@ class PostDetail extends React.Component {
                   />
                 </div>
               ) : null}
-              {/* {this.getAllComments()} */}
+              {this.getAllComments()}
               <br />
               <br />
             </div>
