@@ -8,13 +8,35 @@ import { Grid, List, Paper } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import axios from "axios";
 
-class MainPage extends React.Component {
-  /*componentDidMount = () => {
+class Followers extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      items: []
+    }
+  }
+
+
+
+  componentDidMount = async () => {
     // extract user
-    const user = this.props.currentUser;
-  };*/
+    const { currentUser } = this.props;
+    const id = currentUser.id;
+
+    const doc = await axios.get(`https://nofun.herokuapp.com/author/${id}/followers/`);
+    if (doc.data) {
+      this.setState({items: doc.data.items});
+    }
+  };
+
+
+
+
+
   render() {
+    const { items }  = this.state;
     return (
       <div>
         <Header />
@@ -28,17 +50,23 @@ class MainPage extends React.Component {
             justify="center"
             alignItems="flex-start"
           >
-            <Grid item xs={10} sm={7}>
+            <Grid item xs={10} sm={8}>
               <PostsScroll />
             </Grid>
-            <Grid item xs={10} sm={3}>
-              <Card>
-                <CardContent width={1}>
-                  <Typography color="textSecondary">
-                    Suppose the friend list is displayed here
-                  </Typography>
-                </CardContent>
-              </Card>
+            <Grid item xs={10} sm={4}>
+              <h5>Followers: {items.length} person(s)</h5>
+              {
+                items.map(f => {
+                  return <Card>
+                  <CardContent width={1}>
+                    <Typography color="textSecondary">
+                      {f.displayName}
+                    </Typography>
+                  </CardContent>
+                </Card>
+                })
+              }
+              
             </Grid>
           </Grid>
         </div>
@@ -47,11 +75,10 @@ class MainPage extends React.Component {
   }
 }
 
-export default MainPage;
-/*
+
 // redux
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
 });
-export default connect(mapStateToProps)(MainPage);
-*/
+export default connect(mapStateToProps)(Followers);
+

@@ -15,21 +15,17 @@ class ProfilePage extends React.Component {
   }
 
   componentDidMount = async () => {
-    let doc = null;
-    try {
-      doc = await axios.get(
-        "https://nofun.herokuapp.com/author/" + this.props.match.params.id + "/"
-      );
-    } catch {
-      doc = await axios.get(
-        "https://c404-w2021-t1-social-distribut.herokuapp.com/author/" +
-          this.props.match.params.id +
-          "/"
-      );
+    const config = {
+      headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        'Content-Type': 'application/json'
+      }
     }
+
+    const doc = await axios.get("https://" + this.props.match.params.domain + "/author/" + this.props.match.params.id, config);
     this.setState({ user: doc.data });
-    console.log("----", this.state.user);
   };
+
   render() {
     const { user } = this.state;
     return (
@@ -38,7 +34,7 @@ class ProfilePage extends React.Component {
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
-          {user ? (
+          {user && (
             <Grid
               container
               spacing={3}
@@ -48,16 +44,16 @@ class ProfilePage extends React.Component {
             >
               <Grid item sm={3}>
                 <Paper>
-                  <ProfileComponent user={user} />
+                  <ProfileComponent user={user} domain={this.props.match.params.domain}/>
                 </Paper>
               </Grid>
               <Grid item sm={7}>
                 <Paper style={{ height: "710px", overflow: "auto" }}>
                   <PostsScroll user={user} />
                 </Paper>
-              </Grid>{" "}
+              </Grid>
             </Grid>
-          ) : null}
+          )}
         </div>
       </div>
     );

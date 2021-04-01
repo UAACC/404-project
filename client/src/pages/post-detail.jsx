@@ -30,11 +30,11 @@ class PostDetail extends React.Component {
     super(props);
     this.state = {
       post: null,
-      authorName: null,
+      author: null,
       comments: [],
       authorsList: [],
       title: "",
-      description: "",
+      content: "",
       commentOpen: false,
       editOpen: false,
     };
@@ -43,32 +43,32 @@ class PostDetail extends React.Component {
   componentDidMount = async () => {
     //set post's information in state
     const { currentUser } = this.props;
-    let doc = null;
-    try {
-      doc = await axios.get(
-        "https://nofun.herokuapp.com/posts/" + this.props.match.params.id + "/"
-      );
-    } catch {
-      return window.alert("Post from other node.");
+
+    const domain = this.props.match.params.domain;
+    const authorId = this.props.match.params.authorId;
+    const postId = this.props.match.params.postId;
+
+    const config = {
+      headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+      }
     }
 
-    console.log("friends: ", currentUser.friends);
+    const doc = await axios.get("https://" + domain + "/author/" + authorId + "/posts/" + postId + "/", config);
     const post = doc.data;
+    console.log(post);
     if (
-      post.visibility === "public" ||
-      (post.visibility === "private" && post.author === currentUser?.id)
-      // || (post.visibility === "friends" && currentUser.friends.includes(post.author))
+      post.visibility === "PUBLIC" ||
+      (post.visibility === "PUBLIC" && post.author === currentUser?.id)
     ) {
       this.setState({ post, title: post.title, description: post.description });
     }
 
     //match user's id with the postid to fetch author's username
-    const authorDoc = await axios.get("https://nofun.herokuapp.com/author/");
-    const authorList = authorDoc.data;
-    const the_author_matched = authorList.filter(
-      (singleAuthor) => singleAuthor.id == doc.data.author
-    );
-    this.setState({ authorName: the_author_matched[0].username });
+    const authorDoc = await axios.get("https://" + domain + "/author/" + authorId + "/", config);
+    const author = authorDoc.data;
+
+    this.setState({ author });
   };
 
   getAllComments = () => {
@@ -99,7 +99,7 @@ class PostDetail extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        Authorization: `Token ${token}`,
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -149,7 +149,7 @@ class PostDetail extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        Authorization: `Token ${token}`,
+        "Authorization": `Token ${token}`,
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -168,7 +168,7 @@ class PostDetail extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        Authorization: `Token ${token}`,
+        "Authorization": `Token ${token}`,
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -181,7 +181,7 @@ class PostDetail extends React.Component {
   };
 
   render() {
-    const { post, title, description, editOpen, commentOpen } = this.state;
+    const { post, title, content, editOpen, commentOpen, author } = this.state;
     const { currentUser } = this.props;
     return (
       <div>
@@ -207,11 +207,14 @@ class PostDetail extends React.Component {
                     }}
                   >
                     <Typography variant="h6">
-                      {this.state.authorName}
+                      {author?.displayName}
                     </Typography>
                     <Typography>{post.published.split("T")[0]}</Typography>
-
-                    <img src="https://mentorphiledotcom.files.wordpress.com/2018/09/livedemo-1.png"></img>
+                    <Typography>Type: {post.contentType}</Typography>
+                    {
+                      post.contentType.includes("image") &&
+                      <img src={post.content} style={{width: "500px"}} />
+                    }
                     {editOpen ? (
                       <TextField
                         label="Titile"
@@ -227,14 +230,14 @@ class PostDetail extends React.Component {
                     )}
                     {editOpen ? (
                       <TextField
-                        label="Description"
-                        value={description}
+                        label="content"
+                        value={content}
                         onChange={(e) =>
-                          this.setState({ description: e.target.value })
+                          this.setState({ content: e.target.value })
                         }
                       />
                     ) : (
-                      <Typography>{post.description}</Typography>
+                      <Typography>{post.content}</Typography>
                     )}
                   </div>
                   <br />
@@ -257,8 +260,8 @@ class PostDetail extends React.Component {
                 style={{ marginLeft: "10%" }}
                 onClick={this.handleLike}
               >
-                {this.renderLike()}
-                <div>{post.likes.length}</div>
+                {/* {this.renderLike()} */}
+                {/* <div>{post.likes.length}</div> */}
               </IconButton>
               <IconButton
                 style={{ marginLeft: "3%" }}
@@ -303,7 +306,7 @@ class PostDetail extends React.Component {
                   />
                 </div>
               ) : null}
-              {this.getAllComments()}
+              {/* {this.getAllComments()} */}
               <br />
               <br />
             </div>

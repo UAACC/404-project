@@ -15,7 +15,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 
-class FriendsRequest extends React.Component {
+class Inbox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -45,6 +45,7 @@ class FriendsRequest extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -65,6 +66,7 @@ class FriendsRequest extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -150,4 +152,4 @@ const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
 });
 
-export default connect(mapStateToProps)(FriendsRequest);
+export default connect(mapStateToProps)(Inbox);

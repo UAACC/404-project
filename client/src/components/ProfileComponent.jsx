@@ -42,7 +42,7 @@ class ProfileCard extends React.Component {
     const csrftoken = Cookies.get('csrftoken');
     const config = {
       headers: {
-        "Authorization": `Token ${token}`,
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         'X-CSRFToken': csrftoken,
         "Content-type": "application/json",
       }
@@ -58,35 +58,43 @@ class ProfileCard extends React.Component {
 
   handleAddFriend = async () => {
     const {  id } = this.state;
+    const { domain } = this.props;
     const { currentUser } = this.props;
     const csrftoken = Cookies.get('csrftoken');
     const config = {
       headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         'X-CSRFToken': csrftoken,
         'Content-Type': 'application/json'
       }
     }
-    try {
-      var doc = await axios.post("https://nofun.herokuapp.com/friendrequest/", {from_user: currentUser.id, to_user: id}, config);
-    } catch {
-      var doc = await axios.post("https://c404-w2021-t1-social-distribut.herokuapp.com/friend-request/",{actor:"https://c404-w2021-t1-social-distribut.herokuapp.com/author/1516b2d1c820493a99d4e3ea428111f0", object:"https://c404-w2021-t1-social-distribut.herokuapp.com/author/f3fd3ec4987d4e8a86538e55ace952bb","summary": "yoyoyoyoyo"});
-    }
+
+    const doc = await axios.post("https://" + domain + "/friend-request/", {
+      summary: "friend request",
+      actor: currentUser.id,
+      object: "https://" + domain + "/author/" + id + "/"
+    }, config);
     
     if (doc.data) {
       window.alert(doc.data);
+    } else {
+      window.alert("Fail!");
     }
   }
 
+  // TODO: delete a friend
   handleDeleteFriend = async () => {
     const {  id } = this.state;
     const { currentUser } = this.props;
     const csrftoken = Cookies.get('csrftoken');
     const config = {
       headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         'X-CSRFToken': csrftoken,
         'Content-Type': 'application/json'
       }
     }
+
     const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/delete", {from_user: currentUser.id, to_user: id}, config);
     if (doc.data) {
       window.alert(doc.data);
@@ -169,7 +177,7 @@ class ProfileCard extends React.Component {
               :
               <div>
                 <Button color="primary" variant="contained" onClick={this.handleAddFriend}>Add</Button>
-                <Button color="secondary" variant="contained" style={{marginLeft: 15}} onClick={this.handleDeleteFriend}>Delete</Button>
+                {/* <Button color="secondary" variant="contained" style={{marginLeft: 15}} onClick={this.handleDeleteFriend}>Delete</Button> */}
               </div>
             }
           </CardActions>

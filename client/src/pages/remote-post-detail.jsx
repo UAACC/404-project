@@ -22,6 +22,7 @@ import { Container, TextField } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import LabelIcon from '@material-ui/icons/Label';
 import { connect } from "react-redux";
+import Header from "../components/Header";
 import Cookies from 'js-cookie'
 
 class RemotePostDetail extends React.Component {
@@ -45,8 +46,13 @@ class RemotePostDetail extends React.Component {
   componentDidMount = async() => {
     let posts = [];
     //既然进入了 remote post detail, 那就只能是 team one 的，所以可以 hardcode, 直接呼叫他们的域名
+    const config = {
+      headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+      }
+    }
     const requests = this.props.domains?.map(domain => {
-      return axios.get("https://" + domain + '/post-list/')
+      return axios.get("https://" + domain + '/post-list/', config)
     });
     const resArray = await Promise.all(requests);
     console.log(resArray);
@@ -55,7 +61,7 @@ class RemotePostDetail extends React.Component {
     });
     const publicPosts = posts.filter(post => post.visibility === "PUBLIC");
     this.setState({ posts: publicPosts });
-    console.log(posts[3].id.split("/")[6]);
+
     //从params里拿到真的post_id
     const real_post_id = this.props.match.params.id;
     //遍历所有的public post，找出match的那一个
@@ -68,7 +74,7 @@ class RemotePostDetail extends React.Component {
     this.setState({post: targerp});
     console.log(this.state.post);
     //呼叫author API找出author的ID
-    const fromauthorapi = await axios.get(this.state.post.author);
+    const fromauthorapi = await axios.get(this.state.post.author, config);
     const displayName = fromauthorapi.data.displayName;
     console.log(displayName);
     this.setState({displayName});
@@ -80,6 +86,7 @@ class RemotePostDetail extends React.Component {
     const { currentUser } = this.props;
     return (
       <div>
+        <Header />
         { post ? (
 
           <Paper style={{ overflow: "auto", marginLeft: "10%", marginRight: "10%", marginTop: "5%" }}>

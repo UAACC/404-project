@@ -42,12 +42,9 @@ export default function RecipeReviewCard(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
   return (
     <Card className={classes.root}>
+      <CardActionArea onClick={() => props.handleClick()}>
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
@@ -59,26 +56,21 @@ export default function RecipeReviewCard(props) {
           </IconButton>
         }
         title={props.post.title}
-        // subheader={props.post.published.split("T")[0]}
+        subheader={props.post.published.split("T")[0]}
       />
-      <CardActionArea onClick={() => props.handleClick()}>
-        <CardMedia
+      
+        {
+          props.post.contentType.includes("image") && <CardMedia
           className={classes.media}
-          // image="https://mentorphiledotcom.files.wordpress.com/2018/09/livedemo-1.png"
           image={props.post.content}
-          title="Paella dish"
         />
+        }
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            {props.post.description}
+            {props.post.content}
           </Typography>
         </CardContent>
       </CardActionArea>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph> {props.post.comment}</Typography>
-        </CardContent>
-      </Collapse>
     </Card>
   );
 }

@@ -22,33 +22,31 @@ class Header extends React.Component {
     e.preventDefault();
     const { search } = this.state;
 
+    const config = {
+      headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+      }
+    }
+
     let authors = [];
-    // const requests = this.props.domains?.map(domain => axios.get(domain + '/author/'));
-    // const resArray = Promise.all(requests);
-    // resArray.map(doc => {
-    //   authors = authors.concat(doc.data);
-    // })
-    const doc1 = await axios.get(
-      "https://c404-w2021-t1-social-distribut.herokuapp.com/author/"
-    );
-    const doc2 = await axios.get("https://nofun.herokuapp.com/author/");
-    authors = authors.concat(doc1.data);
-    authors = authors.concat(doc2.data);
+    const requests = this.props.domains?.map(domain => axios.get("https://" + domain + '/all-authors/', config));
+    const resArray = await Promise.all(requests);
+
+    resArray.map(doc => {
+      authors = authors.concat(doc.data);
+    })
 
     let searched = false;
     for (let author of authors) {
-      if (search === author.username || search === author.displayName) {
+      if (search === author.displayName) {
         searched = true;
-        let authorId = author.id;
-        if (
-          author.host === "https://c404-w2021-t1-social-distribut.herokuapp.com"
-        ) {
-          authorId = authorId.split("/")[4];
-        }
-        window.location = "/authors/" + authorId + "/";
+        const domain = author.id.split("/")[2];
+        const authorId = author.id.split("/")[4];
+        window.location = "/authors/"  + domain + "/" + authorId + "/";
       }
     }
-    if (!searched) window.alert("No author found!");
+
+    if (!searched) window.alert("No author found. Please try again!");
   };
 
   renderHeader = () => {
@@ -91,7 +89,7 @@ class Header extends React.Component {
     return (
       <div className="container-fluid shadow p-2 mb-4">
         <nav class="navbar navbar-expand-lg navbar-light">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/">
             Socialdistribution
           </a>
           <button
@@ -121,7 +119,7 @@ class Header extends React.Component {
                   <a
                     className="nav-link"
                     aria-current="page"
-                    href={"/authors/" + currentUser.id + "/"}
+                    href={"/authors/nofun.herokuapp.com/" + currentUser.id.split("/")[4] + "/"}
                   >
                     My profile
                   </a>
@@ -131,9 +129,9 @@ class Header extends React.Component {
                 <a
                   className="nav-link"
                   aria-current="page"
-                  href="/friendrequest"
+                  href="/inbox"
                 >
-                  Request Inbox
+                  Inbox
                 </a>
               </li>
               {this.renderHeader()}

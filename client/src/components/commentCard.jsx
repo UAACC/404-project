@@ -48,7 +48,7 @@ class CommentCard extends React.Component {
     const csrftoken = Cookies.get('csrftoken');
     const config = {
       headers: {
-        "Authorization": `Token ${token}`,
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         'X-CSRFToken': csrftoken,
         'Content-Type': 'application/json',
       }

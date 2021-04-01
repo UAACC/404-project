@@ -9,6 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
 import { connect } from "react-redux";
+import Cookies from "js-cookie";
+
 
 class PostsScroll extends React.Component {
   constructor(props) {
@@ -21,8 +23,18 @@ class PostsScroll extends React.Component {
 
   componentDidMount = async () => {
     let posts = [];
+
+    const csrftoken = Cookies.get('csrftoken');
+    const config = {
+      headers: {
+        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json'
+      }
+    }
+
     const requests = this.props.domains?.map((domain) => {
-      return axios.get("https://" + domain + "/post-list/");
+      return axios.get("https://" + domain + "/post-list/", config);
     });
 
     const resArray = await Promise.all(requests);
@@ -33,7 +45,6 @@ class PostsScroll extends React.Component {
     const publicPosts = posts.filter((post) => post.visibility === "PUBLIC");
 
     this.setState({ posts: publicPosts });
-    console.log("---in posting", posts[3].content);
   };
 
   handleLocal = () => {
@@ -56,8 +67,7 @@ class PostsScroll extends React.Component {
                   <Posting
                     post={post}
                     handleClick={() =>
-                      (window.location =
-                        "/remotepostdetail/" + linksplit[6] + "/")
+                      (window.location = "/posts/" + post.id.split("/")[2]+ "/" + post.id.split("/")[4]+ "/" +  post.id.split("/")[6] + "/")
                     }
                   ></Posting>
                 </Paper>
