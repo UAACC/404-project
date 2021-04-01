@@ -4,17 +4,16 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 import axios from "axios";
 
-
 class CommentForm extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       comment: "",
-      post: props.post
-    }
+      post: props.post,
+    };
   }
 
   handleSubmit = async (event) => {
@@ -23,30 +22,43 @@ class CommentForm extends React.Component {
     const { token, id } = this.props.currentUser;
     const { comment, post } = this.state;
 
-    const csrftoken = Cookies.get('csrftoken');
+    const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json',
-      }
-    }
-    const doc = await axios.post(post.id + "/comments/", {
-       type:"comment", comment, author: id, post: post.id, contentType: "text/plain"
-      }, config);
+        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+    };
+    const doc = await axios.post(
+      post.id + "/comments/",
+      {
+        type: "comment",
+        comment,
+        author: id,
+        post: post.id,
+        contentType: "text/plain",
+      },
+      config
+    );
     if (doc.data) {
       this.props.handleClick();
     }
   };
 
-  render(){
+  render() {
     const { comment } = this.state;
     return (
-        <div
-        style={{ marginLeft: "5%", marginRight: "10%", marginTop: "15px" }}
-      >
+      <div>
         <form>
-            <Grid item xs={10}>
+          <Grid
+            container
+            spacing={4}
+            direction="horizenol"
+            justify="center"
+            alignItems="flex-start"
+          >
+            <Grid item xs={8}>
               <Paper style={{ height: "200px" }}>
                 <div>
                   <TextField
@@ -83,14 +95,15 @@ class CommentForm extends React.Component {
                 </div>
               </Paper>
             </Grid>
+          </Grid>
         </form>
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = (state) => ({
-    currentUser: state.user.currentUser,
-  });
-  
-  export default connect(mapStateToProps)(CommentForm);
+  currentUser: state.user.currentUser,
+});
+
+export default connect(mapStateToProps)(CommentForm);

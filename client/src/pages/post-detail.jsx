@@ -23,7 +23,6 @@ import Header from "../components/Header";
 import { connect } from "react-redux";
 import Cookies from "js-cookie";
 
-
 class PostDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -38,7 +37,7 @@ class PostDetail extends React.Component {
       editOpen: false,
       domain: props.match.params.domain,
       authorId: props.match.params.authorId,
-      postId: props.match.params.postId
+      postId: props.match.params.postId,
     };
   }
 
@@ -49,11 +48,14 @@ class PostDetail extends React.Component {
 
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-      }
-    }
+        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+      },
+    };
 
-    const doc = await axios.get("https://" + domain + "/author/" + authorId + "/posts/" + postId + "/", config);
+    const doc = await axios.get(
+      "https://" + domain + "/author/" + authorId + "/posts/" + postId + "/",
+      config
+    );
     const post = doc.data;
 
     if (
@@ -64,10 +66,13 @@ class PostDetail extends React.Component {
     }
 
     const doc2 = await axios.get(post.comments, config);
-    this.setState({comments: doc2.data});
+    this.setState({ comments: doc2.data });
 
     //match user's id with the postid to fetch author's username
-    const authorDoc = await axios.get("https://" + domain + "/author/" + authorId + "/", config);
+    const authorDoc = await axios.get(
+      "https://" + domain + "/author/" + authorId + "/",
+      config
+    );
     const author = authorDoc.data;
 
     this.setState({ author });
@@ -78,17 +83,23 @@ class PostDetail extends React.Component {
     const { domain, authorId, postId } = this.state;
 
     return (
-      <Container style={{ marginLeft: "10%" }}>
+      <Container style={{ marginTop: "2%" }}>
         {comments.length !== 0 ? (
           comments.map((comment) => (
             <CommentCard
               comment={comment}
-              domain={domain} authorId={authorId} postId={postId}
+              domain={domain}
+              authorId={authorId}
+              postId={postId}
               handleClick={this.componentDidMount}
             />
           ))
         ) : (
-          <div>there's no comment yet</div>
+          <center>
+            <Typography variant="h7" style={{ marginLeft: 20 }}>
+              there's no comment yet
+            </Typography>
+          </center>
         )}
       </Container>
     );
@@ -100,7 +111,7 @@ class PostDetail extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -137,16 +148,12 @@ class PostDetail extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        "Authorization": `Token ${token}`,
+        Authorization: `Token ${token}`,
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
     };
-    await axios.patch(
-      post.id + "/",
-      { title, content },
-      config
-    );
+    await axios.patch(post.id + "/", { title, content }, config);
     this.componentDidMount();
   };
 
@@ -156,15 +163,12 @@ class PostDetail extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        "Authorization": `Token ${token}`,
+        Authorization: `Token ${token}`,
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
     };
-    await axios.delete(
-      post.id + "/",
-      config
-    );
+    await axios.delete(post.id + "/", config);
     window.location = "/posts/";
   };
 
@@ -186,7 +190,7 @@ class PostDetail extends React.Component {
               justify="center"
               alignItems="flex-start"
             >
-              <Grid item xs={10}>
+              <Grid item xs={8}>
                 <Paper>
                   <div
                     style={{
@@ -195,15 +199,12 @@ class PostDetail extends React.Component {
                       paddingTop: "3%",
                     }}
                   >
-                    <Typography variant="h6">
-                      {author?.displayName}
-                    </Typography>
+                    <Typography variant="h6">{author?.displayName}</Typography>
                     <Typography>{post.published.split("T")[0]}</Typography>
                     <Typography>Type: {post.contentType}</Typography>
-                    {
-                      post.contentType.includes("image") &&
-                      <img src={post.content} style={{width: "500px"}} />
-                    }
+                    {post.contentType.includes("image") && (
+                      <img src={post.content} style={{ width: "500px" }} />
+                    )}
                     {editOpen ? (
                       <TextField
                         label="Titile"
@@ -213,7 +214,7 @@ class PostDetail extends React.Component {
                         }
                       />
                     ) : (
-                      <Typography variant="h4" style={{ paddingTop: "5%" }}>
+                      <Typography variant="h5" style={{ paddingTop: "5%" }}>
                         {post.title}
                       </Typography>
                     )}
@@ -246,7 +247,7 @@ class PostDetail extends React.Component {
           {post ? (
             <div style={{ marginTop: "20px" }}>
               <IconButton
-                style={{ marginLeft: "10%" }}
+                style={{ marginLeft: "17%" }}
                 onClick={this.handleLike}
               >
                 <FavoriteIcon color="secondary" size="large" />
@@ -259,7 +260,8 @@ class PostDetail extends React.Component {
               >
                 <CommentIcon></CommentIcon>
               </IconButton>
-              <ShareIcon style={{ marginLeft: "10%" }}></ShareIcon>
+              <IconButton style={{ marginLeft: "50%" }}></IconButton>
+              <ShareIcon></ShareIcon>
 
               {currentUser && currentUser.id === post.author ? (
                 editOpen ? (
@@ -287,7 +289,7 @@ class PostDetail extends React.Component {
                 </IconButton>
               ) : null}
               {commentOpen ? (
-                <div style={{ marginLeft: "10%" }}>
+                <div>
                   <CommentForm
                     post={post}
                     handleClick={this.componentDidMount}
