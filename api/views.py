@@ -123,6 +123,50 @@ class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
+
+
+@api_view(['GET', 'POST'])
+def commentList(request, *args, **kwargs):
+    request_str = str(request)
+    author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
+    if request.method == 'GET':
+        if Post.objects.filter(author=author_id).exists():
+            return Response(Comment.objects.filter(post=post_id).values())
+        else:
+            return Response("This post does not exist.")
+    if request.method == 'POST':
+        content = request.data['content']
+        author = Author.objects.get(id=author_id)
+        post = Post.objects.get(id=post_id)
+        Comment.objects.create(author=author, post=post, content=content)
+        return Response('Comment created!')
+
+
+@api_view(['GET'])
+def comment(request, *args, **kwargs):
+    request_str = str(request)
+    author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
+    comment_id = request_str.split("/")[6]
+
+    if Post.objects.filter(author=author_id).exists() and Comment.objects.filter(post=post_id).exists():
+        return Response(Comment.objects.filter(post=post_id, id=comment_id).values())
+    else:
+        return Response("This post/comment does not exist.")
+
+
+@api_view(['GET'])
+def postLike(request, *args, **kwargs):
+    pass
+
+
+@api_view(['GET'])
+def commentLike(request, *args, **kwargs):
+    pass
+
+
+
 # Friend Request
 class FriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = FriendRequestSerializer
@@ -295,3 +339,5 @@ def friendList(request, *args, **kwargs):
         return Response(friend_list)
     else:
         return Response("You doesn't have any friends.")
+
+    

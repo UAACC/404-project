@@ -29,12 +29,27 @@ urlpatterns = [
     path('categories/', CategoryList.as_view()),
 
 
-     # Friend Request and Followers URL
+     # Comments URL
+     path("author/<str:author_id>/post/<str:post_id>/comments/", views.commentList),
+     path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/", views.comment),
+     
+     # Likes URL
+     path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes/", views.commentLike),
+     path("author/<str:author_id>/post/<str:post_id>/likes", views.postLike),
+     # Liked URL
+
+     # Friend Request
      path("friendrequest", FriendRequestViewSet.as_view({"post": "create"})),
      path("friendrequest/accept", FriendRequestViewSet.as_view({"patch": "accept_incoming_request"})),
      path("friendrequest/decline", FriendRequestViewSet.as_view({"patch": "decline_incoming_request"})),
      path("friendrequest/delete", FriendRequestViewSet.as_view({"patch": "delete"})),
      path("author/<str:author_id>/followers/", views.getFollowers),
+
+     # Follow URL
      path("author/<str:author_id>/followers/<str:foreign_author_id>/", views.operateFollowers),
      path("author/<str:author_id>/friend-list/", views.friendList)
+
+     # Inbox URL
+
+
 ]
