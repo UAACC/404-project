@@ -25,6 +25,8 @@ urlpatterns = [
     # path('posts/<int:pk>/delete/', DeletePost.as_view()),
     # path('posts/', PostList.as_view()),
     #path('posts/search', PostSearchList.as_view()),
+    path('all-authors/',AuthorViewSet.as_view({'get':'all_users'})),
+    path('post-list/',PostViewSet.as_view({'get':"all_posts"})),
     path('author/', AuthorViewSet.as_view({'post':'create_1'})),
     path('author/<str:author_id>/posts/',
          PostViewSet.as_view({'get': 'post_list','post':'create_1'})),

@@ -26,6 +26,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     permission_classes = (AllowAny, )
 
+    def all_users(self, request, *args, **kwargs):
+        return Response(AuthorSerializer(self.queryset, many=True).data)
+
     def retrieve(self, request, *args, **kwargs):
         request_str = str(request)
         author_id = request_str.split("/")[2]
@@ -51,7 +54,6 @@ class AuthorViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=author_data)
         if serializer.is_valid():
             serializer.save()
-        
         
         
 
@@ -137,6 +139,10 @@ class PostViewSet(viewsets.ModelViewSet):
         full_name = f'{host}/author/{author_id}/posts/{post_id}'
         return full_name
 
+    def all_posts(self, request, *args, **kwargs):
+        return Response(PostSerializer(self.queryset, many=True).data)
+
+    
 
     def post_list(self, request, *args, **kwargs):
         request_str = str(request)
