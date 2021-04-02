@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
-import django_heroku
+# import django_heroku
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -83,19 +83,23 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'data8',
-        'USER': 'postgres', 
-        'PASSWORD': 'Lq321918', #xutong 測試自己改密碼
-        'HOST': 'localhost', 
-        'PORT': '5432',  
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'data8',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Lq321918',  # xutong 測試自己改密碼
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 
 REST_FRAMEWORK = {
@@ -144,9 +148,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mysite')
 
 STATIC_URL = '/static/'
-#STATICFILES_DIRS = [
-    #os.path.join(BASE_DIR, 'static')
-#]
+# STATICFILES_DIRS = [
+#os.path.join(BASE_DIR, 'static')
+# ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 CORS_ALLOWED_ORIGINS = [
@@ -159,4 +163,4 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 # MUST BE LAST LINE!!!!
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
