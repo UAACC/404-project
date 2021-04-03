@@ -1,34 +1,34 @@
 # 404-project
 
 ## Run online?
-frontend: https://social-distribution-app.herokuapp.com/
-backend: https://nofun.herokuapp.com/admin/
+frontend: https://social-distribution-app.herokuapp.com/<br/>
+backend: https://nofun.herokuapp.com/admin/<br/>
 
 
 ## Run locally?
-git clone https://github.com/UAACC/404-project.git frontend
-cd frontend
-git fetch
-git checkout frontend
-cd client
-npm install
-cd ..
-npm install
-npm run dev
+git clone https://github.com/UAACC/404-project.git frontend <br/>
+cd frontend<br/>
+git fetch<br/>
+git checkout frontend<br/>
+cd client<br/>
+npm install<br/>
+cd ..<br/>
+npm install<br/>
+npm run dev<br/>
 
-cd ..
-git clone https://github.com/UAACC/404-project.git backend
-cd backend
-git fetch
-git checkout backend
-// optional: use your VM
-python3 manage.py makemigrations
-python3 manage.py migrate
-python3 manage.py migrate --run-syncdb
-python3 manage.py runserver
+cd ..<br/>
+git clone https://github.com/UAACC/404-project.git backend<br/>
+cd backend<br/>
+git fetch<br/>
+git checkout backend<br/>
+// optional: use your VM<br/>
+python3 manage.py makemigrations<br/>
+python3 manage.py migrate<br/>
+python3 manage.py migrate --run-syncdb<br/>
+python3 manage.py runserver<br/>
 
-open frontend URL http://127.0.0.1:3000/
-open backend URL http:/127.0.0.1:8000/admin/
+open frontend URL http://127.0.0.1:3000/<br/>
+open backend URL http:/127.0.0.1:8000/admin/<br/>
 
 ## Project1 - Tasks
 Yanlin - Frontend:  Main page, Post Detail page, Comment and header components <br />
