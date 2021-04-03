@@ -43,7 +43,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     comments = CommentSerializer(many=True, required=False)
     #likes = LikeSerializer(many=True, required=False)
-    author = AuthorSerializer(many = True)
+    author = AuthorSerializer(many=False, required=True)
+    
     class Meta:
         model = Post
         fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categorie', 'count', 'size','comments' , 'published', 'visibility', 'unlisted']
