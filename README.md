@@ -10,6 +10,9 @@ git clone https://github.com/UAACC/404-project.git frontend
 cd frontend
 git fetch
 git checkout frontend
+cd client
+npm install
+cd ..
 npm install
 npm run dev
 
