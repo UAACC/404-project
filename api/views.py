@@ -33,11 +33,13 @@ class AuthorViewSet(viewsets.ModelViewSet):
         serializer = AuthorSerializer(queryset,many = True)
         return Response(serializer.data)
 
-    def retrive(self, request, author_id=None, *args, **kwargs):
+    def retrive(self, request, author_uid=None, *args, **kwargs):
         #request_str = str(request)
         #author_id = request_str.split("/")[2]
         #print(author_id)
         #self.static_author_id = author_id#give global to use
+        host = 'https://nofun.herokuapp.com'
+        author_id= f'{host}/author/{author_uid}'
         queryset = Author.objects.get(id=author_id)
         
         serializer = AuthorSerializer(queryset)
@@ -60,7 +62,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
                        'displayName': display_name, 'github': github,'email':email,'username':username,'password':password}
 
         Author.objects.create(
-                id = author_uid,
+                id = author_id,
                 host = host,
                 url = url,
                 email = email,
@@ -79,7 +81,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
         return JsonResponse(author_data)
 
-    def update(self, request, author_id=None, *args, **kwargs):
+    def update(self, request, author_uid=None, *args, **kwargs):
+        host = 'https://nofun.herokuapp.com'
+        author_id= f'{host}/author/{author_uid}'
         author = Author.objects.get(id=author_id)
         #print(author.id)
         name = request.data.get('displayName', None)
@@ -174,7 +178,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
     
 
-    def post_list(self, request, author_id=None, *args, **kwargs):
+    def post_list(self, request, author_uid=None, *args, **kwargs):
+        host = 'https://nofun.herokuapp.com'
+        author_id= f'{host}/author/{author_uid}'
         
         
         return Response(Post.objects.filter(author=author_id).values())
@@ -182,15 +188,16 @@ class PostViewSet(viewsets.ModelViewSet):
 
         
     
-    def post_list_id(self, request, author_id=None,  post_id = None,*args, **kwargs):
+    def post_list_id(self, request, author_uid=None,  post_id = None,*args, **kwargs):
         host = 'https://nofun.herokuapp.com'
-        post_id = f'{host}/author/{author_id}/posts/{post_id}'
+        post_id = f'{host}/author/{author_uid}/posts/{post_id}'
+        author_id= f'{host}/author/{author_uid}'
         return Response(Post.objects.filter(author=author_id, id = post_id).values())
     # DELETE a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
-    def delete(self, request, author_id=None,  post_id = None, *args, **kwargs):
+    def delete(self, request, author_uid=None,  post_id = None, *args, **kwargs):
         host = 'https://nofun.herokuapp.com'
-        post_id = f'{host}/author/{author_id}/posts/{post_id}'
+        post_id = f'{host}/author/{author_uid}/posts/{post_id}'
         post = get_object_or_404(Post, id=post_id)
         
         try:
@@ -201,12 +208,14 @@ class PostViewSet(viewsets.ModelViewSet):
     
 
 
-    def create_1(self, request, author_id=None,  *args, **kwargs):
+    def create_1(self, request, author_uid=None,  *args, **kwargs):
         
         post_uid = str(uuid.uuid4().hex)
         host = 'https://nofun.herokuapp.com'
         #author_id = f'{host}/author/{author_id}'
-        post_id= f'{host}/author/{author_id}/posts/{post_uid}'
+        post_id= f'{host}/author/{author_uid}/posts/{post_uid}'
+        author_id= f'{host}/author/{author_uid}'
+
         title = request.data.get('title')
         source = request.data.get('source')
         origin = request.data.get('origin')
@@ -238,6 +247,7 @@ class PostViewSet(viewsets.ModelViewSet):
             unlisted = unlisted,
             author = Author.objects.get(id=author_id)
         )
+        
 
        #return response
         post_data = {'title': title,'source': source,
@@ -249,9 +259,10 @@ class PostViewSet(viewsets.ModelViewSet):
         
         return Response(post_data)
         
-    def edit(self, request, author_id=None,  post_id = None,*args, **kwargs):
+    def edit(self, request, author_uid=None,  post_id = None,*args, **kwargs):
         host = 'https://nofun.herokuapp.com'
-        post_id = f'{host}/author/{author_id}/posts/{post_id}'
+        post_id = f'{host}/author/{author_uid}/posts/{post_id}'
+        author_id= f'{host}/author/{author_uid}'
         #post = Post.objects.get(id=post_id,author = author_id)
         post = get_object_or_404(Post, id=post_id)
         print('correct',post.title)
@@ -305,10 +316,11 @@ class PostViewSet(viewsets.ModelViewSet):
         
 
 
-    def create_2(self, request, author_id=None,  post_id = None,*args, **kwargs):
+    def create_2(self, request, author_uid=None,  post_id = None,*args, **kwargs):
         host = 'https://nofun.herokuapp.com'
         #author_id = f'{host}/author/{author_id}'
-        post_id= f'{host}/author/{author_id}/posts/{post_id}'
+        post_id= f'{host}/author/{author_uid}/posts/{post_id}'
+        author_id= f'{host}/author/{author_uid}'
         title = request.data.get('title')
         source = request.data.get('source')
         origin = request.data.get('origin')
@@ -323,7 +335,7 @@ class PostViewSet(viewsets.ModelViewSet):
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
 
-        Post.objects.create(
+        Post.objects.update(
             title = title,
             source = post_id,#fix this 
             origin = post_id,#fix this
