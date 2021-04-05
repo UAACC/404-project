@@ -43,12 +43,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     comments = CommentSerializer(many=True, required=False)
     #likes = LikeSerializer(many=True, required=False)
-<<<<<<< Updated upstream
     author = AuthorSerializer(many=False, required=True)
     
-=======
-    author = AuthorSerializer(many = False)
->>>>>>> Stashed changes
     class Meta:
         model = Post
         fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categorie', 'count', 'size','comments' , 'published', 'visibility', 'unlisted']
