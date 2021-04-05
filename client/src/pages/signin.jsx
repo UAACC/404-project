@@ -16,7 +16,7 @@ class SignInPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      displayName: "",
+      username: "",
       password: "",
       loginError: "",
     };
@@ -31,7 +31,7 @@ class SignInPage extends React.Component {
   }
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { displayName, password } = this.state;
+    const { username, password } = this.state;
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
@@ -41,7 +41,7 @@ class SignInPage extends React.Component {
     };
     const doc = await axios.post(
       "https://nofun.herokuapp.com/author/",
-      { displayName, password },
+      { username, password },
       config
     );
     if (!doc.data) {
@@ -70,10 +70,10 @@ class SignInPage extends React.Component {
                       variant="outlined"
                       required
                       fullWidth
-                      id="displayName"
+                      id="username"
                       label="User Name"
-                      name="displayName"
-                      value={this.state.displayName}
+                      name="username"
+                      value={this.state.username}
                       onChange={this.handleChange}
                     />
                   </Grid>

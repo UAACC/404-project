@@ -16,8 +16,11 @@ class SignUpPage extends React.Component {
     super(props);
     this.state = {
       displayName: "",
+      username: "",
       password: "",
-      loginError: "",
+      email: "",
+      github: "",
+      loginError: ""
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,7 +33,7 @@ class SignUpPage extends React.Component {
   }
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { displayName, password } = this.state;
+    const { username, password, displayName, email, github } = this.state;
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
@@ -40,7 +43,7 @@ class SignUpPage extends React.Component {
     };
     const doc = await axios.post(
       "https://nofun.herokuapp.com/author/",
-      { displayName, password },
+      { username, password, displayName, email, github },
       config
     );
     if (!doc.data) {
@@ -64,15 +67,27 @@ class SignUpPage extends React.Component {
               <h2>Create account</h2>
               <form className="form" onSubmit={this.handleSubmit}>
                 <Grid container spacing={3}>
-                  <Grid item xs={12}>
+                <Grid item xs={12}>
                     <TextField
                       variant="outlined"
                       required
                       fullWidth
                       id="displayName"
-                      label="User Name"
+                      label="Display Name"
                       name="displayName"
                       value={this.state.displayName}
+                      onChange={this.handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="username"
+                      label="User Name"
+                      name="username"
+                      value={this.state.username}
                       onChange={this.handleChange}
                     />
                   </Grid>
@@ -87,6 +102,28 @@ class SignUpPage extends React.Component {
                       name="password"
                       type="password"
                       value={this.state.password}
+                      onChange={this.handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      id="email"
+                      label="Email"
+                      name="email"
+                      value={this.state.email}
+                      onChange={this.handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      id="github"
+                      label="Github Link"
+                      name="github"
+                      value={this.state.github}
                       onChange={this.handleChange}
                     />
                   </Grid>
@@ -110,11 +147,11 @@ class SignUpPage extends React.Component {
                   direction="column"
                   style={{ minHeight: "5vh", marginTop: 45 }}
                 >
-                  <Grid item xs>
+                  {/* <Grid item xs>
                     <Link href="/signin" variant="body2">
                       {"Already have an account? Sign In"}
                     </Link>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </form>
             </section>

@@ -36,9 +36,8 @@ class PostsScroll extends React.Component {
     const requests = this.props.domains?.map((domain) => {
       return axios.get("https://" + domain + "/post-list/", config);
     });
-
     const resArray = await Promise.all(requests);
-    console.log(resArray);
+
     resArray.map((doc) => {
       posts = posts.concat(doc.data);
     });
