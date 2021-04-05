@@ -77,16 +77,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
         #it will return true false and change true false in database and return it out to json
         if is_approved != None:
             if is_approved == 'true':
-
-                Author.objects.update(
-                    is_approved = True
-                )
-
-            elif is_approved == 'false':
-                Author.objects.update(
-                    is_approved = False
-                )
-
+                Author.objects.filter(pk=author_id).update(is_approved=True)
         else:
            is_approved = Author._meta.get_field('is_approved').get_default()
 
