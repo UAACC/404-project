@@ -58,8 +58,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
         email = request.data.get('email')
         username = request.data.get('username')
         password = request.data.get('password')
-        author_data = {'id': author_uid, 'host': host, 'url': url,
-                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password}
+        is_approved = request.data.get('is_approved')
+        
 
         Author.objects.create(
                 id = author_id,
@@ -69,10 +69,36 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 username=username,
                 password=password,
                 displayName = display_name,
-                github = github
+                github = github,
+                
                 
 
                 )
+        #it will return true false and change true false in database and return it out to json
+        if is_approved != None:
+            if is_approved == 'true':
+
+                Author.objects.update(
+                    is_approved = True
+                )
+
+            elif is_approved == 'false':
+                Author.objects.update(
+                    is_approved = False
+                )
+
+        else:
+           is_approved = Author._meta.get_field('is_approved').get_default()
+
+                
+            
+
+
+        print(is_approved)
+        author_data = {'id': author_uid, 'host': host, 'url': url,
+                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_apporved':is_approved}
+
+    
 
 
             #authentication:
@@ -119,7 +145,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
-    authentication_classes = (TokenAuthentication, )
+    #authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
     def create(self, request):
@@ -130,6 +156,7 @@ class LikeViewSet(viewsets.ModelViewSet):
             try:
                 like = Like.objects.get(author=author, comment=comment)
                 like.delete()
+
                 return HttpResponse('Good request, like is deleted')
             except:
                 Like.objects.create(author=author, comment=comment)
@@ -152,7 +179,7 @@ class LikeViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    authentication_classes = (TokenAuthentication, )
+    #authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
     def create(self, request):
@@ -166,7 +193,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    authentication_classes = (TokenAuthentication, )
+    #authentication_classes = (TokenAuthentication, )
     permission_classes = (AllowAny, )
 
     
