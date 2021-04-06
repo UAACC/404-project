@@ -19,7 +19,7 @@ import uuid
 class NodeViewSet(viewsets.ModelViewSet):
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
-    permission_classes = (AllowAny, )
+    # permission_classes = (AllowAny, )
 
     
 
@@ -28,7 +28,7 @@ class NodeViewSet(viewsets.ModelViewSet):
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    permission_classes = (AllowAny, )
+    # permission_classes = (AllowAny, )
     #static_author_id = ''
 
     def all_users(self, request, *args, **kwargs):
@@ -174,7 +174,7 @@ class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
     #authentication_classes = (TokenAuthentication, )
-    permission_classes = (AllowAny, )
+    # permission_classes = (AllowAny, )
 
     def create(self, request):
         author = Author.objects.get(username=request.user)
@@ -204,25 +204,13 @@ class LikeViewSet(viewsets.ModelViewSet):
                 return HttpResponse('Bad request')
 
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    #authentication_classes = (TokenAuthentication, )
-    permission_classes = (AllowAny, )
-
-    def create(self, request):
-        author = Author.objects.get(username=request.user)
-        content = request.data['content']
-        post = Post.objects.get(id=request.data['post'])
-        Comment.objects.create(author=author, post=post, content=content)
-        return HttpResponse('Good request, comment created!')
 
 #URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     #authentication_classes = (TokenAuthentication, )
-    permission_classes = (AllowAny, )
+    # permission_classes = (AllowAny, )
 
     
 
@@ -425,37 +413,111 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 
+# April 6 rewrite comment ViewSet:
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
 
+    def post_new_comment(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+        post_id = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+        real_author_id = host + "author/" + author_id
+        real_post_id = real_author_id + "/posts/" + post_id
 
-@api_view(['GET', 'POST'])
-def commentList(request, *args, **kwargs):
-    request_str = str(request)
-    author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
-    if request.method == 'GET':
-        if Post.objects.filter(author=author_id).exists():
-            return Response(Comment.objects.filter(post=post_id).values())
+        #---
+        post_id = real_post_id
+        comment_uuid = uuid.uuid4().hex
+        comment_id = post_id + "/comments/" + comment_uuid
+        # current_user_id = request.user.id
+        
+        #---
+        comment = request.data.get('comment')
+        contentType = request.data.get('contentType')
+
+        comment_data = {'type': 'comment', 'author': real_author_id, 'post': post_id, 
+                        'comment': comment, 'contentType': contentType, 'id': comment_id}
+
+        Comment.objects.create( author= real_author_id, post= post_id, 
+                        comment=comment, contentType=contentType, id=comment_id)
+        
+        # serializer = self.serializer_class(data=comment_data)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data)
+        # else:
+        return Response(comment_data)
+
+    
+    def get_comment_list(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+        post_id = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+        real_author_id = host + "author/" + author_id
+        real_post_id = real_author_id + "/posts/" + post_id
+        queryset = Comment.objects.filter(post=real_post_id)
+        if queryset.exists():
+            return Response(list(queryset.values()))
         else:
-            return Response("This post does not exist.")
-    if request.method == 'POST':
-        content = request.data['content']
-        author = Author.objects.get(id=author_id)
-        post = Post.objects.get(id=post_id)
-        Comment.objects.create(author=author, post=post, content=content)
-        return Response('Comment created!')
+            return Response("No comments. ")
+            # return Response(str(real_post_id) + "    " + str(real_author_id))
+
+    def retrive_a_comment(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+        post_id = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+        real_author_id = host + "author/" + author_id
+        real_post_id = real_author_id + "/posts/" + post_id
+
+        comment_id = request_str.split("/")[6]
+        real_comment_id = real_post_id + "/comments/" + comment_id
+
+        if Comment.objects.filter(id=real_comment_id).exists():
+            return Response(Comment.objects.filter(id=real_comment_id).values())
+        else:
+            return Response("This comment does not exist.")
 
 
-@api_view(['GET'])
-def comment(request, *args, **kwargs):
-    request_str = str(request)
-    author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
-    comment_id = request_str.split("/")[6]
 
-    if Post.objects.filter(author=author_id).exists() and Comment.objects.filter(post=post_id).exists():
-        return Response(Comment.objects.filter(post=post_id, id=comment_id).values())
-    else:
-        return Response("This post/comment does not exist.")
+# @api_view(['GET', 'POST'])
+# def commentList(request, *args, **kwargs):
+#     request_str = str(request)
+#     author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+#     post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
+
+#     host = "https://nofun.herokuapp.com/"
+#     real_author_id = host + "author/" + author_id
+#     real_post_id = real_author_id + "/comments/" + post_id
+
+#     if request.method == 'GET':
+#         if Post.objects.filter(author=real_author_id).exists():
+#             return Response(Comment.objects.filter(post=real_post_id).values())
+#             # return Response(str(post_id))
+#         else:
+#             return Response("This post does not exist.")
+#             # return Response(str(post_id + author_id))
+#     if request.method == 'POST':
+#         content = request.data.get('')
+#         author = Author.objects.get(id=author_id)
+#         post = Post.objects.get(id=post_id)
+#         Comment.objects.create(author=author, post=post, content=content)
+#         return Response('Comment created!')
+
+
+# @api_view(['GET'])
+# def comment(request, *args, **kwargs):
+#     request_str = str(request)
+#     author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+#     post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
+#     comment_id = request_str.split("/")[6]
+
+#     if Post.objects.filter(author=author_id).exists() and Comment.objects.filter(post=post_id).exists():
+#         return Response(Comment.objects.filter(post=post_id, id=comment_id).values())
+#     else:
+#         return Response("This post/comment does not exist.")
 
 
 @api_view(['GET'])

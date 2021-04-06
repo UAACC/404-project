@@ -18,11 +18,12 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
 
-    likes = LikeSerializer(many=True, required=False)
+    # likes = LikeSerializer(many=True, required=False)
 
     class Meta:
         model = Comment
-        fields = ['id', 'content', 'author', 'post', 'likes', 'published']
+        # fields = ['id', 'content', 'author', 'post', 'likes', 'published']
+        fields = ['type', 'author', 'post', 'comment', 'contentType', 'published', 'id']
 
 
 

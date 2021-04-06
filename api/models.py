@@ -69,12 +69,15 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    content = models.CharField(max_length=256, default="")
-    author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="comments")
-    post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="comments")
+    type = "comment"
+    author = models.CharField(max_length=256, default="")
+    post = models.CharField(max_length=256, default="")
+    comment = models.TextField()
+    contentType = models.CharField(max_length=256, default="")
     published = models.DateTimeField(default=timezone.now)
+    id = models.CharField(primary_key=True, max_length=256)
+
+
 
 
 class Like(models.Model):

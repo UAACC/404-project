@@ -7,13 +7,13 @@ from .views import NodeViewSet, AuthorViewSet, CommentViewSet, LikeViewSet, Post
 from .views import FriendRequestViewSet
 from . import views
 
-router = routers.DefaultRouter()
-router.register('nodes', NodeViewSet)
+router = routers.DefaultRouter()    # Xutong
+# router.register('nodes', NodeViewSet)      # Xutong
 #router.register('author', AuthorViewSet)
 #router.register('posts', PostViewSet)
-router.register('comments', CommentViewSet)
-router.register('likes', LikeViewSet)
-router.register('friendrequest', FriendRequestViewSet)
+# router.register('comments', CommentViewSet)      # Xutong
+# router.register('likes', LikeViewSet)      # Xutong
+# router.register('friendrequest', FriendRequestViewSet)      # Xutong
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -37,9 +37,15 @@ urlpatterns = [
 
 
 
-     # Comments URL
-     path("author/<str:author_id>/posts/<str:post_id>/comments/", views.commentList),
-     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/", views.comment),
+     # # Comments URL
+     # path("author/<str:author_id>/posts/<str:post_id>/comments/", views.commentList),
+     # path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/", views.comment),
+
+     # new Comments URL:
+     path('author/<str:author_uid>/posts/<str:post_id>/comments/',
+         CommentViewSet.as_view({'get': 'get_comment_list', 'post': 'post_new_comment'})),
+     path('author/<str:author_uid>/posts/<str:post_id>/comments/<str:comment_id>/',
+         CommentViewSet.as_view({'get': 'retrive_a_comment'})),
      
      # Likes URL
      path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", views.commentLike),
