@@ -90,7 +90,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
         print(is_approved)
         author_data = {'id': author_id, 'host': host, 'url': url,
-                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_apporved':is_approved}
+                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_approved':is_approved}
 
     
 
@@ -100,7 +100,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
         return JsonResponse(author_data)
-        
+
     def author_login(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -120,7 +120,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
             password = author.password
             is_approved = author.is_approved
             author_data = {'id': author_id, 'host': host, 'url': url,
-                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_apporved':is_approved}
+                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_approved':is_approved}
 
             
             if password == author.password:

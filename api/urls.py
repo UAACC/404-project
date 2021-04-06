@@ -27,9 +27,9 @@ urlpatterns = [
     #path('posts/search', PostSearchList.as_view()),
     path('all-authors/',AuthorViewSet.as_view({'get':'all_users'})),
     path('post-list/',PostViewSet.as_view({'get':"all_posts"})),
-    path('author/login', AuthorViewSet.as_view({'post':'author_login'})),
+    path('author/login/', AuthorViewSet.as_view({'post':'author_login'})),
     path('author/', AuthorViewSet.as_view({'post':'create_1', 'get':"all_users"})),
-    path('author/<str:author_uid>', AuthorViewSet.as_view({'get':'retrive', 'put':'update'})),
+    path('author/<str:author_uid>/', AuthorViewSet.as_view({'get':'retrive', 'put':'update'})),
     path('author/<str:author_uid>/posts/',
          PostViewSet.as_view({'get': 'post_list','post':'create_1'})),
     path('author/<str:author_uid>/posts/<str:post_id>/',
@@ -43,16 +43,16 @@ urlpatterns = [
      
      # Likes URL
      path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes/", views.commentLike),
-     path("author/<str:author_id>/post/<str:post_id>/likes", views.postLike),
+     path("author/<str:author_id>/post/<str:post_id>/likes/", views.postLike),
 
      # Liked URL
      path("author/<str:author_id>/liked/", views.likedList),
 
      # Friend Request
-     path("friendrequest", FriendRequestViewSet.as_view({"post": "create"})),
-     path("friendrequest/accept", FriendRequestViewSet.as_view({"patch": "accept_incoming_request"})),
-     path("friendrequest/decline", FriendRequestViewSet.as_view({"patch": "decline_incoming_request"})),
-     path("friendrequest/delete", FriendRequestViewSet.as_view({"patch": "delete"})),
+     path("friendrequest/", FriendRequestViewSet.as_view({"post": "create"})),
+     path("friendrequest/accept/", FriendRequestViewSet.as_view({"patch": "accept_incoming_request"})),
+     path("friendrequest/decline/", FriendRequestViewSet.as_view({"patch": "decline_incoming_request"})),
+     path("friendrequest/delete/", FriendRequestViewSet.as_view({"patch": "delete"})),
      path("author/<str:author_id>/followers/", views.getFollowers),
 
      # Follow URL
