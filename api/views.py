@@ -270,7 +270,7 @@ class PostViewSet(viewsets.ModelViewSet):
         #author_id = f'{host}/author/{author_id}'
         post_id= f'{host}/author/{author_uid}/posts/{post_uid}'
         author_id= f'{host}/author/{author_uid}'
-        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
+        comments_id = f'{host}/author/{author_uid}/posts/{post_uid}/comments'
 
         title = request.data.get('title')
         source = request.data.get('source')
@@ -317,11 +317,12 @@ class PostViewSet(viewsets.ModelViewSet):
         
     def edit(self, request, author_uid=None,  post_id = None,*args, **kwargs):
         host = 'https://nofun.herokuapp.com'
+        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
         post_id = f'{host}/author/{author_uid}/posts/{post_id}'
         author_id= f'{host}/author/{author_uid}'
         #post = Post.objects.get(id=post_id,author = author_id)
         post = get_object_or_404(Post, id=post_id)
-        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
+        
         print('correct',post.title)
 
         title = request.data.get('title'),
@@ -375,10 +376,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def create_2(self, request, author_uid=None,  post_id = None,*args, **kwargs):
         host = 'https://nofun.herokuapp.com'
+        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
         #author_id = f'{host}/author/{author_id}'
         post_id= f'{host}/author/{author_uid}/posts/{post_id}'
         author_id= f'{host}/author/{author_uid}'
-        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
+        
         title = request.data.get('title')
         source = request.data.get('source')
         origin = request.data.get('origin')
