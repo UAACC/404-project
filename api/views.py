@@ -309,7 +309,7 @@ class PostViewSet(viewsets.ModelViewSet):
                      'origin': origin, 'description': description, 'contentType': contentType,
                      'content': content, 'author': author_id, 'categories': categories,
                      'count': count, 'size': size, 'comments': comments,
-                     'visibility': visibility, 'unlisted': unlisted}
+                     'visibility': visibility, 'unlisted': unlisted, 'id':post_id}
 
         
         return Response(post_data)
