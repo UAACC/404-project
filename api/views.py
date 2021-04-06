@@ -89,7 +89,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
         print(is_approved)
-        author_data = {'id': author_uid, 'host': host, 'url': url,
+        author_data = {'id': author_id, 'host': host, 'url': url,
                        'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_apporved':is_approved}
 
     
