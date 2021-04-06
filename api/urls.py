@@ -38,12 +38,12 @@ urlpatterns = [
 
 
      # Comments URL
-     path("author/<str:author_id>/post/<str:post_id>/comments/", views.commentList),
-     path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/", views.comment),
+     path("author/<str:author_id>/posts/<str:post_id>/comments/", views.commentList),
+     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/", views.comment),
      
      # Likes URL
-     path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes/", views.commentLike),
-     path("author/<str:author_id>/post/<str:post_id>/likes/", views.postLike),
+     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", views.commentLike),
+     path("author/<str:author_id>/posts/<str:post_id>/likes/", views.postLike),
 
      # Liked URL
      path("author/<str:author_id>/liked/", views.likedList),

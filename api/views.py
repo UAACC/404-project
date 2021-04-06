@@ -270,6 +270,7 @@ class PostViewSet(viewsets.ModelViewSet):
         #author_id = f'{host}/author/{author_id}'
         post_id= f'{host}/author/{author_uid}/posts/{post_uid}'
         author_id= f'{host}/author/{author_uid}'
+        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
 
         title = request.data.get('title')
         source = request.data.get('source')
@@ -281,7 +282,7 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request.data.get('count')
         published = request.data.get('published')
         size = request.data.get('size')
-        comments = post_id
+        comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
 
@@ -320,6 +321,7 @@ class PostViewSet(viewsets.ModelViewSet):
         author_id= f'{host}/author/{author_uid}'
         #post = Post.objects.get(id=post_id,author = author_id)
         post = get_object_or_404(Post, id=post_id)
+        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
         print('correct',post.title)
 
         title = request.data.get('title'),
@@ -331,10 +333,10 @@ class PostViewSet(viewsets.ModelViewSet):
         categories = request.data.get('categorie')
         count = request.data.get('count')
         size = request.data.get('size')
-        comments = post_id
+        comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = post.unlisted
-        print('t666666666', post.title)
+        
 
         post_data = {'title': title,'source': source,
                     'origin': origin, 'description': description, 'contentType': contentType,
@@ -376,6 +378,7 @@ class PostViewSet(viewsets.ModelViewSet):
         #author_id = f'{host}/author/{author_id}'
         post_id= f'{host}/author/{author_uid}/posts/{post_id}'
         author_id= f'{host}/author/{author_uid}'
+        comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
         title = request.data.get('title')
         source = request.data.get('source')
         origin = request.data.get('origin')
@@ -386,7 +389,7 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request.data.get('count')
         published = request.data.get('published')
         size = request.data.get('size')
-        comments = post_id
+        comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
 
