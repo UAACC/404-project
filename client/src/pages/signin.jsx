@@ -27,6 +27,12 @@ class SignInPage extends React.Component {
       [event.target.name]: event.target.value,
     });
   }
+
+  handleSaveUser = async (data) => {
+    await this.props.setCurrentUser(data) 
+    window.location = "/"
+  }
+
   handleSubmit = async (event) => {
     event.preventDefault();
     const { username, password } = this.state;
@@ -35,15 +41,12 @@ class SignInPage extends React.Component {
       "https://nofun.herokuapp.com/author/login/",
       { username, password }
     );
-
-    if (!doc.data) {
-      window.alert("Wrong crendentials!");
-    } else if (doc.data === "not approved") {
-      window.alert("Your account has not been approved by admin");
-    } else if (doc.data) {
-      await this.props.setCurrentUser(doc.data);
-      window.location = "/";
-    }
+      console.log(doc.data)
+    !doc.data ? 
+      window.alert("Wrong crendentials!")
+      : !doc.data.is_approved ?
+          window.alert("You have to wait for admin to approve your account!")
+          : this.handleSaveUser(doc.data)
   };
 
   render() {

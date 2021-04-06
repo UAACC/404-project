@@ -65,10 +65,10 @@ class Newpost extends React.Component {
 
     const doc = await axios.post(
      id + "/posts/",
-      { title, description, content, visibility, contentType },
+      { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content, visibility, contentType, published: new Date(), author: id, unlisted: false },
       config
     );
-    if (doc.data) {
+    if (doc.data?.id) {
       window.location = `/posts/nofun.herokuapp.com/${id.split("/")[4]}/${doc.data.id.split("/")[6]}/`;
     }
   };

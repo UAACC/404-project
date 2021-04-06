@@ -27,7 +27,7 @@ class ProfilePage extends React.Component {
 
     const config = {
       headers: {
-        'Authorization': domain.auth,
+        'Authorization': auth,
       }
     }
 

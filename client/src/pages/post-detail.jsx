@@ -56,11 +56,9 @@ class PostDetail extends React.Component {
         "Authorization": auth,
       },
     };
+    const post_id = "https://" + domain + "/author/" + authorId + "/posts/" + postId + "/";
 
-    const doc = await axios.get(
-      "https://" + domain + "/author/" + authorId + "/posts/" + postId + "/",
-      config
-    );
+    const doc = await axios.get(post_id, config);
     const post = doc.data;
 
     if (
@@ -70,10 +68,9 @@ class PostDetail extends React.Component {
       this.setState({ post, title: post.title, content: post.content });
     }
 
-    const doc2 = await axios.get(post.comments, config);
+    const doc2 = await axios.get(post_id + "comments/", config);
     this.setState({ comments: doc2.data });
 
-    //match user's id with the postid to fetch author's username
     const authorDoc = await axios.get(
       "https://" + domain + "/author/" + authorId + "/",
       config
@@ -172,16 +169,22 @@ class PostDetail extends React.Component {
   };
 
   handleDelete = async () => {
-    const { post } = this.state;
-    const { token } = this.props.currentUser;
-    const csrftoken = Cookies.get("csrftoken");
+    const { post, domain } = this.state;
+    const { domains } = this.props;
+
+    let auth = null;
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    });
+
     const config = {
       headers: {
-        Authorization: `Token ${token}`,
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        "Authorization": auth,
       },
     };
+
     await axios.delete(post.id + "/", config);
     window.location = "/posts/";
   };
@@ -309,7 +312,7 @@ class PostDetail extends React.Component {
                   />
                 </div>
               )}
-              {this.getAllComments()}
+              {/* {this.getAllComments()} */}
               <br />
               <br />
             </div>
