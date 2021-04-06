@@ -116,7 +116,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
 
-
+#havent used
     def create(self, request):
         try:
             author = Author.objects.get(username=request.data['username'])
