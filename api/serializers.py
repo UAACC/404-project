@@ -6,7 +6,7 @@ class NodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Node
-        fields = ['id', 'domain']
+        fields = ['id', 'domain','auth']
 
 
 class LikeSerializer(serializers.ModelSerializer):

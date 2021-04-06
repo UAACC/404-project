@@ -100,6 +100,40 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
         return JsonResponse(author_data)
+        
+    def author_login(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        
+        
+        try:
+            
+            author = Author.objects.get(username = username)
+            author_id = author.id
+            host = author.host
+            url = author.url
+            display_name = author.displayName
+            github = author.github
+            email =author.email
+            username = author.username
+            password = author.password
+            is_approved = author.is_approved
+            author_data = {'id': author_id, 'host': host, 'url': url,
+                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_apporved':is_approved}
+
+            
+            if password == author.password:
+                return Response(author_data)
+
+
+        except:
+            return Response(None)
+
+
+
+
+
 
     def update(self, request, author_uid=None, *args, **kwargs):
         host = 'https://nofun.herokuapp.com'
@@ -117,22 +151,22 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
 #havent used
-    def create(self, request):
-        try:
-            author = Author.objects.get(username=request.data['username'])
-            token = Token.objects.get(user=author)
-            response = {'id': author.id, 'username': author.username,
-                        'password': author.password, 'token': token.key}
-            return JsonResponse(response)
-        except:
-            author = Author.objects.create(
-                username=request.data['username'],
-                password=request.data['password'],
-            )
-            token = Token.objects.create(user=author)
-            response = {'id': author.id, 'username': author.username,
-                        'password': author.password, 'token': token.key}
-            return JsonResponse(response)
+    # def create(self, request):
+    #     try:
+    #         author = Author.objects.get(username=request.data['username'])
+    #         token = Token.objects.get(user=author)
+    #         response = {'id': author.id, 'username': author.username,
+    #                     'password': author.password, 'token': token.key}
+    #         return JsonResponse(response)
+    #     except:
+    #         author = Author.objects.create(
+    #             username=request.data['username'],
+    #             password=request.data['password'],
+    #         )
+    #         token = Token.objects.create(user=author)
+    #         response = {'id': author.id, 'username': author.username,
+    #                     'password': author.password, 'token': token.key}
+    #         return JsonResponse(response)
 
 
 # Like & Comment

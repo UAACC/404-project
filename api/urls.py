@@ -10,7 +10,7 @@ from . import views
 router = routers.DefaultRouter()
 router.register('nodes', NodeViewSet)
 #router.register('author', AuthorViewSet)
-router.register('posts', PostViewSet)
+#router.register('posts', PostViewSet)
 router.register('comments', CommentViewSet)
 router.register('likes', LikeViewSet)
 router.register('friendrequest', FriendRequestViewSet)
@@ -27,6 +27,7 @@ urlpatterns = [
     #path('posts/search', PostSearchList.as_view()),
     path('all-authors/',AuthorViewSet.as_view({'get':'all_users'})),
     path('post-list/',PostViewSet.as_view({'get':"all_posts"})),
+    path('author/login', AuthorViewSet.as_view({'post':'author_login'})),
     path('author/', AuthorViewSet.as_view({'post':'create_1', 'get':"all_users"})),
     path('author/<str:author_uid>', AuthorViewSet.as_view({'get':'retrive', 'put':'update'})),
     path('author/<str:author_uid>/posts/',
