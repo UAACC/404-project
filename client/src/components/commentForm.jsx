@@ -4,7 +4,6 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
-import Cookies from "js-cookie";
 import axios from "axios";
 
 class CommentForm extends React.Component {
@@ -19,15 +18,21 @@ class CommentForm extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
 
-    const { token, id } = this.props.currentUser;
+    const { id } = this.props.currentUser;
     const { comment, post } = this.state;
+    const { domains } = this.props;
 
-    const csrftoken = Cookies.get("csrftoken");
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === post.id.split("/")[2]) {
+        auth = d.auth;
+      }
+    })
+
     const config = {
       headers: {
-        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        Authorization: auth,
       },
     };
     const doc = await axios.post(
@@ -104,6 +109,7 @@ class CommentForm extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 
 export default connect(mapStateToProps)(CommentForm);

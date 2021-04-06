@@ -15,14 +15,23 @@ class ProfilePage extends React.Component {
   }
 
   componentDidMount = async () => {
+    const { domains } = this.props;
+    const { domain, id } = this.props.match.params;
+
+    let auth = null;
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    });
+
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        'Content-Type': 'application/json'
+        'Authorization': domain.auth,
       }
     }
 
-    const doc = await axios.get("https://" + this.props.match.params.domain + "/author/" + this.props.match.params.id, config);
+    const doc = await axios.get("https://" + domain + "/author/" + id, config);
     this.setState({ user: doc.data });
   };
 
@@ -62,6 +71,7 @@ class ProfilePage extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 
 export default connect(mapStateToProps)(ProfilePage);

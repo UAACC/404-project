@@ -4,11 +4,9 @@ import "./style/signin.css";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { TextField } from "@material-ui/core";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Link from "@material-ui/core/Link";
 import { connect } from "react-redux";
+import Link from "@material-ui/core/Link";
 import { setCurrentUser } from "../redux/user/useractions";
-import Cookies from "js-cookie";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 class SignUpPage extends React.Component {
@@ -34,24 +32,13 @@ class SignUpPage extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
     const { username, password, displayName, email, github } = this.state;
-    const csrftoken = Cookies.get("csrftoken");
-    const config = {
-      headers: {
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
-      },
-    };
+
     const doc = await axios.post(
       "https://nofun.herokuapp.com/author/",
-      { username, password, displayName, email, github },
-      config
+      { username, password, displayName, email, github }
     );
-    if (!doc.data) {
-      window.alert("Wrong crendentials");
-    } else {
-      await this.props.setCurrentUser(doc.data);
-      window.location = "/";
-    }
+    await this.props.setCurrentUser(doc.data);
+    window.alert("Your request has been sent to admin, you can login after the approval by admin");
   };
 
   render() {
@@ -147,11 +134,11 @@ class SignUpPage extends React.Component {
                   direction="column"
                   style={{ minHeight: "5vh", marginTop: 45 }}
                 >
-                  {/* <Grid item xs>
+                  <Grid item xs>
                     <Link href="/signin" variant="body2">
                       {"Already have an account? Sign In"}
                     </Link>
-                  </Grid> */}
+                  </Grid>
                 </Grid>
               </form>
             </section>

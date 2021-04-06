@@ -3,8 +3,7 @@ import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
 import axios from "axios";
 import "./style/header.css";
-import { colors } from "@material-ui/core";
-import { grey } from "@material-ui/core/colors";
+
 
 class Header extends React.Component {
   constructor(props) {
@@ -22,20 +21,21 @@ class Header extends React.Component {
     e.preventDefault();
     const { search } = this.state;
 
-    const config = {
-      headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-      }
-    }
-
     let authors = [];
-    const requests = this.props.domains?.map(domain => axios.get("https://" + domain + '/all-authors/', config));
+    const requests = this.props.domains?.map(domain => {
+      const config = {
+        headers: {
+          'Authorization': domain.auth,
+        }
+      }
+      return axios.get("https://" + domain.domain + '/all-authors/', config)
+    });
     const resArray = await Promise.all(requests);
 
     resArray.map(doc => {
       authors = authors.concat(doc.data);
     })
-
+    
     let searched = false;
     for (let author of authors) {
       if (search === author.displayName) {

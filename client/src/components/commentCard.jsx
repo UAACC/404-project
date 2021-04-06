@@ -25,10 +25,19 @@ class CommentCard extends React.Component {
 
   componentDidMount = async () => {
     const { domain, authorId, postId } = this.state;
+    const { domains } = this.props;
+
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    })
 
     const config = {
       headers: {
-        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        Authorization: auth,
       },
     };
 
@@ -41,14 +50,20 @@ class CommentCard extends React.Component {
   };
 
   handleLike = async () => {
-    var { comment } = this.state;
-    const { token } = this.props.currentUser;
-    const csrftoken = Cookies.get("csrftoken");
+    const { comment, domain } = this.state;
+    const { domains } = this.props;
+
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    })
+
     const config = {
       headers: {
-        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        Authorization: auth,
       },
     };
 
@@ -58,13 +73,19 @@ class CommentCard extends React.Component {
   handleDelete = async () => {
     const { comment } = this.state;
     const { domain, authorId, postId } = this.state;
+    const { domains } = this.props;
 
-    const csrftoken = Cookies.get("csrftoken");
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    })
+
     const config = {
       headers: {
-        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        Authorization: auth,
       },
     };
 
@@ -127,6 +148,7 @@ class CommentCard extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.user.domains
 });
 
 export default connect(mapStateToProps)(CommentCard);

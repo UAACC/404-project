@@ -4,13 +4,11 @@ import "./style/signin.css";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { TextField } from "@material-ui/core";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
-import Cookies from "js-cookie";
 import CssBaseline from "@material-ui/core/CssBaseline";
+
 
 class SignInPage extends React.Component {
   constructor(props) {
@@ -32,21 +30,17 @@ class SignInPage extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
     const { username, password } = this.state;
-    const csrftoken = Cookies.get("csrftoken");
-    const config = {
-      headers: {
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
-      },
-    };
+
     const doc = await axios.post(
-      "https://nofun.herokuapp.com/author/",
-      { username, password },
-      config
+      "https://nofun.herokuapp.com/author/login/",
+      { username, password }
     );
+
     if (!doc.data) {
-      window.alert("Wrong crendentials");
-    } else {
+      window.alert("Wrong crendentials!");
+    } else if (doc.data === "not approved") {
+      window.alert("Your account has not been approved by admin");
+    } else if (doc.data) {
       await this.props.setCurrentUser(doc.data);
       window.location = "/";
     }
@@ -92,10 +86,6 @@ class SignInPage extends React.Component {
                     />
                   </Grid>
                 </Grid>
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
                 <Button
                   type="Log in"
                   fullWidth

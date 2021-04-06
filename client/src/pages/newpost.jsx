@@ -10,7 +10,6 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
-import Cookies from "js-cookie";
 import axios from "axios";
 import Header from "../components/Header";
 
@@ -47,19 +46,25 @@ class Newpost extends React.Component {
     if (!this.checkValidation()) {
       return window.alert("You have not filed the form completely.");
     }
-
-    const { token, id } = this.props.currentUser;
+    const { domains } = this.props;
+    const { id } = this.props.currentUser;
     const { title, description, content, contentType, visibility } = this.state;
-    const csrftoken = Cookies.get("csrftoken");
+
+    let auth = null;
+    domains.map(d => {
+      if (d.domain === id.split("/")[2]) {
+        auth = d.auth;
+      }
+    })
+
     const config = {
       headers: {
-        Authorization: `Token ${token}`,
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        "Authorization": auth
       },
     };
+
     const doc = await axios.post(
-      "https://nofun.herokuapp.com/posts/",
+     id + "/posts/",
       { title, description, content, visibility, contentType },
       config
     );
@@ -267,6 +272,7 @@ class Newpost extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 
 export default connect(mapStateToProps)(Newpost);

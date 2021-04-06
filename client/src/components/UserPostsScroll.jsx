@@ -1,11 +1,8 @@
 import React from "react";
-// redux
 import Posting from "./Posting.jsx";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import Profile from "./ProfileComponent.jsx";
-import CommentCard from "./commentCard.jsx";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
@@ -20,26 +17,26 @@ class PostsScroll extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { user } = this.props;
-    let posts = [];
+    const { user, domains } = this.props;
+
+    let auth = null;
+    domains.map(d => {
+      if (d.domain === user.id.split("/")[2]) {
+        auth = d.auth
+      }
+    });
 
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        'Content-Type': 'application/json'
+        'Authorization': auth,
       }
     }
-    const requests = this.props.domains?.map((domain) => {
-      return axios.get(user.id + "/posts/", config);
-    });
-    
-    const resArray = await Promise.all(requests);
-    
-    resArray.map((doc) => {
-      posts = posts.concat(doc.data);
-    });
-    const publicPosts = posts.filter((post) => post.visibility === "PUBLIC");
 
+    const doc = await axios.get(user.id + "/posts/", config);
+    
+    const posts = doc.data;
+    const publicPosts = posts.filter((post) => post.visibility === "PUBLIC");
+    console.log(publicPosts)
     this.setState({ posts: publicPosts });
   };
 

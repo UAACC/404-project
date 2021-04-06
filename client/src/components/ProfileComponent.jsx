@@ -1,19 +1,13 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import DeleteIcon from "@material-ui/icons/Delete";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import { sizing } from "@material-ui/system";
 import Paper from "@material-ui/core/Paper";
-import Cookies from "js-cookie"
 import axios from "axios";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
@@ -29,7 +23,6 @@ class ProfileCard extends React.Component {
       username: props.user.username,
       email: props.user.email,
       github: props.user.github,
-      bio: props.user.bio,
       password: props.user.password,
       host: props.user.host,
       displayName: props.user.displayName
@@ -37,18 +30,25 @@ class ProfileCard extends React.Component {
   }
 
   handleEditProfile = async () => {
-    const { token, id } = this.state;
-    const { email, github, bio, password } = this.state;
-    const csrftoken = Cookies.get('csrftoken');
+    const { id } = this.state;
+    const { domains, domain } = this.props;
+    const { email, github, password } = this.state;
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    })
+
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        'X-CSRFToken': csrftoken,
-        "Content-type": "application/json",
-      }
-    }
+        Authorization: auth,
+      },
+    };
+
     
-    let doc = await axios.patch(`https://nofun.herokuapp.com/author/${id}/`, { email, github, bio, password }, config);
+    let doc = await axios.patch(`https://nofun.herokuapp.com/author/${id}/`, { email, github, password }, config);
 
     if (doc.data) {
       // await this.props.setCurrentUser(doc.data);
@@ -60,14 +60,22 @@ class ProfileCard extends React.Component {
     const {  id } = this.state;
     const { domain } = this.props;
     const { currentUser } = this.props;
-    const csrftoken = Cookies.get('csrftoken');
+    const { domains } = this.props;
+
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    })
+
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json'
-      }
-    }
+        Authorization: auth,
+      },
+    };
+
 
     const doc = await axios.post("https://" + domain + "/friend-request/", {
       summary: "friend request",
@@ -85,15 +93,20 @@ class ProfileCard extends React.Component {
   // TODO: delete a friend
   handleDeleteFriend = async () => {
     const {  id } = this.state;
-    const { currentUser } = this.props;
-    const csrftoken = Cookies.get('csrftoken');
+    const { currentUser, domains, domain } = this.props;
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    })
+
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json'
-      }
-    }
+        Authorization: auth,
+      },
+    };
 
     const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/delete", {from_user: currentUser.id, to_user: id}, config);
     if (doc.data) {
@@ -189,6 +202,7 @@ class ProfileCard extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 
 const mapDispatchToProps = (dispatch) => ({

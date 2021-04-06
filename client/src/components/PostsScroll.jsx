@@ -3,13 +3,10 @@ import React from "react";
 import Posting from "./Posting.jsx";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import Profile from "./ProfileComponent.jsx";
-import CommentCard from "./commentCard.jsx";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
 import { connect } from "react-redux";
-import Cookies from "js-cookie";
 
 
 class PostsScroll extends React.Component {
@@ -23,19 +20,16 @@ class PostsScroll extends React.Component {
 
   componentDidMount = async () => {
     let posts = [];
-
-    const csrftoken = Cookies.get('csrftoken');
-    const config = {
-      headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json'
+  
+    const requests = this.props.domains?.map(domain => {
+      const config = {
+        headers: {
+          'Authorization': domain.auth,
+        }
       }
-    }
-
-    const requests = this.props.domains?.map((domain) => {
-      return axios.get("https://" + domain + "/post-list/", config);
+      return axios.get("https://" + domain.domain + "/post-list/", config);
     });
+
     const resArray = await Promise.all(requests);
 
     resArray.map((doc) => {

@@ -42,13 +42,18 @@ class PostDetail extends React.Component {
   }
 
   componentDidMount = async () => {
-    //set post's information in state
-    const { currentUser } = this.props;
+    const { currentUser, domains } = this.props;
     const { domain, authorId, postId } = this.state;
+    let auth = null;
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    });
 
     const config = {
       headers: {
-        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        "Authorization": auth,
       },
     };
 
@@ -106,14 +111,19 @@ class PostDetail extends React.Component {
   };
 
   handleLike = async () => {
-    var { post } = this.state;
-    const { token } = this.props.currentUser;
-    const csrftoken = Cookies.get("csrftoken");
+    const { domains } = this.props;
+    const { domain, post } = this.state;
+    let auth = null;
+
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    });
+
     const config = {
       headers: {
-        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        "Authorization": auth,
       },
     };
 
@@ -143,14 +153,18 @@ class PostDetail extends React.Component {
   };
 
   handleSubmitEdit = async () => {
-    const { post, title, content } = this.state;
-    const { token } = this.props.currentUser;
-    const csrftoken = Cookies.get("csrftoken");
+    const { post, title, content, domain } = this.state;
+    const {  domains } = this.props;
+    let auth = null;
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    });
+
     const config = {
       headers: {
-        Authorization: `Token ${token}`,
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        "Authorization": auth,
       },
     };
     await axios.patch(post.id + "/", { title, content }, config);
@@ -173,7 +187,6 @@ class PostDetail extends React.Component {
   };
 
   render() {
-    const { domain, authorId, postId } = this.state;
     const { post, title, content, editOpen, commentOpen, author } = this.state;
     const { currentUser } = this.props;
     return (
@@ -244,7 +257,7 @@ class PostDetail extends React.Component {
               </Typography>
             </center>
           )}
-          {post ? (
+          {post && (
             <div style={{ marginTop: "20px" }}>
               <IconButton
                 style={{ marginLeft: "17%" }}
@@ -263,7 +276,7 @@ class PostDetail extends React.Component {
               <IconButton style={{ marginLeft: "50%" }}></IconButton>
               <ShareIcon></ShareIcon>
 
-              {currentUser && currentUser.id === post.author ? (
+              {currentUser && currentUser.id === post.author && (
                 editOpen ? (
                   <IconButton
                     style={{ marginLeft: "10%", color: "green" }}
@@ -279,28 +292,28 @@ class PostDetail extends React.Component {
                     {this.renderEdit()}
                   </IconButton>
                 )
-              ) : null}
-              {currentUser && currentUser.id === post.author ? (
+              )}
+              {currentUser && currentUser.id === post.author && (
                 <IconButton
                   style={{ marginLeft: "10%", color: "red" }}
                   onClick={this.handleDelete}
                 >
                   X
                 </IconButton>
-              ) : null}
-              {commentOpen ? (
+              )}
+              {commentOpen && (
                 <div>
                   <CommentForm
                     post={post}
                     handleClick={this.componentDidMount}
                   />
                 </div>
-              ) : null}
+              )}
               {this.getAllComments()}
               <br />
               <br />
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     );
@@ -309,6 +322,7 @@ class PostDetail extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 
 export default connect(mapStateToProps)(PostDetail);

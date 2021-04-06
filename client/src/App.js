@@ -22,11 +22,9 @@ class App extends React.Component {
 
   componentDidMount = async () => {
     const doc = await axios.get("https://nofun.herokuapp.com/nodes/");
-    if (doc) {
-      const domains = [];
-      doc.data.map((res) => {
-        domains.push(res.domain);
-      });
+    if (doc.data) {
+      console.log(doc.data);
+      const domains = doc.data
       this.props.setCurrentDomain(domains);
     }
   };
@@ -41,7 +39,7 @@ class App extends React.Component {
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={Main} />
-          {/* <Route exact path="/signin" component={SignIn} /> */}
+          <Route exact path="/signin" component={SignIn} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/inbox" component={Inbox} />
           <Route exact path="/newpost" component={Newpost} />
