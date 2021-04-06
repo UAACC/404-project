@@ -21,6 +21,9 @@ class NodeViewSet(viewsets.ModelViewSet):
     serializer_class = NodeSerializer
     permission_classes = (AllowAny, )
 
+    
+
+
 #URL: ://service/author/{AUTHOR_ID}/
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()

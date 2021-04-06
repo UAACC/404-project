@@ -5,7 +5,8 @@ import uuid
 
 
 class Node(models.Model):
-    domain = models.CharField(max_length=50, unique=True)
+    domain = models.CharField(max_length=256, unique=True)
+    auth = models.CharField(max_length=256, unique=True, null = False)
 
 
 class Author(AbstractUser):
