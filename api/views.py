@@ -274,7 +274,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
-        img = request.data.get('image')
+        #img = request.data.get('image')
 
         Post.objects.create(
             id= post_id,
@@ -292,7 +292,7 @@ class PostViewSet(viewsets.ModelViewSet):
             published = published,
             unlisted = unlisted,
             author = Author.objects.get(id=author_id),
-            image = img
+            #image = img
         )
         
 
