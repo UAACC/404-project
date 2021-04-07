@@ -70,17 +70,22 @@ class ProfileCard extends React.Component {
       }
     })
 
+    console.log("---",auth.split(" ")[1]);
+
     const config = {
       headers: {
-        Authorization: auth,
+        Authorization: auth.split(" ")[1],
       },
     };
 
+    //console.log("---",auth.split(" ")[1]);
+    console.log(currentUser.displayName);
+    console.log(currentUser.id);
+    console.log(id + "/");
 
-    const doc = await axios.post("https://" + domain + "/friend-request/", {
-      summary: "friend request",
-      actor: currentUser.id,
-      object: "https://" + domain + "/author/" + id + "/"
+    const doc = await axios.post("https://" + domain + "/friendrequest/", {
+      from_user: currentUser.id,
+      to_user: id
     }, config);
     
     if (doc.data) {
