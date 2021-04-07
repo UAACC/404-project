@@ -1,17 +1,11 @@
 import React from "react";
-import Posting from "../components/Posting";
 import CommentCard from "../components/commentCard";
 import CommentForm from "../components/commentForm";
-import profileee from "../components/ProfileComponent";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import DescriptionIcon from "@material-ui/icons/Description";
-import EventNoteIcon from "@material-ui/icons/EventNote";
-import ClosedCaptionIcon from "@material-ui/icons/ClosedCaption";
 import ShareIcon from "@material-ui/icons/Share";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import IconButton from "@material-ui/core/IconButton";
@@ -19,9 +13,8 @@ import CommentIcon from "@material-ui/icons/Comment";
 import { Container, TextField, Avatar } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Header from "../components/Header";
-
 import { connect } from "react-redux";
-import Cookies from "js-cookie";
+
 
 class PostDetail extends React.Component {
   constructor(props) {
@@ -33,6 +26,7 @@ class PostDetail extends React.Component {
       authorsList: [],
       title: "",
       content: "",
+      description: "",
       commentOpen: false,
       editOpen: false,
       domain: props.match.params.domain,
@@ -59,16 +53,25 @@ class PostDetail extends React.Component {
     const post_id = "https://" + domain + "/author/" + authorId + "/posts/" + postId + "/";
 
     const doc = await axios.get(post_id, config);
-    const post = doc.data;
+
+    let post = null;
+    if (doc.data.length === undefined) {
+      post = doc.data;
+    } else {
+      post = doc.data[0];
+    }
+
+    console.log(post);
 
     if (
       post.visibility === "PUBLIC" ||
-      (post.visibility === "PUBLIC" && post.author === currentUser?.id)
+      (post.visibility === "PUBLIC" && (post.author_id === currentUser?.id || post.author === currentUser?.id ))
     ) {
-      this.setState({ post, title: post.title, content: post.content });
+      this.setState({ post, title: post.title, content: post.content, description: post.description });
     }
 
     const doc2 = await axios.get(post_id + "comments/", config);
+    console.log(doc2.data);
     this.setState({ comments: doc2.data });
 
     const authorDoc = await axios.get(
@@ -128,29 +131,16 @@ class PostDetail extends React.Component {
     this.componentDidMount();
   };
 
-  renderEdit = () => {
-    const { post } = this.state;
-    const user = this.props.currentUser;
-    const likesToPost = post.likes;
-    //看当前user有没有喜欢这个post
-    const currentLike = likesToPost.filter((like) => like.author === user.id);
-    if (currentLike.length != 0) {
-      return <EditIcon size="large" />;
-    } else {
-      return <EditIcon />;
-    }
-  };
-
   handleEdit = () => {
     const { post } = this.state;
     const { id } = this.props.currentUser;
-    if (id === post.author) {
+    if (id === post.author || id === post.author_id) {
       this.setState({ editOpen: !this.state.editOpen });
     }
   };
 
   handleSubmitEdit = async () => {
-    const { post, title, content, domain } = this.state;
+    const { post, title, content, description, domain } = this.state;
     const {  domains } = this.props;
     let auth = null;
     domains.map(d => {
@@ -164,7 +154,7 @@ class PostDetail extends React.Component {
         "Authorization": auth,
       },
     };
-    await axios.patch(post.id + "/", { title, content }, config);
+    await axios.put(post.id + "/", {...post, title, description, content }, config);
     this.componentDidMount();
   };
 
@@ -186,11 +176,11 @@ class PostDetail extends React.Component {
     };
 
     await axios.delete(post.id + "/", config);
-    window.location = "/posts/";
+    window.location = "/";
   };
 
   render() {
-    const { post, title, content, editOpen, commentOpen, author } = this.state;
+    const { post, title, description, content, editOpen, commentOpen, author } = this.state;
     const { currentUser } = this.props;
     return (
       <div>
@@ -231,8 +221,19 @@ class PostDetail extends React.Component {
                       />
                     ) : (
                       <Typography variant="h5" style={{ paddingTop: "5%" }}>
-                        {post.title}
+                        Title: {post.title}
                       </Typography>
+                    )}
+                    {editOpen ? (
+                      <TextField
+                        label="description"
+                        value={description}
+                        onChange={(e) =>
+                          this.setState({ description: e.target.value })
+                        }
+                      />
+                    ) : (
+                      <Typography>Description: {post.description}</Typography>
                     )}
                     {editOpen ? (
                       <TextField
@@ -243,7 +244,7 @@ class PostDetail extends React.Component {
                         }
                       />
                     ) : (
-                      <Typography>{post.content}</Typography>
+                      <Typography>Content: {post.content}</Typography>
                     )}
                   </div>
                   <br />
@@ -260,8 +261,10 @@ class PostDetail extends React.Component {
               </Typography>
             </center>
           )}
+          
           {post && (
-            <div style={{ marginTop: "20px" }}>
+            <div >
+              <div style={{marginTop: "2%"}}>
               <IconButton
                 style={{ marginLeft: "17%" }}
                 onClick={this.handleLike}
@@ -274,36 +277,38 @@ class PostDetail extends React.Component {
                   this.setState({ commentOpen: !this.state.commentOpen })
                 }
               >
-                <CommentIcon></CommentIcon>
+                <CommentIcon />
               </IconButton>
-              <IconButton style={{ marginLeft: "50%" }}></IconButton>
-              <ShareIcon></ShareIcon>
+              <IconButton style={{ marginLeft: "3%" }}>
+                <ShareIcon />
+              </IconButton>
 
-              {currentUser && currentUser.id === post.author && (
+              {currentUser && (post.author_id === currentUser?.id || post.author === currentUser?.id ) && (
                 editOpen ? (
                   <IconButton
-                    style={{ marginLeft: "10%", color: "green" }}
+                    style={{ marginLeft: "3%", color: "green" }}
                     onClick={this.handleSubmitEdit}
                   >
                     V
                   </IconButton>
                 ) : (
                   <IconButton
-                    style={{ marginLeft: "10%" }}
+                    style={{ marginLeft: "3%" }}
                     onClick={this.handleEdit}
                   >
-                    {this.renderEdit()}
+                    <EditIcon size="large" />
                   </IconButton>
                 )
               )}
-              {currentUser && currentUser.id === post.author && (
+              {(currentUser && (post.author_id === currentUser?.id || post.author === currentUser?.id )) && (
                 <IconButton
-                  style={{ marginLeft: "10%", color: "red" }}
+                  style={{ marginLeft: "3%", color: "red" }}
                   onClick={this.handleDelete}
                 >
                   X
                 </IconButton>
               )}
+              </div>
               {commentOpen && (
                 <div>
                   <CommentForm
@@ -312,7 +317,7 @@ class PostDetail extends React.Component {
                   />
                 </div>
               )}
-              {/* {this.getAllComments()} */}
+              {this.getAllComments()}
               <br />
               <br />
             </div>

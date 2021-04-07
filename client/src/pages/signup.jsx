@@ -32,10 +32,27 @@ class SignUpPage extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
     const { username, password, displayName, email, github } = this.state;
+    const { domains } = this.props;
+
+    let auth = null;
+    domains.map(d => {
+      if (d.domain.includes("nofun")) {
+        auth = d.auth;
+      }
+    });
+
+    console.log(auth);
+
+    const config = {
+      headers: {
+        'Authorization': auth,
+      }
+    }
 
     const doc = await axios.post(
       "https://nofun.herokuapp.com/author/",
-      { username, password, displayName, email, github }
+      { username, password, displayName, email, github },
+      config
     );
     await this.props.setCurrentUser(doc.data);
     window.alert("Your request has been sent to admin, you can login after the approval by admin");
@@ -149,8 +166,13 @@ class SignUpPage extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser,
+  domains: state.domain.domains
+});
+
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
 
-export default connect(null, mapDispatchToProps)(SignUpPage);
+export default connect(mapStateToProps, mapDispatchToProps)(SignUpPage);

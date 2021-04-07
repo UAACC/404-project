@@ -197,20 +197,11 @@ class Newpost extends React.Component {
                       variant="filled"
                     />
                   </div> */}
-                  {/* <div id="image">
-                    <Button
-                      onClick={() => {
-                        this.setState({ PopupImageUpload: true });
-                      }}
-                      variant="outlined"
-                      color="primary"
-                      style={{
-                        marginLeft: "3%",
-                        marginTop: "3%",
-                      }}
-                    >
-                      Upload Image
-                    </Button>
+                  {/* <div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
+                    <FormLabel component="legend">
+                      Upload an image
+                    </FormLabel>
+                    <input type="file" onChange={(e) => this.setState({file: e.target.files[0]})} />
                   </div> */}
                   <div id="visibility">
                     <FormControl

@@ -36,12 +36,27 @@ class SignInPage extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
     const { username, password } = this.state;
+    const { domains } = this.props;
+
+    let auth = null;
+    domains.map(d => {
+      if (d.domain.includes("nofun")) {
+        auth = d.auth;
+      }
+    });
+
+    const config = {
+      headers: {
+        'Authorization': auth,
+      }
+    }
 
     const doc = await axios.post(
       "https://nofun.herokuapp.com/author/login/",
-      { username, password }
+      { username, password },
+      config
     );
-      console.log(doc.data)
+      
     !doc.data ? 
       window.alert("Wrong crendentials!")
       : !doc.data.is_approved ?
@@ -124,8 +139,13 @@ class SignInPage extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser,
+  domains: state.domain.domains
+});
+
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
 
-export default connect(null, mapDispatchToProps)(SignInPage);
+export default connect(mapStateToProps, mapDispatchToProps)(SignInPage);

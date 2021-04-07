@@ -43,6 +43,7 @@ class CommentForm extends React.Component {
         author: id,
         post: post.id,
         contentType: "text/plain",
+        published: new Date()
       },
       config
     );
