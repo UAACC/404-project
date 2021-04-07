@@ -8,7 +8,7 @@ from .views import FriendRequestViewSet
 from . import views
 
 router = routers.DefaultRouter()    # Xutong
-# router.register('nodes', NodeViewSet)      # Xutong
+router.register('nodes', NodeViewSet)      # Xutong
 #router.register('author', AuthorViewSet)
 #router.register('posts', PostViewSet)
 # router.register('comments', CommentViewSet)      # Xutong
@@ -18,7 +18,7 @@ router = routers.DefaultRouter()    # Xutong
 urlpatterns = [
     path('', include(router.urls)),
 
-    path('nodes/',NodeViewSet.as_view()),
+    
 
     # POST
     # path('posts/<int:pk>/', PostDetail.as_view()),
