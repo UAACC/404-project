@@ -19,7 +19,7 @@ import uuid
 class NodeViewSet(viewsets.ModelViewSet):
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
-    # permission_classes = (AllowAny, )
+    permission_classes = (AllowAny, )
 
     
 
