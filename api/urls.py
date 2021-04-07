@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 from django.conf.urls import include
-from .views import NodeViewSet, AuthorViewSet, CommentViewSet, LikeViewSet, PostViewSet
+from .views import NodeViewSet, AuthorViewSet, CommentViewSet, LikeViewSet, PostViewSet, LikesViewSet, InboxViewSet
 # from .views import PostList, PostDetail, UpdatePost, PostCreate, DeletePost
 # PostSearchList
 from .views import FriendRequestViewSet
@@ -50,8 +50,8 @@ urlpatterns = [
          CommentViewSet.as_view({'get': 'retrive_a_comment'})),
      
      # Likes URL
-     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", views.commentLike),
-     path("author/<str:author_id>/posts/<str:post_id>/likes/", views.postLike),
+     path("author/<str:author_id>/posts/<str:post_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),
+     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),
 
      # Liked URL
      path("author/<str:author_id>/liked/", views.likedList),
@@ -65,9 +65,10 @@ urlpatterns = [
 
      # Follow URL
      path("author/<str:author_id>/followers/<str:foreign_author_id>/", views.operateFollowers),
-     path("author/<str:author_id>/friend-list/", views.friendList)
+     path("author/<str:author_id>/friend-list/", views.friendList),
 
      # Inbox URL
+     path("author/<str:author_id>/inbox/request-list", InboxViewSet.as_view({"get": "current_user_requests"}))
 
 
 ]

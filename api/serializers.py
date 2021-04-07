@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Node, Author, Post, Comment, Like, FriendRequest
+from .models import Node, Author, Post, Comment, Like, FriendRequest, Likes, Inbox
 
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -26,10 +26,6 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['type', 'author', 'post', 'comment', 'contentType', 'published', 'id']
 
 
-
-
-
-
 class AuthorSerializer(serializers.ModelSerializer):
 
     #posts = PostSerializer(many=True, required=False)
@@ -40,6 +36,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ('id','type', 'host', 'displayName', 'url', 'github','email','username','password','is_approved')
         
+
 class PostSerializer(serializers.ModelSerializer):
 
     comments = CommentSerializer(many=True, required=False)
@@ -50,7 +47,27 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categorie', 'count', 'size','comments' , 'published', 'visibility', 'unlisted']
 
+
 class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendRequest
         fields = ['from_user', 'to_user', 'status']
+
+
+class LikesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Likes
+        fields = ['type', 'context', 'summary', 'author', 'object']
+
+
+class InboxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inbox
+        fields = ['type', 'author', 'items']
+
+# class ItemSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Inbox
+#         fields = ['type', 'author', 'items']
+
+

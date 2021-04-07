@@ -102,3 +102,20 @@ class FriendRequest(models.Model):
         Author, related_name='to_user', on_delete=models.CASCADE)
     status = models.CharField(
         choices=Friendship_status, default="Requested", max_length=1)
+
+
+class Likes(models.Model):
+    type = 'Like'
+    context = models.URLField(max_length=256, default = '')
+    summary = models.CharField(max_length=256, default = '')
+    author = models.URLField(max_length=256, default = '')
+    object = models.URLField(max_length=256, default = '')
+
+
+class Inbox(models.Model):
+    type = 'Inbox'
+    author = models.CharField(max_length=256, default="")
+    items = models.TextField(null=True)
+
+
+

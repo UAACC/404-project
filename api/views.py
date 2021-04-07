@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
-from .serializers import NodeSerializer, AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer
-from .models import Node, Author, Post, Like, Comment, FriendRequest
+from .serializers import NodeSerializer, AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer, LikesSerializer, InboxSerializer
+from .models import Node, Author, Post, Like, Comment, FriendRequest, Likes, Inbox
 from .serializers import FriendRequestSerializer
 from django.http import JsonResponse, HttpResponse
 from .permissions import IsOwnerOrReadOnly
@@ -203,7 +203,6 @@ class LikeViewSet(viewsets.ModelViewSet):
                     return HttpResponse('Good request, like is created')
             except:
                 return HttpResponse('Bad request')
-
 
 
 #URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
@@ -754,4 +753,74 @@ def friendList(request, *args, **kwargs):
     else:
         return Response("You doesn't have any friends.")
 
-    
+
+class LikesViewSet(viewsets.ModelViewSet):
+    serializer_class = LikesSerializer
+    queryset = Likes.objects.all()
+
+    # create like for the comment/post
+    def create_likes(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        post_uuid = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+
+        author_id = host + "author/" + author_uuid
+        post_id = author_id + "/posts/" + post_uuid
+        is_comments = False
+        if '/comments/' in request_str:
+            is_comments = True
+            comment_uuid = request_str.split("/")[6]
+            comment_id = post_id + "/comments/" + comment_uuid
+
+        context = ''
+        author = author_id
+        if is_comments:
+            summary = 'An author liked your comment. '
+            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': comment_id, 'context': context}
+            Likes.objects.create(summary=summary, author=author, object=comment_id, context=context)
+        else:
+            summary = 'An author liked your post. ' 
+            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': post_id, 'context': context}
+            Likes.objects.create(summary=summary, author=author, object=post_id, context=context)
+
+
+        return Response(list(likes_data))
+
+
+
+# class InboxViewSet(viewsets.ModelViewSet):
+#     serializer_class = LikesSerializer
+
+#     def current_user_requests
+
+class InboxViewSet(viewsets.ModelViewSet):
+    serializer_class = InboxSerializer
+    def current_user_requests(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        post_uuid = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+
+        author_id = host + "author/" + author_uuid
+        post_id = author_id + "/posts/" + post_uuid
+
+        is_comments = False
+        if '/comments/' in request_str:
+            is_comments = True
+            comment_uuid = request_str.split("/")[6]
+            comment_id = post_id + "/comments/" + comment_uuid
+
+        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
+            request_list = FriendRequest.objects.filter(to_user=author_id, status="R").values()
+
+        inbox_data = {'type': 'Inbox', 'author': author_id, 'items': str(request_list)}
+        # serializer = self.serializer_class(data=inbox_data)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
+        return Response({
+            'type': 'Inbox',
+            'author': 'author_id',
+            'items': request_list
+        })
+
