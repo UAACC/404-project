@@ -8,12 +8,12 @@ from .views import FriendRequestViewSet
 from . import views
 
 router = routers.DefaultRouter()    # Xutong
-router.register('nodes', NodeViewSet)      # Xutong
+router.register('nodes', NodeViewSet)      #usful
 #router.register('author', AuthorViewSet)
 #router.register('posts', PostViewSet)
 # router.register('comments', CommentViewSet)      # Xutong
 # router.register('likes', LikeViewSet)      # Xutong
-# router.register('friendrequest', FriendRequestViewSet)      # Xutong
+router.register('friendrequest', FriendRequestViewSet)      # Xutong
 
 urlpatterns = [
     path('', include(router.urls)),
