@@ -114,7 +114,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
             
             if password == author.password:
                 if author.is_approved:
-                    return Response(True)
+                    serializer = AuthorSerializer(author)
+                    return Response(serializer.data)
+                    
                 else:
                     return Response(False)
 
