@@ -820,7 +820,7 @@ class InboxViewSet(viewsets.ModelViewSet):
         # serializer.save()
         return Response({
             'type': 'Inbox',
-            'author': 'author_id',
+            'author': author_id,
             'items': request_list
         })
 
