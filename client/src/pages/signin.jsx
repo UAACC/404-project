@@ -51,17 +51,20 @@ class SignInPage extends React.Component {
       }
     }
 
-    const doc = await axios.post(
-      "https://nofun.herokuapp.com/author/login/",
-      { username, password },
-      config
-    );
-      
-    !doc.data ? 
-      window.alert("Wrong crendentials!")
-      : !doc.data.is_approved ?
+    try {
+      const doc = await axios.post(
+        "https://nofun.herokuapp.com/author/login/",
+        { username, password },
+        config
+      );
+      console.log(doc.data);
+      doc.data === false ?
           window.alert("You have to wait for admin to approve your account!")
           : this.handleSaveUser(doc.data)
+    } catch {
+      window.alert("Wrong crendentials!")
+    }
+
   };
 
   render() {

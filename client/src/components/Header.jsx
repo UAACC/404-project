@@ -86,6 +86,7 @@ class Header extends React.Component {
   render() {
     const { search } = this.state;
     const { currentUser } = this.props;
+    console.log(currentUser);
     return (
       <div className="container-fluid shadow p-2 mb-4">
         <nav class="navbar navbar-expand-lg navbar-light">

@@ -140,7 +140,7 @@ class PostDetail extends React.Component {
   };
 
   handleSubmitEdit = async () => {
-    const { post, title, content, description, domain } = this.state;
+    const { post, title, content, description, domain, authorId, postId } = this.state;
     const {  domains } = this.props;
     let auth = null;
     domains.map(d => {
@@ -155,7 +155,7 @@ class PostDetail extends React.Component {
       },
     };
     await axios.put(post.id + "/", {...post, title, description, content }, config);
-    this.componentDidMount();
+    window.location = "/posts/" + domain + "/" + authorId + "/" + postId;
   };
 
   handleDelete = async () => {

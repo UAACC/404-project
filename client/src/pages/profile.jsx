@@ -32,6 +32,7 @@ class ProfilePage extends React.Component {
     }
 
     const doc = await axios.get("https://" + domain + "/author/" + id, config);
+    console.log(doc.data);
     this.setState({ user: doc.data });
   };
 

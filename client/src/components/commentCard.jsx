@@ -24,25 +24,24 @@ class CommentCard extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { domain, authorId, postId } = this.state;
+    const { comment } = this.state;
     const { domains } = this.props;
-
     let auth = null;
 
-    domains.map(d => {
-      if (d.domain === domain) {
+    domains?.map(d => {
+      if (d.domain === comment.author.split("/")[2]) {
         auth = d.auth;
       }
     })
 
     const config = {
       headers: {
-        Authorization: auth,
+        "Authorization": auth,
       },
     };
 
     const doc = await axios.get(
-      "https://" + domain + "/author/" + authorId + +"/",
+      comment.author + "/",
       config
     );
 
@@ -50,13 +49,13 @@ class CommentCard extends React.Component {
   };
 
   handleLike = async () => {
-    const { comment, domain } = this.state;
+    const { comment } = this.state;
     const { domains } = this.props;
 
     let auth = null;
 
     domains.map(d => {
-      if (d.domain === domain) {
+      if (d.domain === comment.author.split("/")[2]) {
         auth = d.auth;
       }
     })
@@ -70,33 +69,33 @@ class CommentCard extends React.Component {
     await axios.post(comment.id + "/likes/", config);
   };
 
-  handleDelete = async () => {
-    const { comment } = this.state;
-    const { domain, authorId, postId } = this.state;
-    const { domains } = this.props;
+  // handleDelete = async () => {
+  //   const { comment } = this.state;
+  //   const { domains } = this.props;
 
-    let auth = null;
+  //   let auth = null;
 
-    domains.map(d => {
-      if (d.domain === domain) {
-        auth = d.auth;
-      }
-    })
+  //   domains?.map(d => {
+  //     if (d.domain === comment.author.split("/")[2]) {
+  //       auth = d.auth;
+  //     }
+  //   })
 
-    const config = {
-      headers: {
-        Authorization: auth,
-      },
-    };
+  //   const config = {
+  //     headers: {
+  //       Authorization: auth,
+  //     },
+  //   };
 
-    await axios.delete(comment.id, config);
+  //   await axios.delete(comment.id + "/", config);
 
-    this.props.handleClick();
-  };
+  //   this.props.handleClick();
+  // };
 
   render() {
     const { author, comment } = this.state;
     const { currentUser } = this.props;
+    console.log(author);
     return (
       <Grid
         container
@@ -112,7 +111,7 @@ class CommentCard extends React.Component {
                 <div className="col-9">
                   <Typography variant="body1" component="h4">
                     User Name:{" "}
-                    <b>{author ? author.displayName : "Loading ... "}</b>
+                    <b>{author?.displayName}</b>
                   </Typography>
                   <Typography variant="body1" component="h4">
                     Content: {comment ? comment.comment : "Loading ... "}
@@ -125,7 +124,7 @@ class CommentCard extends React.Component {
                   >
                     <FavoriteIcon color="secondary" size="large" />
                   </IconButton>
-                  {currentUser && currentUser.id === comment.author ? (
+                  {/* {currentUser && currentUser.id === comment.author ? (
                     <div>
                       <Button
                         variant="contained"
@@ -135,7 +134,7 @@ class CommentCard extends React.Component {
                         Delete
                       </Button>
                     </div>
-                  ) : null}
+                  ) : null} */}
                 </div>
               </div>
             </CardContent>
@@ -148,7 +147,7 @@ class CommentCard extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.user.domains
+  domains: state.domain.domains
 });
 
 export default connect(mapStateToProps)(CommentCard);

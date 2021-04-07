@@ -32,7 +32,7 @@ class ProfileCard extends React.Component {
   handleEditProfile = async () => {
     const { id } = this.state;
     const { domains, domain } = this.props;
-    const { email, github, password } = this.state;
+    const { email, github, password, displayName } = this.state;
     let auth = null;
 
     domains.map(d => {
@@ -48,11 +48,10 @@ class ProfileCard extends React.Component {
     };
 
     
-    let doc = await axios.patch(`https://nofun.herokuapp.com/author/${id}/`, { email, github, password }, config);
-
+    const doc = await axios.put(id + "/", { displayName, email, github, password }, config);
     if (doc.data) {
-      // await this.props.setCurrentUser(doc.data);
-      window.location = `/authors/${id}/`;
+      await this.props.setCurrentUser(doc.data);
+      window.location = `/authors/${id.split("/")[2]}/${id.split("/")[4]}/`;
     }
   }
 
@@ -117,7 +116,7 @@ class ProfileCard extends React.Component {
   
 
   render(){
-    const { editOpen, displayName, email, password, bio, github, host} = this.state;
+    const { editOpen, displayName, email, password, url, username, github, host} = this.state;
     const { currentUser } = this.props;
     return (
       <Paper style={{ overflow: "auto" }}>
@@ -134,13 +133,20 @@ class ProfileCard extends React.Component {
               editOpen ?
               <div>
                 <TextField label="Email" value={email} onChange={(e) => this.setState({email: e.target.value})} />
-                <TextField label="Password" type="password" value={password} onChange={(e) => this.setState({password: e.target.value})} />
+                <TextField label="DisplayName" value={displayName} onChange={(e) => this.setState({displayName: e.target.value})} />
+                <TextField label="Password" value={password} onChange={(e) => this.setState({password: e.target.value})} />
                 <TextField label="Github" value={github} onChange={(e) => this.setState({github: e.target.value})} />
-                <TextField label="Bio" value={bio} onChange={(e) => this.setState({bio: e.target.value})} />
-              </div>:
+              </div>
+              :
               <div>
                 <Typography variant="body1" component="h4">
                   Email: {email}
+                </Typography>
+                <Typography variant="body1" component="h4">
+                  DisplayName: {displayName}
+                </Typography>
+                <Typography variant="body1" component="h4">
+                  UserName: {username}
                 </Typography>
                 <Typography variant="body1" component="h4">
                   Github: {github}
@@ -148,19 +154,9 @@ class ProfileCard extends React.Component {
                 <Typography variant="body1" component="h4">
                   Host: {host}
                 </Typography>
-                <div className="row">
-                  <Typography variant="body1" component="h4">
-                    Bio:
-                  </Typography>
-                  <Typography
-                    variant="body3"
-                    component="p"
-                    style={{ marginLeft: "50px" }}
-                  >
-                    {bio}
-                    <br />
-                  </Typography>
-                </div>
+                <Typography variant="body1" component="h4">
+                  URL: {url}
+                </Typography>
               </div>
             }
           </CardContent>
@@ -177,7 +173,7 @@ class ProfileCard extends React.Component {
               Confirm
             </Button>
             :
-              currentUser && currentUser.id === this.props.user.id ?
+              currentUser?.id === this.props.user.id ?
               <Button
                 variant="contained"
                 color="secondary"
