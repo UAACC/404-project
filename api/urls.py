@@ -18,6 +18,8 @@ router = routers.DefaultRouter()    # Xutong
 urlpatterns = [
     path('', include(router.urls)),
 
+    path('nodes/',NodeViewSet.as_view())
+
     # POST
     # path('posts/<int:pk>/', PostDetail.as_view()),
     # path('posts/<int:pk>/edit/', UpdatePost.as_view()),
