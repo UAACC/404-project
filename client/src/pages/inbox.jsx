@@ -8,6 +8,8 @@ import {
   Button,
 } from "@material-ui/core";
 import axios from "axios";
+import PropTypes from "prop-types";
+
 import { connect } from "react-redux";
 import Cookies from "js-cookie";
 import Header from "../components/Header";
@@ -15,11 +17,45 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`vertical-tabpanel-${index}`}
+      aria-labelledby={`vertical-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `vertical-tab-${index}`,
+    "aria-controls": `vertical-tabpanel-${index}`,
+  };
+}
+
 class Inbox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       requests: [],
+      value: "",
     };
   }
 
@@ -45,7 +81,7 @@ class Inbox extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -66,7 +102,7 @@ class Inbox extends React.Component {
     const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+        Authorization: "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
@@ -82,66 +118,85 @@ class Inbox extends React.Component {
     }
   };
 
+  handleChange = (event, value) => {
+    this.setState({ value });
+  };
+
   render() {
     const { requests } = this.state;
     return (
       <div>
         <Header />
         <div
-          style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
+          style={{
+            marginLeft: "15%",
+            marginRight: "10%",
+            marginTop: "30px",
+            display: "flex",
+          }}
         >
           <Tabs
-            indicatorColor="primary"
-            orientation="vertical"
-            textColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
+            value={this.state.value}
+            onChange={this.handleChange}
             aria-label="tabs"
+            orientation="vertical"
+            variant="scrollable"
+            style={{
+              marginRight: "5%",
+            }}
           >
-            <Tab label="comments" />
-            <Tab label="likes❤️" />
-            <Tab label="Friend requests" />
+            <Tab label="comments" {...a11yProps(0)} />
+            <Tab label="likes" {...a11yProps(1)} />
+            <Tab label="Friend requests" {...a11yProps(2)} />
           </Tabs>
-          {requests.length !== 0 ? (
-            requests.map((doc) => (
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" component="h2" gutterBottom>
-                    User Name: {doc.data.username}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Email: {doc.data.email}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Bio: {doc.data.bio}
-                  </Typography>
-                  <Typography variant="body2" component="p">
-                    Github: {doc.data.github}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    color="primary"
-                    variant="contianed"
-                    onClick={() => this.handleAccept(doc.data.id)}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    size="small"
-                    color="secondary"
-                    variant="contianed"
-                    onClick={() => this.handleReject(doc.data.id)}
-                  >
-                    Reject
-                  </Button>
-                </CardActions>
-              </Card>
-            ))
-          ) : (
-            <h7>You have not had any friend requests yet!</h7>
-          )}
+          <TabPanel value={this.state.value} index={0}>
+            comments
+          </TabPanel>
+          <TabPanel value={this.state.value} index={1}>
+            likes
+          </TabPanel>
+          <TabPanel value={this.state.value} index={2}>
+            {requests.length !== 0 ? (
+              requests.map((doc) => (
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="h2" gutterBottom>
+                      User Name: {doc.data.username}
+                    </Typography>
+                    <Typography color="textSecondary">
+                      Email: {doc.data.email}
+                    </Typography>
+                    <Typography color="textSecondary">
+                      Bio: {doc.data.bio}
+                    </Typography>
+                    <Typography variant="body2" component="p">
+                      Github: {doc.data.github}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      variant="contianed"
+                      onClick={() => this.handleAccept(doc.data.id)}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      size="small"
+                      color="secondary"
+                      variant="contianed"
+                      onClick={() => this.handleReject(doc.data.id)}
+                    >
+                      Reject
+                    </Button>
+                  </CardActions>
+                </Card>
+              ))
+            ) : (
+              <h7>You have not had any friend requests yet!</h7>
+            )}
+          </TabPanel>
         </div>
       </div>
     );
