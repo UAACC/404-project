@@ -57,9 +57,10 @@ class Post(models.Model):
     categorie = models.CharField(max_length=256,
                   choices=CATE_CHOICES,
                   default="WEB")#team1 suggestion
-    count = models.IntegerField(default=0,blank=True)
-    size = models.IntegerField(default=0)
+    count = models.IntegerField(default=0,blank=True,null = True)
+    size = models.IntegerField(default=0,blank=True,null = True)
     unlisted = models.BooleanField(default = False)
+    image = models.FileField(null = True, blank = True)#image url: media/image name/
 
 
     #image = models.ImageField(null = True, blank = True, upload_to= "images/")

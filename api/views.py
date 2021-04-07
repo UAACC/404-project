@@ -273,7 +273,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
-        #img = request.data.get('image')
+        img = request.FILES.get('image')
 
         Post.objects.create(
             id= post_id,
@@ -291,7 +291,7 @@ class PostViewSet(viewsets.ModelViewSet):
             published = published,
             unlisted = unlisted,
             author = Author.objects.get(id=author_id),
-            #image = img
+            image = img
         )
         
 
@@ -313,11 +313,11 @@ class PostViewSet(viewsets.ModelViewSet):
         #post = Post.objects.get(id=post_id)
         post = get_object_or_404(Post, id=post_id)
         
-        print('correct',post.title)
+        #print('correct',post.title)
         
 
         title = request.data.get('title')
-        print(title)
+        #print(title)
         source = request.data.get('source')
         origin = request.data.get('origin')
         description = request.data.get('description')
@@ -329,6 +329,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = post.unlisted
+        img = request.FILES.get('image')
         
 
         post_data = {'title': title,'source': source,
@@ -345,7 +346,11 @@ class PostViewSet(viewsets.ModelViewSet):
             Post.objects.filter(pk=post_id).update(
                 title = title
                 )
-            
+        
+        if img:
+            Post.objects.filter(pk=post_id).update(
+                image = img
+                )
         
         post.source = post_id#fix this 
 
@@ -406,6 +411,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
+        img = request.FILES.get('image')
 
         Post.objects.filter(pk=post_id).update(
             title = title,
@@ -421,7 +427,8 @@ class PostViewSet(viewsets.ModelViewSet):
             visibility = visibility,
             published = published,
             unlisted = unlisted,
-            author = Author.objects.get(id=author_id)
+            author = Author.objects.get(id=author_id),
+            image = img
         )
 
        #return response
