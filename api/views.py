@@ -110,21 +110,13 @@ class AuthorViewSet(viewsets.ModelViewSet):
         try:
             
             author = Author.objects.get(username = username)
-            author_id = author.id
-            host = author.host
-            url = author.url
-            display_name = author.displayName
-            github = author.github
-            email =author.email
-            username = author.username
-            password = author.password
-            is_approved = author.is_approved
-            author_data = {'id': author_id, 'host': host, 'url': url,
-                       'displayName': display_name, 'github': github,'email':email,'username':username,'password':password,'is_approved':is_approved}
-
+            
             
             if password == author.password:
-                return Response(author_data)
+                if author.is_approved:
+                    return Response(True)
+                else:
+                    return Response(False)
 
 
         except:
@@ -141,12 +133,19 @@ class AuthorViewSet(viewsets.ModelViewSet):
         author = Author.objects.get(id=author_id)
         #print(author.id)
         name = request.data.get('displayName', None)
+        email = request.data.get('email',None)
+        password = request.data.get('password',None)
         github = request.data.get('github', None)
         author.displayName = name   
         author.github = github
+        author.email = email
+        author.password =password
         author.save()
+        #return frontend need data
+        serializer = AuthorSerializer(author)
+        return Response(serializer.data)
 
-        return Response('Author updated successfully', 204)
+        
 
 
 
@@ -273,6 +272,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
+        img = request.data.get('image')
 
         Post.objects.create(
             id= post_id,
@@ -289,7 +289,8 @@ class PostViewSet(viewsets.ModelViewSet):
             visibility = visibility,
             published = published,
             unlisted = unlisted,
-            author = Author.objects.get(id=author_id)
+            author = Author.objects.get(id=author_id),
+            image = img
         )
         
 
@@ -308,13 +309,15 @@ class PostViewSet(viewsets.ModelViewSet):
         comments_id = f'{host}/author/{author_uid}/posts/{post_id}/comments'
         post_id = f'{host}/author/{author_uid}/posts/{post_id}'
         author_id= f'{host}/author/{author_uid}'
-        #post = Post.objects.get(id=post_id,author = author_id)
+        #post = Post.objects.get(id=post_id)
         post = get_object_or_404(Post, id=post_id)
         
         print('correct',post.title)
+        
 
-        title = request.data.get('title'),
-        source = request.data.get('source',None)
+        title = request.data.get('title')
+        print(title)
+        source = request.data.get('source')
         origin = request.data.get('origin')
         description = request.data.get('description')
         contentType = request.data.get('contentType')
@@ -338,22 +341,42 @@ class PostViewSet(viewsets.ModelViewSet):
         
 
         if title:
-            post.title = title
+            Post.objects.filter(pk=post_id).update(
+                title = title
+                )
+            
         
-        post.source = post_id,#fix this 
-        post.origin = post_id,#fix this
-        post.description = description,
-        post.contentType = contentType,
-        post.content = content,
+        post.source = post_id#fix this 
+
+        post.origin = post_id#fix this
+
+        if description:
+            Post.objects.filter(pk=post_id).update(
+                description = description
+                )
+
+            post.description = description
+
+        if contentType:
+            post.contentType = contentType
+        
+        if content:
+            post.content = content
+
         if count:
             post.count = count
         if size:
             post.size = size
-        post.categorie = categories,
-        post.comment = comments,
-        post.visibility = visibility,
-        post.author = Author.objects.get(id=author_id)
-        post.save()
+        
+        if categories:
+
+            post.categorie = categories
+
+        if visibility:
+            post.visibility = visibility
+
+        #post.author = Author.objects.get(id=author_id)
+        
         return Response(post_data)
          
 
@@ -383,7 +406,7 @@ class PostViewSet(viewsets.ModelViewSet):
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted',False)
 
-        Post.objects.update(
+        Post.objects.filter(pk=post_id).update(
             title = title,
             source = post_id,#fix this 
             origin = post_id,#fix this
@@ -461,7 +484,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         if queryset.exists():
             return Response(list(queryset.values()))
         else:
-            return Response("No comments. ")
+            return Response([])
             # return Response(str(real_post_id) + "    " + str(real_author_id))
 
     def retrive_a_comment(self, request, *args, **kwargs):
