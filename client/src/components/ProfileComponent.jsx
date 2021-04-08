@@ -80,7 +80,7 @@ class ProfileCard extends React.Component {
     //console.log("---",auth.split(" ")[1]);
     console.log(currentUser.displayName);
     console.log(currentUser.id);
-    console.log(id + "/");
+    console.log("-------",id);
 
     const doc = await axios.post("https://" + domain + "/friendrequest/", {
       from_user: currentUser.id,

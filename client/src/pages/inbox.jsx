@@ -24,63 +24,105 @@ class Inbox extends React.Component {
   }
 
   componentDidMount = async () => {
-    const doc = await axios.get("https://nofun.herokuapp.com/friendrequest/");
-    const { currentUser } = this.props;
-    const api_requests = [];
-    for (let request of doc.data) {
-      if (request.status === "R" && request.to_user === currentUser.id) {
-        api_requests.push(
-          axios.get(
-            "https://nofun.herokuapp.com/author/" + request.from_user + "/"
-          )
-        );
+    let auth = null;
+
+    const {currentUser} = this.props;
+    const {domains} = this.props;
+    console.log(currentUser);
+    console.log(this.props.currentUser.id);
+
+    // get the nofun token from redux
+    // get the host matches the currentUser
+    const host_for_currentUser = currentUser.host.split("/")[2];
+    domains.map(d=>{
+      if(d.domain === host_for_currentUser){
+        auth = d.auth;
       }
-    }
-    const requests = await Promise.all(api_requests);
-    this.setState({ requests });
-  };
+    });
 
-  handleAccept = async (from_user) => {
-    const { id } = this.props.currentUser;
-    const csrftoken = Cookies.get("csrftoken");
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        // Authorization: auth.split(" ")[1],
+        Authorization: auth,
       },
     };
-    const doc = await axios.patch(
-      "https://nofun.herokuapp.com/friendrequest/accept/",
-      { from_user, to_user: id },
-      config
-    );
-    if (doc.data) {
-      await window.alert(doc.data);
-      this.componentDidMount();
+
+    const doc = await axios.get(currentUser.id + "/inbox/request-list",config);
+    console.log(doc);
+
+    //put all request item in state
+    console.log("---check--",doc.data.items);
+    const requests_list = doc.data.items;
+    console.log(requests_list);
+    this.setState({requests: requests_list});
+
+
+    this.state.requests[0].name = "hoee";
+    //literate through items and append displayname to each item
+    for (let req of requests_list){
+      var docc = await axios.get(req.from_user_id,config);
+      var request_username = docc.data.displayName;
+      req.name = request_username;
     }
+    this.setState({request:requests_list});
+    console.log(this.state.requests);
   };
 
-  handleReject = async (from_user) => {
-    const { id } = this.props.currentUser;
-    const csrftoken = Cookies.get("csrftoken");
+  //"from_user_domain" distinguish the domain name no matter what server this "from user" is from
+  handleAccept = async (from_user_id,from_user_domain) => {
+    let auth = null;
+    const {currentUser} = this.props;
+    const {domains} = this.props;
+
+    console.log(currentUser);
+    console.log(this.props.currentUser.id);
+    console.log(from_user_id);
+    // get the nofun token from redux
+    // get the host matches the currentUser
+    const host_for_currentUser = currentUser.host.split("/")[2];
+    domains.map(d=>{
+      if(d.domain === host_for_currentUser){
+        auth = d.auth;
+      }
+    });
+
     const config = {
       headers: {
-        'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
+        Authorization: auth.split(" ")[1],
       },
     };
-    const doc = await axios.patch(
-      "https://nofun.herokuapp.com/friendrequest/decline/",
-      { from_user, to_user: id },
-      config
-    );
-    if (doc.data) {
-      await window.alert(doc.data);
-      this.componentDidMount();
-    }
+    console.log(auth.split(" ")[1]);
+
+    console.log(from_user_id);
+    console.log(currentUser.id);
+    const doc = await axios.patch("https://" + from_user_domain + "/friendrequest/accept/", {
+      from_user: from_user_id,
+      to_user: currentUser.id
+    }, config);
+
+    console.log(doc);
   };
+
+  // handleReject = async (from_user) => {
+  //   const { id } = this.props.currentUser;
+  //   const csrftoken = Cookies.get("csrftoken");
+  //   const config = {
+  //     headers: {
+  //       'Authorization': "Basic UmVtb3RlMTpyZW1vdGUxMjM0",
+  //       "X-CSRFToken": csrftoken,
+  //       "Content-Type": "application/json",
+  //     },
+  //   };
+  //   const doc = await axios.patch(
+  //     "https://nofun.herokuapp.com/friendrequest/decline/",
+  //     { from_user, to_user: id },
+  //     config
+  //   );
+  //   if (doc.data) {
+  //     await window.alert(doc.data);
+  //     this.componentDidMount();
+  //   }
+  // };
 
   render() {
     const { requests } = this.state;
@@ -105,26 +147,16 @@ class Inbox extends React.Component {
           {requests.length !== 0 ? (
             requests.map((doc) => (
               <Card>
-                <CardContent>
-                  <Typography variant="h5" component="h2" gutterBottom>
-                    User Name: {doc.data.username}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Email: {doc.data.email}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Bio: {doc.data.bio}
-                  </Typography>
-                  <Typography variant="body2" component="p">
-                    Github: {doc.data.github}
-                  </Typography>
-                </CardContent>
                 <CardActions>
+                  <h5>
+                    {doc.name } has sent you friend request
+                  </h5>
                   <Button
                     size="small"
                     color="primary"
                     variant="contianed"
-                    onClick={() => this.handleAccept(doc.data.id)}
+                    style={{ marginLeft: "10%"}}
+                    onClick={() => this.handleAccept(doc.from_user_id,doc.from_user_id.split("/")[2])}
                   >
                     Accept
                   </Button>
@@ -132,7 +164,7 @@ class Inbox extends React.Component {
                     size="small"
                     color="secondary"
                     variant="contianed"
-                    onClick={() => this.handleReject(doc.data.id)}
+                    onClick={() => this.handleReject(doc.from_user_id)}
                   >
                     Reject
                   </Button>
@@ -150,6 +182,7 @@ class Inbox extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 
 export default connect(mapStateToProps)(Inbox);
