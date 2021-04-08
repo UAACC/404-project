@@ -93,7 +93,6 @@ class Inbox extends React.Component {
     this.setState({requests: requests_list});
 
 
-    this.state.requests[0].name = "hoee";
     //literate through items and append displayname to each item
     for (let req of requests_list){
       var docc = await axios.get(req.from_user_id,config);
@@ -124,7 +123,8 @@ class Inbox extends React.Component {
 
     const config = {
       headers: {
-        Authorization: auth.split(" ")[1],
+        //Authorization: auth.split(" ")[1],
+        Authorization: auth,
       },
     };
     console.log(auth.split(" ")[1]);
@@ -133,7 +133,42 @@ class Inbox extends React.Component {
     console.log(currentUser.id);
     const doc = await axios.patch("https://" + from_user_domain + "/friendrequest/accept/", {
       from_user: from_user_id,
-      to_user: currentUser.id
+      to_user: currentUser.id,
+    }, config);
+
+    console.log(doc);
+  };
+
+  handleDecline = async (from_user_id,from_user_domain) => {
+    let auth = null;
+    const {currentUser} = this.props;
+    const {domains} = this.props;
+
+    console.log(currentUser);
+    console.log(this.props.currentUser.id);
+    console.log(from_user_id);
+    // get the nofun token from redux
+    // get the host matches the currentUser
+    const host_for_currentUser = currentUser.host.split("/")[2];
+    domains.map(d=>{
+      if(d.domain === host_for_currentUser){
+        auth = d.auth;
+      }
+    });
+
+    const config = {
+      headers: {
+        //Authorization: auth.split(" ")[1],
+        Authorization: auth,
+      },
+    };
+    console.log(auth.split(" ")[1]);
+
+    console.log(from_user_id);
+    console.log(currentUser.id);
+    const doc = await axios.patch("https://" + from_user_domain + "/friendrequest/decline/", {
+      from_user: from_user_id,
+      to_user: currentUser.id,
     }, config);
 
     console.log(doc);
@@ -187,7 +222,7 @@ render() {
                     size="small"
                     color="secondary"
                     variant="contianed"
-                    onClick={() => this.handleReject(doc.from_user_id)}
+                    onClick={() => this.handleDecline(doc.from_user_id,doc.from_user_id.split("/")[2])}
                   >
                     Reject
                   </Button>
