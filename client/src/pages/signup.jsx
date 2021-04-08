@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import "./style/signin.css";
+import "./style/signup.css";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { TextField } from "@material-ui/core";
@@ -18,7 +18,7 @@ class SignUpPage extends React.Component {
       password: "",
       email: "",
       github: "",
-      loginError: ""
+      loginError: "",
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -35,7 +35,7 @@ class SignUpPage extends React.Component {
     const { domains } = this.props;
 
     let auth = null;
-    domains.map(d => {
+    domains.map((d) => {
       if (d.domain.includes("nofun")) {
         auth = d.auth;
       }
@@ -45,9 +45,9 @@ class SignUpPage extends React.Component {
 
     const config = {
       headers: {
-        'Authorization': auth,
-      }
-    }
+        Authorization: auth,
+      },
+    };
 
     const doc = await axios.post(
       "https://nofun.herokuapp.com/author/",
@@ -55,7 +55,9 @@ class SignUpPage extends React.Component {
       config
     );
     await this.props.setCurrentUser(doc.data);
-    window.alert("Your request has been sent to admin, you can login after the approval by admin");
+    window.alert(
+      "Your request has been sent to admin, you can login after the approval by admin"
+    );
   };
 
   render() {
@@ -65,13 +67,13 @@ class SignUpPage extends React.Component {
         <Grid item xs={false} md={7}>
           <div className="image"></div>
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid item md={5}>
           <div className="login">
             <section className="content">
               <h2>Create account</h2>
               <form className="form" onSubmit={this.handleSubmit}>
                 <Grid container spacing={3}>
-                <Grid item xs={12}>
+                  <Grid item xs={12}>
                     <TextField
                       variant="outlined"
                       required
@@ -168,7 +170,7 @@ class SignUpPage extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 
 const mapDispatchToProps = (dispatch) => ({

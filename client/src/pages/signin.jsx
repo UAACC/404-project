@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import "./style/signin.css";
+import "./style/signup.css";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { TextField } from "@material-ui/core";
@@ -8,7 +8,6 @@ import Link from "@material-ui/core/Link";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
 import CssBaseline from "@material-ui/core/CssBaseline";
-
 
 class SignInPage extends React.Component {
   constructor(props) {
@@ -29,9 +28,9 @@ class SignInPage extends React.Component {
   }
 
   handleSaveUser = async (data) => {
-    await this.props.setCurrentUser(data) 
-    window.location = "/"
-  }
+    await this.props.setCurrentUser(data);
+    window.location = "/";
+  };
 
   handleSubmit = async (event) => {
     event.preventDefault();
@@ -39,7 +38,7 @@ class SignInPage extends React.Component {
     const { domains } = this.props;
 
     let auth = null;
-    domains.map(d => {
+    domains.map((d) => {
       if (d.domain.includes("nofun")) {
         auth = d.auth;
       }
@@ -47,9 +46,9 @@ class SignInPage extends React.Component {
 
     const config = {
       headers: {
-        'Authorization': auth,
-      }
-    }
+        Authorization: auth,
+      },
+    };
 
     try {
       const doc = await axios.post(
@@ -58,13 +57,12 @@ class SignInPage extends React.Component {
         config
       );
       console.log(doc.data);
-      doc.data === false ?
-          window.alert("You have to wait for admin to approve your account!")
-          : this.handleSaveUser(doc.data)
+      doc.data === false
+        ? window.alert("You have to wait for admin to approve your account!")
+        : this.handleSaveUser(doc.data);
     } catch {
-      window.alert("Wrong crendentials!")
+      window.alert("Wrong crendentials!");
     }
-
   };
 
   render() {
@@ -74,9 +72,9 @@ class SignInPage extends React.Component {
         <Grid item xs={false} md={7}>
           <div className="image"></div>
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid item md={5}>
           <div className="login">
-            <section className="content">
+            <section className="logincontent">
               <h2>Log in</h2>
               <form className="form" onSubmit={this.handleSubmit}>
                 <Grid container spacing={3}>
@@ -144,7 +142,7 @@ class SignInPage extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 
 const mapDispatchToProps = (dispatch) => ({

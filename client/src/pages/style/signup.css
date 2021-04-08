@@ -6,7 +6,15 @@
 }
 .content {
   background-color: #fafafa;
-  margin: 200px auto;
+  margin-top: 100px;
+  margin-bottom: 60px;
+  padding: 25px 40px;
+}
+
+.logincontent {
+  background-color: #fafafa;
+  margin-top: 200px;
+  margin-bottom: 242px;
   padding: 25px 40px;
 }
 
