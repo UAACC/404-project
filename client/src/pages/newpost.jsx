@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Header from "../components/Header";
 
-
 class Newpost extends React.Component {
   constructor(props) {
     super(props);
@@ -37,7 +36,13 @@ class Newpost extends React.Component {
 
   checkValidation = () => {
     const { title, content, description, visibility, unlisted } = this.state;
-    if (title === null || content === null || description === null || visibility === null || unlisted === null) {
+    if (
+      title === null ||
+      content === null ||
+      description === null ||
+      visibility === null ||
+      unlisted === null
+    ) {
       return false;
     }
     return true;
@@ -67,21 +72,36 @@ class Newpost extends React.Component {
     const { title, description, content, contentType, visibility, unlisted } = this.state;
 
     let auth = null;
-    domains.map(d => {
+    domains.map((d) => {
       if (d.domain === currentUser?.id?.split("/")[2]) {
         auth = d.auth;
       }
-    })
+    });
 
     const config = {
       headers: {
-        "Authorization": auth
+        Authorization: auth,
       },
     };
 
     const doc = await axios.post(
         currentUser?.id + "/posts/",
-        { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content, visibility, unlisted, contentType, published: new Date(), author: currentUser?.id, unlisted: false },
+        {
+          title,
+          source: "",
+          origin: "",
+          categorie: "web",
+          count: 1,
+          size: 1,
+          description,
+          content,
+          visibility,
+          unlisted,
+          contentType,
+          published: new Date(),
+          author: currentUser?.id,
+          unlisted: false,
+        },
         config
       );
     
@@ -198,56 +218,55 @@ class Newpost extends React.Component {
                     />
                   </div> */}
                   {contentType === "image" ?
-                    <div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
+                    (<div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
                       <div id="format">
-                    <FormControl
-                      component="fieldset"
-                      style={{
-                        marginLeft: "3%",
-                        marginRight: "3%",
-                        marginTop: "3%",
-                        width: "94%",
-                      }}
-                      onChange={(e) => {
-                        this.setState({ imageLocal: e.target.value === "true" });
-                      }}
-                    >
-                      <FormLabel component="legend">
-                        How do you want to upload the image?
-                      </FormLabel>
-                      <RadioGroup row aria-label="visible" name="visible">
-                        <FormControlLabel
-                          value={"true"}
-                          checked={imageLocal}
-                          control={<Radio />}
-                          label="Local Image"
-                        />
-                        <FormControlLabel
-                          value={"false"}
-                          checked={!imageLocal}
-                          control={<Radio />}
-                          label="URL"
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </div>
-                  {
-                    imageLocal ?
-                      <div>
-                      <FormLabel style={{marginRight: "20px"}}>
-                        Upload an Image from local machine
-                      </FormLabel>
-                      <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
+                        <FormControl
+                          component="fieldset"
+                          style={{
+                            marginLeft: "3%",
+                            marginRight: "3%",
+                            marginTop: "3%",
+                            width: "94%",
+                          }}
+                          onChange={(e) => {
+                            this.setState({ imageLocal: e.target.value === "true" });
+                          }}
+                        >
+                          <FormLabel component="legend">
+                            How do you want to upload the image?
+                          </FormLabel>
+                          <RadioGroup row aria-label="visible" name="visible">
+                            <FormControlLabel
+                              value={"true"}
+                              checked={imageLocal}
+                              control={<Radio />}
+                              label="Local Image"
+                            />
+                            <FormControlLabel
+                              value={"false"}
+                              checked={!imageLocal}
+                              control={<Radio />}
+                              label="URL"
+                            />
+                          </RadioGroup>
+                        </FormControl>
                       </div>
-                      :
-                      <div>
-                        <FormLabel style={{marginTop: "30px", marginRight: "20px"}}>Input image URL</FormLabel>
-                        <TextField style={{width: "80%"}} label="Image" onChange={(e) => this.setState({content: e.target.value})}/>
-                      </div>
-                  }
+                      {imageLocal ?
+                        <div>
+                          <FormLabel style={{marginRight: "20px"}}>
+                            Upload an Image from local machine
+                          </FormLabel>
+                          <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
+                        </div>
+                        :
+                        <div>
+                          <FormLabel style={{marginTop: "30px", marginRight: "20px"}}>Input image URL</FormLabel>
+                          <TextField style={{width: "80%"}} label="Image" onChange={(e) => this.setState({content: e.target.value})}/>
+                        </div>
+                      }
                       {content && <img src={content} style={{width: "40%"}} />}
                     </div>
-                    :
+                  ) : (
                     <div id="content">
                       <TextField
                         onChange={(e) => {
@@ -267,9 +286,9 @@ class Newpost extends React.Component {
                         rows={6}
                         variant="outlined"
                       />
-                    </div> 
-                  }
-                  
+                    </div>
+                  )}
+
                   <div id="visibility">
                     <FormControl
                       component="fieldset"
@@ -344,6 +363,7 @@ class Newpost extends React.Component {
                       style={{
                         marginLeft: "3%",
                         marginTop: "3%",
+                        marginBottom: "3%",
                       }}
                     >
                       Submit
@@ -361,7 +381,7 @@ class Newpost extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 
 export default connect(mapStateToProps)(Newpost);
