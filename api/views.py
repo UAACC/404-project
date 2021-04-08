@@ -613,19 +613,19 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             return Response("Unable to send friend request because you have already become friends!")
         elif FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").exists():
             # If your reuqest was declined and send again
-            FriendRequest.objects.update(
+            FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").update(
                 from_user=from_user_id, to_user=to_user_id, status='R')
             return Response("Successfully create the friend request!")
 
         elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").exists():
             # if he already send the request to you and status is R, then you become friend automatically
-            FriendRequest.objects.update(
+            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").update(
                 from_user=to_user_id, to_user=from_user_id, status='A')
             return Response("He/She had sent the request to you and you become friend automatically!")
         elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="A").exists():
             return Response("Unable to send friend request because you have already become friends!")
         elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").exists():
-            FriendRequest.objects.update(
+            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").update(
                 from_user=to_user_id, to_user=from_user_id, status='R')
             return Response("Successfully create the friend request!")
 
@@ -647,7 +647,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             return Response("Unable to accept, because you had already declined it!")
         elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
             # If request exists and status is Requested, then able to accept:
-            FriendRequest.objects.update(
+            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
                 from_user=request_from_user_id, to_user=current_user_id, status='A')
             return Response("Successfully accept the friend request!")
         else:
@@ -665,7 +665,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             return Response("Unable to decline because you had already declined it!")
         elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
             # Successfully decline this friend request
-            FriendRequest.objects.update(
+            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
                 from_user=request_from_user_id, to_user=current_user_id, status='D')
             return Response("Successfully decline this friend request!")
         else:
