@@ -273,8 +273,9 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
-        print(unlisted)
+        
         img = request.FILES.get('image')
+        print(img)
 
         Post.objects.create(
             id= post_id,
