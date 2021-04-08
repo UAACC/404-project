@@ -274,8 +274,10 @@ class PostViewSet(viewsets.ModelViewSet):
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
         
+        file_1 = request.data.get('file')
+        print('file',file_1)
         img = request.FILES.get('image')
-        print(img)
+        print('img',img)
 
         Post.objects.create(
             id= post_id,
