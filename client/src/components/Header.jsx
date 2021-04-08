@@ -61,9 +61,9 @@ class Header extends React.Component {
               className="nav-link active"
               aria-current="page"
               onMouseOver="cursor"
-              href="/signup"
+              href="/signin"
             >
-              sign up
+              sign in
             </a>
           </li>
         );

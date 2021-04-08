@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Header from "../components/Header";
 
+
 class Newpost extends React.Component {
   constructor(props) {
     super(props);
@@ -24,21 +25,38 @@ class Newpost extends React.Component {
       origin: "",
       description: "",
       content: "",
-      contentType: "",
+      contentType: "text/plain",
       category: [],
       published: "",
       format: "",
       image: "",
-      visibility: "",
+      visibility: null,
+      unlisted: null,
+      image: null
     };
   }
 
   checkValidation = () => {
-    const { title, description, visibility } = this.state;
-    if (!title || !description || !visibility) {
+    const { title, content, description, visibility, unlisted } = this.state;
+    if (title === null || content === null || description === null || visibility === null || unlisted === null) {
       return false;
     }
     return true;
+  };
+
+  encodeFileBase64 = (file) => {
+    var reader = new FileReader();
+    if (file) {
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        var Base64 = reader.result;
+        // console.log(Base64);
+        this.setState({ image: Base64 });
+      };
+      reader.onerror = (error) => {
+        console.log("error: ", error);
+      };
+    }
   };
 
   handleSubmit = async (event) => {
@@ -46,13 +64,12 @@ class Newpost extends React.Component {
     if (!this.checkValidation()) {
       return window.alert("You have not filed the form completely.");
     }
-    const { domains } = this.props;
-    const { id } = this.props.currentUser;
-    const { title, description, content, contentType, visibility } = this.state;
+    const { domains, currentUser } = this.props;
+    const { title, description, content, contentType, visibility, unlisted, image } = this.state;
 
     let auth = null;
     domains.map(d => {
-      if (d.domain === id.split("/")[2]) {
+      if (d.domain === currentUser?.id?.split("/")[2]) {
         auth = d.auth;
       }
     })
@@ -63,18 +80,31 @@ class Newpost extends React.Component {
       },
     };
 
-    const doc = await axios.post(
-     id + "/posts/",
-      { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content, visibility, contentType, published: new Date(), author: id, unlisted: false },
-      config
-    );
-    if (doc.data?.id) {
-      window.location = `/posts/nofun.herokuapp.com/${id.split("/")[4]}/${doc.data.id.split("/")[6]}/`;
+    // console.log("image;", image);
+    let doc;
+
+    if (contentType === "image") {
+      doc = await axios.post(
+        currentUser?.id + "/posts/",
+        { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content: image, visibility, unlisted, contentType, published: new Date(), author: currentUser?.id, unlisted: false },
+        config
+      );
+    } else {
+      doc = await axios.post(
+        currentUser?.id + "/posts/",
+        { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content, visibility, unlisted, contentType, published: new Date(), author: currentUser?.id, unlisted: false },
+        config
+      );
     }
+
+    
+    // if (doc.data?.id) {
+    //   window.location = `/posts/nofun.herokuapp.com/${currentUser?.id.split("/")[4]}/${doc.data.id.split("/")[6]}/`;
+    // }
   };
 
   render() {
-    const { title, description, content, contentType } = this.state;
+    const { title, description, content, contentType, image } = this.state;
     return (
       <div>
         <Header />
@@ -90,7 +120,7 @@ class Newpost extends React.Component {
               alignItems="flex-start"
             >
               <Grid item xs={10}>
-                <Paper style={{ height: "710px" }}>
+                <Paper style={{ height: "90%" }}>
                   <div id="title">
                     <TextField
                       onChange={(e) => {
@@ -125,13 +155,18 @@ class Newpost extends React.Component {
                       }}
                     >
                       <FormLabel component="legend">
-                        How do you want to format the content?
+                        What content do you want to post?
                       </FormLabel>
                       <RadioGroup row aria-label="visible" name="visible">
                         <FormControlLabel
                           value="text/plain"
                           control={<Radio />}
                           label="Plain Text"
+                        />
+                        <FormControlLabel
+                          value="image"
+                          control={<Radio />}
+                          label="Image"
                         />
                         {/* <FormControlLabel
                           value="markdown"
@@ -140,26 +175,6 @@ class Newpost extends React.Component {
                         /> */}
                       </RadioGroup>
                     </FormControl>
-                  </div>
-                  <div id="content">
-                    <TextField
-                      onChange={(e) => {
-                        this.setState({ content: e.target.value });
-                      }}
-                      id="description"
-                      name="description"
-                      style={{
-                        marginLeft: "3%",
-                        marginRight: "3%",
-                        marginTop: "3%",
-                        width: "94%",
-                      }}
-                      label="Content"
-                      value={content}
-                      multiline
-                      rows={6}
-                      variant="outlined"
-                    />
                   </div>
                   <div id="desc">
                     <TextField
@@ -197,12 +212,37 @@ class Newpost extends React.Component {
                       variant="filled"
                     />
                   </div> */}
-                  {/* <div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
-                    <FormLabel component="legend">
-                      Upload an image
-                    </FormLabel>
-                    <input type="file" onChange={(e) => this.setState({file: e.target.files[0]})} />
-                  </div> */}
+                  {contentType === "image" ?
+                    <div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
+                      <FormLabel component="legend">
+                        Upload an image
+                      </FormLabel>
+                      <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
+                      {image && <img src={image} style={{width: "40%"}} />}
+                    </div>
+                    :
+                    <div id="content">
+                      <TextField
+                        onChange={(e) => {
+                          this.setState({ content: e.target.value });
+                        }}
+                        id="description"
+                        name="description"
+                        style={{
+                          marginLeft: "3%",
+                          marginRight: "3%",
+                          marginTop: "3%",
+                          width: "94%",
+                        }}
+                        label="Content"
+                        value={content}
+                        multiline
+                        rows={6}
+                        variant="outlined"
+                      />
+                    </div> 
+                  }
+                  
                   <div id="visibility">
                     <FormControl
                       component="fieldset"
@@ -234,6 +274,40 @@ class Newpost extends React.Component {
                           value="PRIVATE"
                           control={<Radio />}
                           label="Private"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                  <div id="unlisted">
+                    <FormControl
+                      component="fieldset"
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      onChange={(e) => {
+                        if (e.target.value === "false") {
+                          this.setState({ unlisted: false });
+                        } else {
+                          this.setState({ unlisted: true });
+                        }
+                      }}
+                    >
+                      <FormLabel component="legend">
+                        Do you want to list this post?
+                      </FormLabel>
+                      <RadioGroup row aria-label="unlisted" name="unlisted">
+                        <FormControlLabel
+                          value="false"
+                          control={<Radio />}
+                          label="Yes"
+                        />
+                        <FormControlLabel
+                          value="true"
+                          control={<Radio />}
+                          label="No"
                         />
                       </RadioGroup>
                     </FormControl>
