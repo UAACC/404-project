@@ -50,6 +50,7 @@ class PostDetail extends React.Component {
         "Authorization": auth,
       },
     };
+
     const post_id = "https://" + domain + "/author/" + authorId + "/posts/" + postId + "/";
 
     const doc = await axios.get(post_id, config);
@@ -61,8 +62,6 @@ class PostDetail extends React.Component {
       post = doc.data[0];
     }
 
-    console.log(post);
-
     if (
       post.visibility === "PUBLIC" ||
       (post.visibility === "PUBLIC" && (post.author_id === currentUser?.id || post.author === currentUser?.id ))
@@ -71,7 +70,7 @@ class PostDetail extends React.Component {
     }
 
     const doc2 = await axios.get(post_id + "comments/", config);
-    console.log(doc2.data);
+
     this.setState({ comments: doc2.data });
 
     const authorDoc = await axios.get(
@@ -182,6 +181,7 @@ class PostDetail extends React.Component {
   render() {
     const { post, title, description, content, editOpen, commentOpen, author } = this.state;
     const { currentUser } = this.props;
+
     return (
       <div>
         <Header />
