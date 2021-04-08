@@ -272,7 +272,8 @@ class PostViewSet(viewsets.ModelViewSet):
         size = request.data.get('size')
         comments = comments_id
         visibility = request.data.get('visibility')
-        unlisted = request.data.get('unlisted',False)
+        unlisted = request.data.get('unlisted')
+        print(unlisted)
         img = request.FILES.get('image')
 
         Post.objects.create(
@@ -410,7 +411,7 @@ class PostViewSet(viewsets.ModelViewSet):
         size = request.data.get('size')
         comments = comments_id
         visibility = request.data.get('visibility')
-        unlisted = request.data.get('unlisted',False)
+        unlisted = request.data.get('unlisted')
         img = request.FILES.get('image')
 
         Post.objects.filter(pk=post_id).update(
