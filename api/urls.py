@@ -20,7 +20,7 @@ urlpatterns = [
 
     
 
-    # POST
+    # POST/Author
     # path('posts/<int:pk>/', PostDetail.as_view()),
     # path('posts/<int:pk>/edit/', UpdatePost.as_view()),
     # path('posts/create/', PostCreate.as_view()),
@@ -38,37 +38,34 @@ urlpatterns = [
          PostViewSet.as_view({'get': 'post_list_id','put':'edit','delete':'delete','post':'create_2'})),
 
 
-
-     # # Comments URL
-     # path("author/<str:author_id>/posts/<str:post_id>/comments/", views.commentList),
-     # path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/", views.comment),
-
-     # new Comments URL:
+     # Comments:
      path('author/<str:author_uid>/posts/<str:post_id>/comments/',
          CommentViewSet.as_view({'get': 'get_comment_list', 'post': 'post_new_comment'})),
      path('author/<str:author_uid>/posts/<str:post_id>/comments/<str:comment_id>/',
          CommentViewSet.as_view({'get': 'retrive_a_comment'})),
-     
-     # Likes URL
+
+
+     # Like/Likes/Liked
      path("author/<str:author_id>/posts/<str:post_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),
      path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),
-
-     # Liked URL
      path("author/<str:author_id>/liked/", views.likedList),
 
-     # Friend Request
-     path("friendrequest/", FriendRequestViewSet.as_view({"post": "create"})),
-     path("friendrequest/accept/", FriendRequestViewSet.as_view({"patch": "accept_incoming_request"})),
-     path("friendrequest/decline/", FriendRequestViewSet.as_view({"patch": "decline_incoming_request"})),
-     path("friendrequest/delete/", FriendRequestViewSet.as_view({"patch": "delete"})),
-     path("author/<str:author_id>/followers/", views.getFollowers),
 
-     # Follow URL
-     path("author/<str:author_id>/followers/<str:foreign_author_id>/", views.operateFollowers),
-     path("author/<str:author_id>/friend-list/", views.friendList),
+     # Friend/Follower
+     path("friendrequest/", FriendRequestViewSet.as_view({"post": "create"})),   
+     path("friendrequest/accept/", FriendRequestViewSet.as_view({"patch": "accept_incoming_request"})),  
+     path("friendrequest/decline/", FriendRequestViewSet.as_view({"patch": "decline_incoming_request"})),    
+     path("friendrequest/delete/", FriendRequestViewSet.as_view({"patch": "delete"})),  
+     path("author/<str:author_id>/followers/", FriendRequestViewSet.as_view({"get": "get_follower_list"})),
+     path("author/<str:author_id>/followers/<str:foreign_author_id>/", FriendRequestViewSet.as_view({"get": "is_follower", "put": "put_follower", "delete": "remove_follower"})), 
+
 
      # Inbox URL
-     path("author/<str:author_id>/inbox/request-list", InboxViewSet.as_view({"get": "current_user_requests"}))
+     path("author/<str:author_id>/inbox/", InboxViewSet.as_view({"get": "all_info_list"})),
+     path("author/<str:author_id>/inbox/request-list/", InboxViewSet.as_view({"get": "current_user_requests"})), # for test
+    #  path("author/<str:author_id>/inbox/post-list/", InboxViewSet.as_view({"get": "following_posts"})), # for test
+    #  path("author/<str:author_id>/inbox/comment-list/", InboxViewSet.as_view({"get": "current_user_requests"})),
+    #  path("author/<str:author_id>/inbox/like-list/", InboxViewSet.as_view({"get": "current_user_requests"})),
 
 
 ]

@@ -15,15 +15,21 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.shortcuts import get_list_or_404, get_object_or_404
 import uuid
+from itertools import chain
 
+
+# =====================================================================================================================================
+# Node
+# =====================================================================================================================================
 class NodeViewSet(viewsets.ModelViewSet):
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
     permission_classes = (AllowAny, )
 
-    
 
-
+# =====================================================================================================================================
+# Author
+# =====================================================================================================================================
 #URL: ://service/author/{AUTHOR_ID}/
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
@@ -170,41 +176,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
     #         return JsonResponse(response)
 
 
-# Like & Comment
-class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-    #authentication_classes = (TokenAuthentication, )
-    # permission_classes = (AllowAny, )
-
-    def create(self, request):
-        author = Author.objects.get(username=request.user)
-        try:
-            commentId = request.data['comment']
-            comment = Comment.objects.get(id=commentId)
-            try:
-                like = Like.objects.get(author=author, comment=comment)
-                like.delete()
-
-                return HttpResponse('Good request, like is deleted')
-            except:
-                Like.objects.create(author=author, comment=comment)
-                return HttpResponse('Good request, like is created')
-        except:
-            try:
-                postId = request.data['post']
-                post = Post.objects.get(id=postId)
-                try:
-                    like = Like.objects.get(author=author, post=post)
-                    like.delete()
-                    return HttpResponse('Good request, like is deleted')
-                except:
-                    Like.objects.create(author=author, post=post)
-                    return HttpResponse('Good request, like is created')
-            except:
-                return HttpResponse('Bad request')
-
-
+# =====================================================================================================================================
+# Post
+# =====================================================================================================================================
 #URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -446,28 +420,26 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(post_data)
 
 
-
-
-# April 6 rewrite comment ViewSet:
+# =====================================================================================================================================
+# Comment
+# =====================================================================================================================================
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
     def post_new_comment(self, request, *args, **kwargs):
         request_str = str(request)
-        author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+        author_id = request_str.split("/")[2]   # currently the author_id is the UUID
         post_id = request_str.split("/")[4]     
         host = "https://nofun.herokuapp.com/"
         real_author_id = host + "author/" + author_id
         real_post_id = real_author_id + "/posts/" + post_id
 
-        #---
         post_id = real_post_id
         comment_uuid = uuid.uuid4().hex
         comment_id = post_id + "/comments/" + comment_uuid
         # current_user_id = request.user.id
         
-        #---
         comment = request.data.get('comment')
         contentType = request.data.get('contentType')
 
@@ -477,17 +449,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         Comment.objects.create( author= real_author_id, post= post_id, 
                         comment=comment, contentType=contentType, id=comment_id)
         
-        # serializer = self.serializer_class(data=comment_data)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data)
-        # else:
         return Response(comment_data)
 
-    
+
     def get_comment_list(self, request, *args, **kwargs):
         request_str = str(request)
-        author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
+        author_id = request_str.split("/")[2]   # currently the author_id is the UUID
         post_id = request_str.split("/")[4]     
         host = "https://nofun.herokuapp.com/"
         real_author_id = host + "author/" + author_id
@@ -497,7 +464,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Response(list(queryset.values()))
         else:
             return Response([])
-            # return Response(str(real_post_id) + "    " + str(real_author_id))
+
 
     def retrive_a_comment(self, request, *args, **kwargs):
         request_str = str(request)
@@ -516,43 +483,328 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Response("This comment does not exist.")
 
 
+# =====================================================================================================================================
+# Friend/Follower
+# =====================================================================================================================================
+class FriendRequestViewSet(viewsets.ModelViewSet):
+    serializer_class = FriendRequestSerializer
+    queryset = FriendRequest.objects.all()
 
-# @api_view(['GET', 'POST'])
-# def commentList(request, *args, **kwargs):
-#     request_str = str(request)
-#     author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-#     post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
+    def get_permissions(self):
+        self.permission_classes = [AllowAny]
+        return super(FriendRequestViewSet, self).get_permissions()
 
-#     host = "https://nofun.herokuapp.com/"
-#     real_author_id = host + "author/" + author_id
-#     real_post_id = real_author_id + "/comments/" + post_id
+    def create(self, request, *args, **kwargs):
+        # create friend request
+        from_user_id = Author.objects.get(id=request.data["from_user"])
+        to_user_id = Author.objects.get(id=request.data["to_user"])
 
-#     if request.method == 'GET':
-#         if Post.objects.filter(author=real_author_id).exists():
-#             return Response(Comment.objects.filter(post=real_post_id).values())
-#             # return Response(str(post_id))
-#         else:
-#             return Response("This post does not exist.")
-#             # return Response(str(post_id + author_id))
-#     if request.method == 'POST':
-#         content = request.data.get('')
-#         author = Author.objects.get(id=author_id)
-#         post = Post.objects.get(id=post_id)
-#         Comment.objects.create(author=author, post=post, content=content)
-#         return Response('Comment created!')
+        if FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="R").exists():
+            # Check if the request alreay exists and status is "requested".
+            return Response("Unable to send friend request because the friend request alreay exists!")
+        elif FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="A").exists():
+            # Check if the request exists and status is "A"
+            return Response("Unable to send friend request because you have already become friends!")
+        elif FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").exists():
+            # If your reuqest was declined and send again
+            FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").update(
+                from_user=from_user_id, to_user=to_user_id, status='R')
+            return Response("Successfully create the friend request!")
+        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").exists():
+            # if he already send the request to you and status is R, then you become friend automatically
+            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").update(
+                from_user=to_user_id, to_user=from_user_id, status='A')
+            return Response("He/She had sent the request to you and you become friend automatically!")
+        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="A").exists():
+            return Response("Unable to send friend request because you have already become friends!")
+        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").exists():
+            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").update(
+                from_user=to_user_id, to_user=from_user_id, status='R')
+            return Response("Successfully create the friend request!")
+        else:
+            friend_request = FriendRequest.objects.create(
+                from_user=from_user_id, to_user=to_user_id, status='R')
+            return Response("Successfully create the friend request!")
+
+
+    def accept_incoming_request(self, request, *args, **kwargs):
+        # accept incoming friend request
+        request_from_user_id = Author.objects.get(id=request.data["from_user"])
+        current_user_id = Author.objects.get(id=request.data["to_user"])
+
+        if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
+            # Check if the request has already been accepted
+            return Response("Unable to accept, because you had already accepted it!")
+        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='D').exists():
+            # Check if the request has already been declined
+            return Response("Unable to accept, because you had already declined it!")
+        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
+            # If request exists and status is Requested, then able to accept:
+            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
+                from_user=request_from_user_id, to_user=current_user_id, status='A')
+            return Response("Successfully accept the friend request!")
+        else:
+            return Response("Unable to accept because this request does not exist.")
+
+
+    def decline_incoming_request(self, request, *args, **kwargs):
+        # decline incoming friend request
+        request_from_user_id = Author.objects.get(id=request.data["from_user"])
+        current_user_id = Author.objects.get(id=request.data["to_user"])
+        if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
+            # Check if the request has already been accepted
+            return Response("Unable to decline because you had already accepted it!")
+        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='D').exists():
+            # Check if the request has already been delined
+            return Response("Unable to decline because you had already declined it!")
+        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
+            # Successfully decline this friend request
+            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
+                from_user=request_from_user_id, to_user=current_user_id, status='D')
+            return Response("Successfully decline this friend request!")
+        else:
+            # Request does not exist
+            return Response("Unable to decline because this request does not exist.")
+
+
+    def delete(self, request, *args, **kwargs):
+        # delete friend(only available when the status of request is 'Accepted')
+        user_1 = Author.objects.get(id=request.data["from_user"])
+        user_2 = Author.objects.get(id=request.data["to_user"])
+        if FriendRequest.objects.filter(from_user=user_1, to_user=user_2, status='A').exists():
+            # user1 create the friend request and user1 delete
+            FriendRequest.objects.filter(
+                from_user=user_1, to_user=user_2, status='A').delete()
+            return Response("Successfully delete this friend!")
+        elif FriendRequest.objects.filter(from_user=user_2, to_user=user_1, status='A').exists():
+            # user2 create the friend request and userr1 delete
+            FriendRequest.objects.filter(
+                from_user=user_2, to_user=user_1, status='A').delete()
+            return Response("Successfully delete this friend!")
+        else:
+            return Response("Unable to delete because you are not friends.")
+
+
+    def get_follower_list(self, request, *args, **kwargs):
+        # get list of followers and friends
+        request = str(request)
+        author_uuid = request.split("/")[2]
+        host = "https://nofun.herokuapp.com/"
+        author_id = host + "author/" + author_uuid
+        current_user = Author.objects.get(id=author_id)
+        items = []
+        # follower_list = {"type": "followers", "items": []}
+        for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
+            follower_id=item["from_user_id"]
+            this_follower = Author.objects.filter(id=follower_id)
+            items.append(this_follower.values()[0])
+        for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
+            follower_id=item["from_user_id"]
+            this_follower = Author.objects.filter(id=follower_id)
+            items.append(this_follower.values()[0])
+        return Response({
+            'type': 'followers',
+            'items': items
+        })
+
+    
+    def is_follower(self, request, *args, **kwargs):
+        # check if author2 is author1's follower
+        request = str(request)
+        author_1_uuid = request.split("/")[2]
+        author_2_uuid = request.split("/")[4]
+        host = "https://nofun.herokuapp.com/"
+        author_1_id = host + "author/" + author_1_uuid
+        author_2_id = host + "author/" + author_2_uuid
+        current_user = Author.objects.get(id=author_1_id)
+        foreign_user = Author.objects.get(id=author_2_id)
+        if FriendRequest.objects.filter(to_user=current_user, from_user=foreign_user, status='R').exists():
+            return Response({'is_follower': True})
+        elif FriendRequest.objects.filter(to_user=current_user, from_user=foreign_user, status='A').exists():
+            return Response({'is_follower': True})
+        elif FriendRequest.objects.filter(to_user=foreign_user, from_user=current_user, status='A').exists():
+            return Response({'is_follower': True})
+        else:
+            return Response({'is_follower': False})
+
+
+    def put_follower(self, request, *args, **kwargs):
+        # check if author2 is author1's follower
+        request = str(request)
+        author_1_uuid = request.split("/")[2]
+        author_2_uuid = request.split("/")[4]
+        host = "https://nofun.herokuapp.com/"
+        author_1_id = host + "author/" + author_1_uuid
+        author_2_id = host + "author/" + author_2_uuid
+        current_user = Author.objects.get(id=author_1_id)
+        foreign_user = Author.objects.get(id=author_2_id)
+        if not FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='R').exists():
+            FriendRequest.objects.create(from_user=foreign_user, to_user=current_user, status='R')
+            return Response("Successfully add this follower.")
+        else:
+            return Response("")
+
+
+    def remove_follower(self, request, *args, **kwargs):
+        request = str(request)
+        author_1_uuid = request.split("/")[2]
+        author_2_uuid = request.split("/")[4]
+        host = "https://nofun.herokuapp.com/"
+        author_1_id = host + "author/" + author_1_uuid
+        author_2_id = host + "author/" + author_2_uuid
+        current_user = Author.objects.get(id=author_1_id)
+        foreign_user = Author.objects.get(id=author_2_id)
+        FriendRequest.objects.filter(from_user=current_user, to_user=foreign_user, status='A').delete()
+        FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='A').delete()
+        FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='R').delete()
+        return Response("Successfully removed this follower.")
 
 
 # @api_view(['GET'])
-# def comment(request, *args, **kwargs):
+# def getFollowers(request, *args, **kwargs):
+#     request = str(request)
+#     author_id = request.split("/")[2]   # currently the author_id is the pure UUID
+#     current_user = Author.objects.get(id=author_id)
+#     follower_list = {"type": "followers", "items": []}
+#     if FriendRequest.objects.filter(to_user=current_user, status='R').exists() or FriendRequest.objects.filter(to_user=current_user, status='A').exists():
+#         # for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
+#         #     follower_list["items"].append(item)
+#         # for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
+#         #     follower_list["items"].append(item)
+
+#         for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
+#             follower_id=item["from_user_id"]
+#             this_follower = Author.objects.filter(id=follower_id)
+#             follower_list["items"].append(this_follower.values()[0])
+#         for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
+#             follower_id=item["from_user_id"]
+#             this_follower = Author.objects.filter(id=follower_id)
+#             follower_list["items"].append(this_follower.values()[0])
+#         return Response(follower_list)
+#     else:
+#         return Response("You doesn't have any followers.")
+
+
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def operateFollowers(request, *args, **kwargs):
 #     request_str = str(request)
 #     author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-#     post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
-#     comment_id = request_str.split("/")[6]
+#     foreign_id = request_str.split("/")[4]   # currently the author_id is the pure UUID
+#     current_user = Author.objects.get(id=author_id)
+#     checking_user = Author.objects.get(id=foreign_id)
+#     if request.method == 'GET':
+#         if FriendRequest.objects.filter(to_user=current_user, from_user=checking_user, status='R').exists():
+#             return Response({'exist': True})
+#         elif FriendRequest.objects.filter(to_user=current_user, from_user=checking_user, status='A').exists():
+#             # return Response("This author is your follower. ")
+#             return Response({'exist': True})
+#         elif FriendRequest.objects.filter(to_user=checking_user, from_user=current_user, status='A').exists():
+#             # return Response("This author is your follower. ")
+#             return Response({'exist': True})
+#         else:
+#             # return Response("This author is not your follower! ")
+#             return Response({'exist': False})
 
-#     if Post.objects.filter(author=author_id).exists() and Comment.objects.filter(post=post_id).exists():
-#         return Response(Comment.objects.filter(post=post_id, id=comment_id).values())
+#     if request.method == 'DELETE':
+#         FriendRequest.objects.filter(from_user=current_user, to_user=checking_user, status='A').delete()
+#         FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='A').delete()
+#         FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='R').delete()
+#         return Response("Successfully removed this follower.")
+
+#     if request.method == 'PUT':
+#         FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='R').update()
+#         return Response("Successfully add this follower.")
+
+
+# @api_view(['GET'])
+# def friendList(request, *args, **kwargs):
+#     request = str(request)
+#     author_id = request.split("/")[2]   # currently the author_id is the pure UUID
+#     current_user = Author.objects.get(id=author_id)
+#     friend_list = []
+#     if FriendRequest.objects.filter(to_user=current_user, status='A').exists() or FriendRequest.objects.filter(from_user=current_user, status='A').exists():
+#         for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
+#             this_friend_id=item["from_user_id"]
+#             this_friend = Author.objects.filter(id=this_friend_id).values()
+#             friend_list.append(this_friend)
+#         for item in FriendRequest.objects.filter(from_user=current_user, status='A').values():
+#             this_friend_id=item["to_user_id"]
+#             this_friend = Author.objects.filter(id=this_friend_id).values()
+#             friend_list.append(this_friend)
+#         return Response(friend_list)
 #     else:
-#         return Response("This post/comment does not exist.")
+#         return Response("You doesn't have any friends.")
+
+
+# =====================================================================================================================================
+# Like/Likes/Liked
+# =====================================================================================================================================
+class LikesViewSet(viewsets.ModelViewSet):
+    serializer_class = LikesSerializer
+    queryset = Likes.objects.all()
+
+    # create like for the comment/post
+    def create_likes(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        post_uuid = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+
+        author_id = host + "author/" + author_uuid
+        post_id = author_id + "/posts/" + post_uuid
+        is_comments = False
+        if '/comments/' in request_str:
+            is_comments = True
+            comment_uuid = request_str.split("/")[6]
+            comment_id = post_id + "/comments/" + comment_uuid
+
+        context = ''
+        author = author_id
+        if is_comments:
+            summary = 'An author liked your comment. '
+            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': comment_id, 'context': context}
+            Likes.objects.create(summary=summary, author=author, object=comment_id, context=context)
+        else:
+            summary = 'An author liked your post. ' 
+            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': post_id, 'context': context}
+            Likes.objects.create(summary=summary, author=author, object=post_id, context=context)
+
+
+        return Response(list(likes_data))
+
+
+class LikeViewSet(viewsets.ModelViewSet):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    #authentication_classes = (TokenAuthentication, )
+    # permission_classes = (AllowAny, )
+
+    def create(self, request):
+        author = Author.objects.get(username=request.user)
+        try:
+            commentId = request.data['comment']
+            comment = Comment.objects.get(id=commentId)
+            try:
+                like = Like.objects.get(author=author, comment=comment)
+                like.delete()
+
+                return HttpResponse('Good request, like is deleted')
+            except:
+                Like.objects.create(author=author, comment=comment)
+                return HttpResponse('Good request, like is created')
+        except:
+            try:
+                postId = request.data['post']
+                post = Post.objects.get(id=postId)
+                try:
+                    like = Like.objects.get(author=author, post=post)
+                    like.delete()
+                    return HttpResponse('Good request, like is deleted')
+                except:
+                    Like.objects.create(author=author, post=post)
+                    return HttpResponse('Good request, like is created')
+            except:
+                return HttpResponse('Bad request')
 
 
 @api_view(['GET'])
@@ -591,247 +843,89 @@ def likedList(request, *args, **kwargs):
         return Response(item)
     return Response("You have not liked any posts. ")
 
-# Friend Request
-class FriendRequestViewSet(viewsets.ModelViewSet):
-    serializer_class = FriendRequestSerializer
-    queryset = FriendRequest.objects.all()
 
-    def get_permissions(self):
-        self.permission_classes = [AllowAny]
-        return super(FriendRequestViewSet, self).get_permissions()
-
-    def create(self, request, *args, **kwargs):
-        # create friend request
-        from_user_id = Author.objects.get(id=request.data["from_user"])
-        to_user_id = Author.objects.get(id=request.data["to_user"])
-
-        if FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="R").exists():
-            # Check if the request alreay exists and status is "requested".
-            return Response("Unable to send friend request because the friend request alreay exists!")
-        elif FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="A").exists():
-            # Check if the request exists and status is "A"
-            return Response("Unable to send friend request because you have already become friends!")
-        elif FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").exists():
-            # If your reuqest was declined and send again
-            FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").update(
-                from_user=from_user_id, to_user=to_user_id, status='R')
-            return Response("Successfully create the friend request!")
-
-        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").exists():
-            # if he already send the request to you and status is R, then you become friend automatically
-            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").update(
-                from_user=to_user_id, to_user=from_user_id, status='A')
-            return Response("He/She had sent the request to you and you become friend automatically!")
-        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="A").exists():
-            return Response("Unable to send friend request because you have already become friends!")
-        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").exists():
-            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").update(
-                from_user=to_user_id, to_user=from_user_id, status='R')
-            return Response("Successfully create the friend request!")
-
-        else:
-            friend_request = FriendRequest.objects.create(
-                from_user=from_user_id, to_user=to_user_id, status='R')
-            return Response("Successfully create the friend request!")
-
-    def accept_incoming_request(self, request, *args, **kwargs):
-        # accept incoming friend request
-        request_from_user_id = Author.objects.get(id=request.data["from_user"])
-        current_user_id = Author.objects.get(id=request.data["to_user"])
-
-        if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
-            # Check if the request has already been accepted
-            return Response("Unable to accept, because you had already accepted it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='D').exists():
-            # Check if the request has already been declined
-            return Response("Unable to accept, because you had already declined it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
-            # If request exists and status is Requested, then able to accept:
-            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
-                from_user=request_from_user_id, to_user=current_user_id, status='A')
-            return Response("Successfully accept the friend request!")
-        else:
-            return Response("Unable to accept because this request does not exist.")
-
-    def decline_incoming_request(self, request, *args, **kwargs):
-        # decline incoming friend request
-        request_from_user_id = Author.objects.get(id=request.data["from_user"])
-        current_user_id = Author.objects.get(id=request.data["to_user"])
-        if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
-            # Check if the request has already been accepted
-            return Response("Unable to decline because you had already accepted it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='D').exists():
-            # Check if the request has already been delined
-            return Response("Unable to decline because you had already declined it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
-            # Successfully decline this friend request
-            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
-                from_user=request_from_user_id, to_user=current_user_id, status='D')
-            return Response("Successfully decline this friend request!")
-        else:
-            # Request does not exist
-            return Response("Unable to decline because this request does not exist.")
-
-    def delete(self, request, *args, **kwargs):
-        # delete friend(only available when the status of request is 'Accepted')
-        user_1 = Author.objects.get(id=request.data["from_user"])
-        user_2 = Author.objects.get(id=request.data["to_user"])
-        if FriendRequest.objects.filter(from_user=user_1, to_user=user_2, status='A').exists():
-            # user1 create the friend request and user1 delete
-            FriendRequest.objects.filter(
-                from_user=user_1, to_user=user_2, status='A').delete()
-            return Response("Successfully delete this friend!")
-        elif FriendRequest.objects.filter(from_user=user_2, to_user=user_1, status='A').exists():
-            # user2 create the friend request and userr1 delete
-            FriendRequest.objects.filter(
-                from_user=user_2, to_user=user_1, status='A').delete()
-            return Response("Successfully delete this friend!")
-        else:
-            return Response("Unable to delete because you are not friends.")
-
-@api_view(['GET'])
-def getFollowers(request, *args, **kwargs):
-    request = str(request)
-    author_id = request.split("/")[2]   # currently the author_id is the pure UUID
-    current_user = Author.objects.get(id=author_id)
-    follower_list = {"type": "followers", "items": []}
-    if FriendRequest.objects.filter(to_user=current_user, status='R').exists() or FriendRequest.objects.filter(to_user=current_user, status='A').exists():
-        # for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
-        #     follower_list["items"].append(item)
-        # for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
-        #     follower_list["items"].append(item)
-
-        for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
-            follower_id=item["from_user_id"]
-            this_follower = Author.objects.filter(id=follower_id)
-            follower_list["items"].append(this_follower.values()[0])
-        for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
-            follower_id=item["from_user_id"]
-            this_follower = Author.objects.filter(id=follower_id)
-            follower_list["items"].append(this_follower.values()[0])
-        return Response(follower_list)
-    else:
-        return Response("You doesn't have any followers.")
-
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def operateFollowers(request, *args, **kwargs):
-    request_str = str(request)
-    author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-    foreign_id = request_str.split("/")[4]   # currently the author_id is the pure UUID
-    current_user = Author.objects.get(id=author_id)
-    checking_user = Author.objects.get(id=foreign_id)
-    if request.method == 'GET':
-        if FriendRequest.objects.filter(to_user=current_user, from_user=checking_user, status='R').exists():
-            return Response({'exist': True})
-        elif FriendRequest.objects.filter(to_user=current_user, from_user=checking_user, status='A').exists():
-            # return Response("This author is your follower. ")
-            return Response({'exist': True})
-        elif FriendRequest.objects.filter(to_user=checking_user, from_user=current_user, status='A').exists():
-            # return Response("This author is your follower. ")
-            return Response({'exist': True})
-        else:
-            # return Response("This author is not your follower! ")
-            return Response({'exist': False})
-
-    if request.method == 'DELETE':
-        FriendRequest.objects.filter(from_user=current_user, to_user=checking_user, status='A').delete()
-        FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='A').delete()
-        FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='R').delete()
-        return Response("Successfully removed this follower.")
-
-    if request.method == 'PUT':
-        FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='R').update()
-        return Response("Successfully add this follower.")
-
-
-@api_view(['GET'])
-def friendList(request, *args, **kwargs):
-    request = str(request)
-    author_id = request.split("/")[2]   # currently the author_id is the pure UUID
-    current_user = Author.objects.get(id=author_id)
-    friend_list = []
-    if FriendRequest.objects.filter(to_user=current_user, status='A').exists() or FriendRequest.objects.filter(from_user=current_user, status='A').exists():
-        for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
-            this_friend_id=item["from_user_id"]
-            this_friend = Author.objects.filter(id=this_friend_id).values()
-            friend_list.append(this_friend)
-        for item in FriendRequest.objects.filter(from_user=current_user, status='A').values():
-            this_friend_id=item["to_user_id"]
-            this_friend = Author.objects.filter(id=this_friend_id).values()
-            friend_list.append(this_friend)
-        return Response(friend_list)
-    else:
-        return Response("You doesn't have any friends.")
-
-
-class LikesViewSet(viewsets.ModelViewSet):
-    serializer_class = LikesSerializer
-    queryset = Likes.objects.all()
-
-    # create like for the comment/post
-    def create_likes(self, request, *args, **kwargs):
-        request_str = str(request)
-        author_uuid = request_str.split("/")[2]
-        post_uuid = request_str.split("/")[4]     
-        host = "https://nofun.herokuapp.com/"
-
-        author_id = host + "author/" + author_uuid
-        post_id = author_id + "/posts/" + post_uuid
-        is_comments = False
-        if '/comments/' in request_str:
-            is_comments = True
-            comment_uuid = request_str.split("/")[6]
-            comment_id = post_id + "/comments/" + comment_uuid
-
-        context = ''
-        author = author_id
-        if is_comments:
-            summary = 'An author liked your comment. '
-            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': comment_id, 'context': context}
-            Likes.objects.create(summary=summary, author=author, object=comment_id, context=context)
-        else:
-            summary = 'An author liked your post. ' 
-            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': post_id, 'context': context}
-            Likes.objects.create(summary=summary, author=author, object=post_id, context=context)
-
-
-        return Response(list(likes_data))
-
-
-
-# class InboxViewSet(viewsets.ModelViewSet):
-#     serializer_class = LikesSerializer
-
-#     def current_user_requests
-
+# =====================================================================================================================================
+# Inbox
+# =====================================================================================================================================
 class InboxViewSet(viewsets.ModelViewSet):
     serializer_class = InboxSerializer
-    def current_user_requests(self, request, *args, **kwargs):
+
+    def all_info_list(self, request, *args, **kwargs):
         request_str = str(request)
         author_uuid = request_str.split("/")[2]
         post_uuid = request_str.split("/")[4]     
         host = "https://nofun.herokuapp.com/"
-
         author_id = host + "author/" + author_uuid
         post_id = author_id + "/posts/" + post_uuid
-
         is_comments = False
         if '/comments/' in request_str:
             is_comments = True
             comment_uuid = request_str.split("/")[6]
             comment_id = post_id + "/comments/" + comment_uuid
 
+        all_info_list = []
+        # add friends requests info
+        request_list = []
         if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
             request_list = FriendRequest.objects.filter(to_user=author_id, status="R").values()
 
-        inbox_data = {'type': 'Inbox', 'author': author_id, 'items': str(request_list)}
-        # serializer = self.serializer_class(data=inbox_data)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
+
+        request_list2 = []
+        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
+            request_list2 = FriendRequest.objects.filter(to_user=author_id, status="R").values()
+
+        
+        request_list3 = []
+        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
+            request_list3 = FriendRequest.objects.filter(to_user=author_id, status="R").values()
+
+        #TODO get likes info from database(only retrive)
+
+        #TODO get share posts info from database(only retrive)
+
+        #TODO get comments info from database(only retrive)
+
+        #TODO get posts info from database(only retrive)
+
+        # return all info with chain(queryset1, queryset2, ...)
+        return Response({
+            'type': 'Inbox',
+            'author': author_id,
+            'items': chain(request_list, request_list2, request_list3)
+        })
+
+    def current_user_requests(self, request, *args, **kwargs):
+    # the requests you received
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        post_uuid = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+        author_id = host + "author/" + author_uuid
+        post_id = author_id + "/posts/" + post_uuid
+        is_comments = False
+        if '/comments/' in request_str:
+            is_comments = True
+            comment_uuid = request_str.split("/")[6]
+            comment_id = post_id + "/comments/" + comment_uuid
+
+        # add friends requests info
+        request_list = None
+        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
+            request_list = FriendRequest.objects.filter(to_user=author_id, status="R").values()
+
+        # return request list
         return Response({
             'type': 'Inbox',
             'author': author_id,
             'items': request_list
         })
 
+
+    def clear(self, request, *args, **kwargs):
+    # clear the inbox database and decline all the requests
+        pass
+
+    
+
+# =====================================================================================================================================
+# =====================================================================================================================================
