@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Header from "../components/Header";
 
-
 class Newpost extends React.Component {
   constructor(props) {
     super(props);
@@ -32,13 +31,19 @@ class Newpost extends React.Component {
       image: "",
       visibility: null,
       unlisted: null,
-      image: null
+      image: null,
     };
   }
 
   checkValidation = () => {
     const { title, content, description, visibility, unlisted } = this.state;
-    if (title === null || content === null || description === null || visibility === null || unlisted === null) {
+    if (
+      title === null ||
+      content === null ||
+      description === null ||
+      visibility === null ||
+      unlisted === null
+    ) {
       return false;
     }
     return true;
@@ -65,18 +70,26 @@ class Newpost extends React.Component {
       return window.alert("You have not filed the form completely.");
     }
     const { domains, currentUser } = this.props;
-    const { title, description, content, contentType, visibility, unlisted, image } = this.state;
+    const {
+      title,
+      description,
+      content,
+      contentType,
+      visibility,
+      unlisted,
+      image,
+    } = this.state;
 
     let auth = null;
-    domains.map(d => {
+    domains.map((d) => {
       if (d.domain === currentUser?.id?.split("/")[2]) {
         auth = d.auth;
       }
-    })
+    });
 
     const config = {
       headers: {
-        "Authorization": auth
+        Authorization: auth,
       },
     };
 
@@ -86,18 +99,47 @@ class Newpost extends React.Component {
     if (contentType === "image") {
       doc = await axios.post(
         currentUser?.id + "/posts/",
-        { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content: image, visibility, unlisted, contentType, published: new Date(), author: currentUser?.id, unlisted: false },
+        {
+          title,
+          source: "",
+          origin: "",
+          categorie: "web",
+          count: 1,
+          size: 1,
+          description,
+          content: image,
+          visibility,
+          unlisted,
+          contentType,
+          published: new Date(),
+          author: currentUser?.id,
+          unlisted: false,
+        },
         config
       );
     } else {
       doc = await axios.post(
         currentUser?.id + "/posts/",
-        { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content, visibility, unlisted, contentType, published: new Date(), author: currentUser?.id, unlisted: false },
+        {
+          title,
+          source: "",
+          origin: "",
+          categorie: "web",
+          count: 1,
+          size: 1,
+          description,
+          content,
+          visibility,
+          unlisted,
+          contentType,
+          published: new Date(),
+          author: currentUser?.id,
+          unlisted: false,
+        },
         config
       );
     }
 
-    
     // if (doc.data?.id) {
     //   window.location = `/posts/nofun.herokuapp.com/${currentUser?.id.split("/")[4]}/${doc.data.id.split("/")[6]}/`;
     // }
@@ -212,15 +254,21 @@ class Newpost extends React.Component {
                       variant="filled"
                     />
                   </div> */}
-                  {contentType === "image" ?
-                    <div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
-                      <FormLabel component="legend">
-                        Upload an image
-                      </FormLabel>
-                      <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
-                      {image && <img src={image} style={{width: "40%"}} />}
+                  {contentType === "image" ? (
+                    <div
+                      id="image"
+                      style={{ marginLeft: "3%", marginTop: "2%" }}
+                    >
+                      <FormLabel component="legend">Upload an image</FormLabel>
+                      <input
+                        type="file"
+                        onChange={(e) =>
+                          this.encodeFileBase64(e.target.files[0])
+                        }
+                      />
+                      {image && <img src={image} style={{ width: "40%" }} />}
                     </div>
-                    :
+                  ) : (
                     <div id="content">
                       <TextField
                         onChange={(e) => {
@@ -240,9 +288,9 @@ class Newpost extends React.Component {
                         rows={6}
                         variant="outlined"
                       />
-                    </div> 
-                  }
-                  
+                    </div>
+                  )}
+
                   <div id="visibility">
                     <FormControl
                       component="fieldset"
@@ -320,6 +368,7 @@ class Newpost extends React.Component {
                       style={{
                         marginLeft: "3%",
                         marginTop: "3%",
+                        marginBottom: "3%",
                       }}
                     >
                       Submit
@@ -337,7 +386,7 @@ class Newpost extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 
 export default connect(mapStateToProps)(Newpost);
