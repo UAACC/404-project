@@ -103,12 +103,12 @@ class FriendRequest(models.Model):
     status = models.CharField(
         choices=Friendship_status, default="Requested", max_length=1)
 
-
+#u
 class Likes(models.Model):
     type = 'Like'
     context = models.URLField(max_length=256, default = '')
     summary = models.CharField(max_length=256, default = '')
-    author = models.URLField(max_length=256, default = '')
+    author = models.URLField(max_length=256, default = '')#it is an actor
     object = models.URLField(max_length=256, default = '')
 
 

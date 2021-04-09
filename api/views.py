@@ -757,13 +757,16 @@ class LikesViewSet(viewsets.ModelViewSet):
             comment_id = post_id + "/comments/" + comment_uuid
 
         context = ''
-        current_user = request.user.username
-        print(current_user)
-        author = author_id
+        liker = request.data.get（'liker',None)# author ID
+        #current_user = request.user.username
+        #print(current_user)
+        #author = author_id
+        actor_name = liker.displayName
+        
         if is_comments:
-            summary = str(current_user) + ' liked your comment. '
-            likes_data = {'type': 'Like', 'summary': summary, 'author': author, 'object': comment_id, 'context': context}
-            Likes.objects.create(summary=summary, author=author, object=comment_id, context=context)
+            summary = str(actor_name) + ' liked your comment. '#liker.displayname or some name
+            likes_data = {'type': 'Like', 'summary': summary, 'author': liker, 'object': comment_id, 'context': context}
+            Likes.objects.create(summary=summary, author=liker, object=comment_id, context=context)#create author who is an actor
 
             # add to object author's inbox
             receiver_id = author_id
@@ -772,14 +775,14 @@ class LikesViewSet(viewsets.ModelViewSet):
             return Response({
             'type': 'Like', 
             'summary': summary, 
-            'author': author, 
+            'author': liker, 
             'object': comment_id, 
             'context': context
             })
         else:
-            summary = str(current_user) + ' liked your post. ' 
-            likes_data = {'type': 'Like', 'summary': summary, 'author': author, 'object': post_id, 'context': context}
-            Likes.objects.create(summary=summary, author=author, object=post_id, context=context)
+            summary = str(actor_name) + ' liked your post. ' 
+            likes_data = {'type': 'Like', 'summary': summary, 'author': liker, 'object': post_id, 'context': context}
+            Likes.objects.create(summary=summary, author=liker, object=post_id, context=context)
 
             # add to object author's inbox
             receiver_id = author_id
@@ -788,7 +791,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             return Response({
                 'type': 'Like', 
                 'summary': summary, 
-                'author': author, 
+                'author': liker, 
                 'object': post_id, 
                 'context': context
             })
