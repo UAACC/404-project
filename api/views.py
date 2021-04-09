@@ -320,9 +320,9 @@ class PostViewSet(viewsets.ModelViewSet):
         
         
 
-        if title:
-            Post.objects.filter(pk=post_id).update(
-                title = title
+    
+        Post.objects.filter(pk=post_id).update(
+            title = title
                 )
         
         if img:
@@ -334,9 +334,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
         post.origin = post_id#fix this
 
-        if description:
-            Post.objects.filter(pk=post_id).update(
-                description = description
+        Post.objects.filter(pk=post_id).update(
+            description = description
                 )
 
             
@@ -347,9 +346,8 @@ class PostViewSet(viewsets.ModelViewSet):
                 )
             
         
-        if content:
-            Post.objects.filter(pk=post_id).update(
-                content = content
+        Post.objects.filter(pk=post_id).update(
+            content = content
                 )
 
         if count:
@@ -361,9 +359,9 @@ class PostViewSet(viewsets.ModelViewSet):
                 size = size
                 )
         
-        if categories:
-            Post.objects.filter(pk=post_id).update(
-                categorie = categories
+
+        Post.objects.filter(pk=post_id).update(
+            categorie = categories
                 )
 
             
