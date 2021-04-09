@@ -280,7 +280,28 @@ class PostViewSet(viewsets.ModelViewSet):
                      'count': count, 'size': size, 'comments': comments,
                      'visibility': visibility, 'unlisted': unlisted, 'id':post_id}
 
-        
+
+        # add this new post into your follower's inbox
+        # print(author_id)
+        current_user = Author.objects.get(id=author_id) # print username
+        # print(current_user)
+        followers_request = FriendRequest.objects.filter(to_user = current_user).values()
+        # print(followers_request)
+        followers = []
+        for request in followers_request:
+            followers.append(request["from_user_id"])
+        print(followers)
+        post_data2 = {'type': 'post','title': title,'source': source,
+                     'origin': origin, 'description': description, 'contentType': contentType,
+                     'content': content, 'author': author_id, 'categories': categories,
+                     'count': count, 'size': size, 'comments': comments,
+                     'visibility': visibility, 'unlisted': unlisted, 'id':post_id}
+
+        for follower in followers:
+            Inbox.objects.create(author=follower, items=post_data2)
+
+
+
         return Response(post_data)
         
     def edit(self, request, author_uid=None,  post_id = None,*args, **kwargs):
@@ -606,12 +627,15 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         author_id = host + "author/" + author_uuid
         current_user = Author.objects.get(id=author_id)
         items = []
-        # follower_list = {"type": "followers", "items": []}
         for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
             follower_id=item["from_user_id"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
         for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
+            follower_id=item["from_user_id"]
+            this_follower = Author.objects.filter(id=follower_id)
+            items.append(this_follower.values()[0])
+        for item in FriendRequest.objects.filter(to_user=current_user, status='D').values():
             follower_id=item["from_user_id"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
@@ -690,82 +714,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='A').delete()
         FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='R').delete()
         return Response("Successfully removed this follower.")
-
-
-# @api_view(['GET'])
-# def getFollowers(request, *args, **kwargs):
-#     request = str(request)
-#     author_id = request.split("/")[2]   # currently the author_id is the pure UUID
-#     current_user = Author.objects.get(id=author_id)
-#     follower_list = {"type": "followers", "items": []}
-#     if FriendRequest.objects.filter(to_user=current_user, status='R').exists() or FriendRequest.objects.filter(to_user=current_user, status='A').exists():
-#         # for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
-#         #     follower_list["items"].append(item)
-#         # for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
-#         #     follower_list["items"].append(item)
-
-#         for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
-#             follower_id=item["from_user_id"]
-#             this_follower = Author.objects.filter(id=follower_id)
-#             follower_list["items"].append(this_follower.values()[0])
-#         for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
-#             follower_id=item["from_user_id"]
-#             this_follower = Author.objects.filter(id=follower_id)
-#             follower_list["items"].append(this_follower.values()[0])
-#         return Response(follower_list)
-#     else:
-#         return Response("You doesn't have any followers.")
-
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def operateFollowers(request, *args, **kwargs):
-#     request_str = str(request)
-#     author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-#     foreign_id = request_str.split("/")[4]   # currently the author_id is the pure UUID
-#     current_user = Author.objects.get(id=author_id)
-#     checking_user = Author.objects.get(id=foreign_id)
-#     if request.method == 'GET':
-#         if FriendRequest.objects.filter(to_user=current_user, from_user=checking_user, status='R').exists():
-#             return Response({'exist': True})
-#         elif FriendRequest.objects.filter(to_user=current_user, from_user=checking_user, status='A').exists():
-#             # return Response("This author is your follower. ")
-#             return Response({'exist': True})
-#         elif FriendRequest.objects.filter(to_user=checking_user, from_user=current_user, status='A').exists():
-#             # return Response("This author is your follower. ")
-#             return Response({'exist': True})
-#         else:
-#             # return Response("This author is not your follower! ")
-#             return Response({'exist': False})
-
-#     if request.method == 'DELETE':
-#         FriendRequest.objects.filter(from_user=current_user, to_user=checking_user, status='A').delete()
-#         FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='A').delete()
-#         FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='R').delete()
-#         return Response("Successfully removed this follower.")
-
-#     if request.method == 'PUT':
-#         FriendRequest.objects.filter(from_user=checking_user, to_user=current_user, status='R').update()
-#         return Response("Successfully add this follower.")
-
-
-# @api_view(['GET'])
-# def friendList(request, *args, **kwargs):
-#     request = str(request)
-#     author_id = request.split("/")[2]   # currently the author_id is the pure UUID
-#     current_user = Author.objects.get(id=author_id)
-#     friend_list = []
-#     if FriendRequest.objects.filter(to_user=current_user, status='A').exists() or FriendRequest.objects.filter(from_user=current_user, status='A').exists():
-#         for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
-#             this_friend_id=item["from_user_id"]
-#             this_friend = Author.objects.filter(id=this_friend_id).values()
-#             friend_list.append(this_friend)
-#         for item in FriendRequest.objects.filter(from_user=current_user, status='A').values():
-#             this_friend_id=item["to_user_id"]
-#             this_friend = Author.objects.filter(id=this_friend_id).values()
-#             friend_list.append(this_friend)
-#         return Response(friend_list)
-#     else:
-#         return Response("You doesn't have any friends.")
 
 
 # =====================================================================================================================================
@@ -902,15 +850,6 @@ class InboxViewSet(viewsets.ModelViewSet):
             request_list = FriendRequest.objects.filter(to_user=author_id, status="R").values()
 
 
-        request_list2 = []
-        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
-            request_list2 = FriendRequest.objects.filter(to_user=author_id, status="R").values()
-
-        
-        request_list3 = []
-        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
-            request_list3 = FriendRequest.objects.filter(to_user=author_id, status="R").values()
-
         #TODO get likes info from database(only retrive)
 
         #TODO get share posts info from database(only retrive)
@@ -918,12 +857,14 @@ class InboxViewSet(viewsets.ModelViewSet):
         #TODO get comments info from database(only retrive)
 
         #TODO get posts info from database(only retrive)
+        post_list = Inbox.objects.filter(author=author_id).values()
+        # print("asdawdsdadsadas" + str(post_list))
 
         # return all info with chain(queryset1, queryset2, ...)
         return Response({
             'type': 'Inbox',
             'author': author_id,
-            'items': chain(request_list, request_list2, request_list3)
+            'items': chain(request_list, post_list)
         })
 
     def current_user_requests(self, request, *args, **kwargs):

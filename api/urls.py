@@ -63,9 +63,5 @@ urlpatterns = [
      # Inbox URL
      path("author/<str:author_id>/inbox/", InboxViewSet.as_view({"get": "all_info_list"})),
      path("author/<str:author_id>/inbox/request-list/", InboxViewSet.as_view({"get": "current_user_requests"})), # for test
-    #  path("author/<str:author_id>/inbox/post-list/", InboxViewSet.as_view({"get": "following_posts"})), # for test
-    #  path("author/<str:author_id>/inbox/comment-list/", InboxViewSet.as_view({"get": "current_user_requests"})),
-    #  path("author/<str:author_id>/inbox/like-list/", InboxViewSet.as_view({"get": "current_user_requests"})),
-
 
 ]
