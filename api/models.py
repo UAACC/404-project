@@ -95,8 +95,9 @@ class FriendRequest(models.Model):
 
     Friendship_status = (("R", "Requested"),
                          ("A", "Accepted"), ("D", "Declined"))
-    from_user = models.ForeignKey(
-        Author, related_name='from_user', on_delete=models.CASCADE)
+    from_user = models.CharField(max_length=256, blank=False)
+    # from_user = models.ForeignKey(
+    #     Author, related_name='from_user', on_delete=models.CASCADE)
     to_user = models.ForeignKey(
         Author, related_name='to_user', on_delete=models.CASCADE)
     status = models.CharField(

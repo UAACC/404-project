@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 from django.conf.urls import include
-from .views import NodeViewSet, AuthorViewSet, CommentViewSet, LikeViewSet, PostViewSet, LikesViewSet, InboxViewSet
+from .views import NodeViewSet, AuthorViewSet, CommentViewSet, PostViewSet, LikesViewSet, InboxViewSet
 # from .views import PostList, PostDetail, UpdatePost, PostCreate, DeletePost
 # PostSearchList
 from .views import FriendRequestViewSet
@@ -18,7 +18,6 @@ router.register('nodes', NodeViewSet)      #usful
 urlpatterns = [
     path('', include(router.urls)),
 
-    
 
     # POST/Author
     # path('posts/<int:pk>/', PostDetail.as_view()),
@@ -46,9 +45,9 @@ urlpatterns = [
 
 
      # Like/Likes/Liked
-     path("author/<str:author_id>/posts/<str:post_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),
-     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),
-     path("author/<str:author_id>/liked/", views.likedList),
+     path("author/<str:author_id>/posts/<str:post_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),     # wrong
+     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),       #wrong
+     path("author/<str:author_id>/liked/", views.likedList),        
 
 
      # Friend/Follower

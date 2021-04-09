@@ -491,7 +491,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         Comment.objects.create( author= real_author_id, post= post_id, 
                         comment=comment, contentType=contentType, id=comment_id)
-        
+
+
+        # add this comment to the post's owner's inbox
+        receiver_id = host + "author/" + author_id
+        Inbox.objects.create(author=receiver_id, items=comment_data)
+
         return Response(comment_data)
 
 
@@ -539,7 +544,8 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # create friend request
-        from_user_id = Author.objects.get(id=request.data["from_user"])
+        # from_user_id = Author.objects.get(id=request.data["from_user"])
+        from_user_id = request.data["from_user"]
         to_user_id = Author.objects.get(id=request.data["to_user"])
 
         if FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="R").exists():
@@ -572,7 +578,8 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def accept_incoming_request(self, request, *args, **kwargs):
         # accept incoming friend request
-        request_from_user_id = Author.objects.get(id=request.data["from_user"])
+        # request_from_user_id = Author.objects.get(id=request.data["from_user"])
+        request_from_user_id = request.data["from_user"]
         current_user_id = Author.objects.get(id=request.data["to_user"])
 
         if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
@@ -592,7 +599,8 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def decline_incoming_request(self, request, *args, **kwargs):
         # decline incoming friend request
-        request_from_user_id = Author.objects.get(id=request.data["from_user"])
+        # request_from_user_id = Author.objects.get(id=request.data["from_user"])
+        request_from_user_id = request.data["from_user"]
         current_user_id = Author.objects.get(id=request.data["to_user"])
         if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
             # Check if the request has already been accepted
@@ -612,7 +620,8 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def delete(self, request, *args, **kwargs):
         # delete friend(only available when the status of request is 'Accepted')
-        user_1 = Author.objects.get(id=request.data["from_user"])
+        # user_1 = Author.objects.get(id=request.data["from_user"])
+        user_1 = request.data["from_user"]
         user_2 = Author.objects.get(id=request.data["to_user"])
         if FriendRequest.objects.filter(from_user=user_1, to_user=user_2, status='A').exists():
             # user1 create the friend request and user1 delete
@@ -762,38 +771,38 @@ class LikesViewSet(viewsets.ModelViewSet):
         return Response(list(likes_data))
 
 
-class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-    #authentication_classes = (TokenAuthentication, )
-    # permission_classes = (AllowAny, )
+# class LikeViewSet(viewsets.ModelViewSet):
+#     queryset = Like.objects.all()
+#     serializer_class = LikeSerializer
+#     #authentication_classes = (TokenAuthentication, )
+#     # permission_classes = (AllowAny, )
 
-    def create(self, request):
-        author = Author.objects.get(username=request.user)
-        try:
-            commentId = request.data['comment']
-            comment = Comment.objects.get(id=commentId)
-            try:
-                like = Like.objects.get(author=author, comment=comment)
-                like.delete()
+#     def create(self, request):
+#         author = Author.objects.get(username=request.user)
+#         try:
+#             commentId = request.data['comment']
+#             comment = Comment.objects.get(id=commentId)
+#             try:
+#                 like = Like.objects.get(author=author, comment=comment)
+#                 like.delete()
 
-                return HttpResponse('Good request, like is deleted')
-            except:
-                Like.objects.create(author=author, comment=comment)
-                return HttpResponse('Good request, like is created')
-        except:
-            try:
-                postId = request.data['post']
-                post = Post.objects.get(id=postId)
-                try:
-                    like = Like.objects.get(author=author, post=post)
-                    like.delete()
-                    return HttpResponse('Good request, like is deleted')
-                except:
-                    Like.objects.create(author=author, post=post)
-                    return HttpResponse('Good request, like is created')
-            except:
-                return HttpResponse('Bad request')
+#                 return HttpResponse('Good request, like is deleted')
+#             except:
+#                 Like.objects.create(author=author, comment=comment)
+#                 return HttpResponse('Good request, like is created')
+#         except:
+#             try:
+#                 postId = request.data['post']
+#                 post = Post.objects.get(id=postId)
+#                 try:
+#                     like = Like.objects.get(author=author, post=post)
+#                     like.delete()
+#                     return HttpResponse('Good request, like is deleted')
+#                 except:
+#                     Like.objects.create(author=author, post=post)
+#                     return HttpResponse('Good request, like is created')
+#             except:
+#                 return HttpResponse('Bad request')
 
 
 @api_view(['GET'])
@@ -826,11 +835,12 @@ def commentLike(request, *args, **kwargs):
 @api_view(['GET'])
 def likedList(request, *args, **kwargs):
     request_str = str(request)
-    author_id = request_str.split("/")[2]
-    if Like.objects.filter(author_id=Author.objects.get(id=author_id)).exists():
-        item = Like.objects.filter(author_id=Author.objects.get(id=author_id)).values()
-        return Response(item)
-    return Response("You have not liked any posts. ")
+    author_uuid = request_str.split("/")[2]
+    host = "https://nofun.herokuapp.com/"
+    author_id = host + "author/" + author_uuid
+
+    item = Like.objects.filter(author_id=Author.objects.get(id=author_id)).values()
+    return Response(item)
 
 
 # =====================================================================================================================================
@@ -866,14 +876,13 @@ class InboxViewSet(viewsets.ModelViewSet):
         #TODO get comments info from database(only retrive)
 
         #TODO get posts info from database(only retrive)
-        post_list = Inbox.objects.filter(author=author_id).values()
-        # print("asdawdsdadsadas" + str(post_list))
+        item_list = Inbox.objects.filter(author=author_id).values()
 
         # return all info with chain(queryset1, queryset2, ...)
         return Response({
             'type': 'Inbox',
             'author': author_id,
-            'items': chain(request_list, post_list)
+            'items': chain(request_list, item_list)
         })
 
     def current_user_requests(self, request, *args, **kwargs):
