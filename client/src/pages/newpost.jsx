@@ -90,8 +90,6 @@ class Newpost extends React.Component {
         currentUser?.id + "/posts/",
         {
           title,
-          source: "",
-          origin: "",
           count: 1,
           size: 1,
           description,
@@ -101,7 +99,6 @@ class Newpost extends React.Component {
           contentType,
           published: new Date(),
           author: currentUser?.id,
-          unlisted: false,
           categorie: JSON.stringify(categories)
         },
         config

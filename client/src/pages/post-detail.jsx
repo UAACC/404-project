@@ -120,26 +120,68 @@ class PostDetail extends React.Component {
     );
   };
 
-  handleLike = async () => {
-    const { domains } = this.props;
-    const { domain, post } = this.state;
-    let auth = null;
+  // handleLike = async () => {
+  //   const { domains } = this.props;
+  //   const { domain, post } = this.state;
+  //   let auth = null;
 
-    domains.map(d => {
-      if (d.domain === domain) {
+  //   domains.map(d => {
+  //     if (d.domain === domain) {
+  //       auth = d.auth;
+  //     }
+  //   });
+
+  //   const config = {
+  //     headers: {
+  //       "Authorization": auth,
+  //     },
+  //   };
+
+  //   await axios.post(post.id + "/likes/", config);
+  //   this.componentDidMount();
+  // };
+
+  handleShare = async () => {
+    const { post } = this.state;
+    const { domains, currentUser } = this.props;
+
+    let auth = null;
+    domains.map((d) => {
+      if (d.domain === currentUser?.id?.split("/")[2]) {
         auth = d.auth;
       }
     });
 
     const config = {
       headers: {
-        "Authorization": auth,
+        Authorization: auth,
       },
     };
 
-    await axios.post(post.id + "/likes/", config);
-    this.componentDidMount();
-  };
+    const doc = await axios.post(
+      currentUser?.id + "/posts/",
+      {
+        title: post.title,
+        source: post.id,
+        origin: post.origin,
+        count: post.count,
+        size: post.size,
+        description: post.description,
+        content: post.content,
+        visibility: post.visibility,
+        unlisted: post.unlisted,
+        contentType: post.contentType,
+        published: new Date(),
+        author: currentUser?.id,
+        categorie: post.categorie
+      },
+      config
+    );
+  
+    if (doc.data?.id) {
+      window.location = `/posts/nofun.herokuapp.com/${currentUser?.id.split("/")[4]}/${doc.data.id.split("/")[6]}/`;
+    }
+  }
 
   encodeFileBase64 = (file) => {
     var reader = new FileReader();
@@ -409,9 +451,12 @@ class PostDetail extends React.Component {
               >
                 <CommentIcon />
               </IconButton>
-              <IconButton style={{ marginLeft: "3%" }}>
-                <ShareIcon />
-              </IconButton>
+              {
+                !(post.author_id === currentUser?.id || post.author === currentUser?.id ) && <IconButton style={{ marginLeft: "3%" }}>
+                  <ShareIcon onClick={this.handleShare} />
+                </IconButton>
+              }
+              
 
               {currentUser && (post.author_id === currentUser?.id || post.author === currentUser?.id ) && (
                 editOpen ? (
