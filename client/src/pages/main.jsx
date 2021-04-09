@@ -14,7 +14,8 @@ class Followers extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      items: []
+      items: [],
+      friends:[]
     }
   }
 
@@ -24,19 +25,21 @@ class Followers extends React.Component {
     // extract user
     const { currentUser } = this.props;
     const id = currentUser.id;
-
-    const doc = await axios.get(`https://nofun.herokuapp.com/author/${id}/followers/`);
+    const id_digit = id.split("/")[4];
+    
+    const doc = await axios.get(`https://nofun.herokuapp.com/author/${id_digit}/followers/`);
     if (doc.data) {
       this.setState({items: doc.data.items});
     }
+
+    const frienddoc = await axios.get(`https://nofun.herokuapp.com/author/${id_digit}/friends/`);
+    if(doc.data) {
+      this.setState({friends: frienddoc.data.items})
+    }
   };
 
-
-
-
-
   render() {
-    const { items }  = this.state;
+    const { items,friends }  = this.state;
     return (
       <div>
         <Header />
@@ -66,7 +69,18 @@ class Followers extends React.Component {
                 </Card>
                 })
               }
-              
+              <h5>Friends: {items.length} person(s)</h5>
+              {
+                friends.map(f => {
+                  return <Card>
+                  <CardContent width={1}>
+                    <Typography color="textSecondary">
+                      {f.displayName}
+                    </Typography>
+                  </CardContent>
+                </Card>
+                })
+              }
             </Grid>
           </Grid>
         </div>
