@@ -25,14 +25,14 @@ class Author(AbstractUser):
 
 
 
+def _list():
+    return []
 
 class Post(models.Model):
 
 
-    CATE_CHOICES = (
-    ('WEB', 'web'),
-    ('TUTORIAL', 'tutorial'),
-)
+    
+
     VISIBILITY_CHOICES = (
     ('PUBLIC', 'public'),
     ('PRIVATE', 'private'),
@@ -54,9 +54,7 @@ class Post(models.Model):
         Author, on_delete=models.CASCADE, related_name="posts",max_length=256)
     published = models.DateTimeField(default=timezone.now)
     comment = models.URLField(max_length=256, default = '')
-    categorie = models.CharField(max_length=256,
-                  choices=CATE_CHOICES,
-                  default="WEB")#team1 suggestion
+    categorie = models.JSONField(default=_list,blank = True, null = True)#team1 suggestion
     count = models.IntegerField(default=0,blank=True,null = True)
     size = models.IntegerField(default=0,blank=True,null = True)
     unlisted = models.BooleanField(default = False)
