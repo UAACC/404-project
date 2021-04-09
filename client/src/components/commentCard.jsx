@@ -9,7 +9,6 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Paper from "@material-ui/core/Paper";
-import Cookies from "js-cookie";
 import { connect } from "react-redux";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
@@ -95,7 +94,7 @@ class CommentCard extends React.Component {
   render() {
     const { author, comment } = this.state;
     const { currentUser } = this.props;
-    console.log(author);
+
     return (
       <Grid
         container

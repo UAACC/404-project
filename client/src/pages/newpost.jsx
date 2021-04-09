@@ -8,6 +8,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
+import Chip from '@material-ui/core/Chip';
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
 import axios from "axios";
@@ -25,7 +26,8 @@ class Newpost extends React.Component {
       description: "",
       content: "",
       contentType: "text/plain",
-      category: [],
+      currCategory: "",
+      categories: [],
       published: "",
       format: "",
       imageLocal: true,
@@ -69,7 +71,7 @@ class Newpost extends React.Component {
       return window.alert("You have not filed the form completely.");
     }
     const { domains, currentUser } = this.props;
-    const { title, description, content, contentType, visibility, unlisted } = this.state;
+    const { title, description, content, contentType, visibility, unlisted, categories } = this.state;
 
     let auth = null;
     domains.map((d) => {
@@ -90,7 +92,6 @@ class Newpost extends React.Component {
           title,
           source: "",
           origin: "",
-          categorie: "web",
           count: 1,
           size: 1,
           description,
@@ -101,6 +102,7 @@ class Newpost extends React.Component {
           published: new Date(),
           author: currentUser?.id,
           unlisted: false,
+          categorie: JSON.stringify(categories)
         },
         config
       );
@@ -111,14 +113,13 @@ class Newpost extends React.Component {
   };
 
   render() {
-    const { title, description, content, contentType, unlisted, visibility, imageLocal } = this.state;
+    const { title, description, content, contentType, unlisted, visibility, imageLocal, currCategory, categories } = this.state;
     return (
       <div>
         <Header />
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
-          <form>
             <Grid
               container
               spacing={4}
@@ -201,22 +202,6 @@ class Newpost extends React.Component {
                         variant="outlined"
                       />}
                   </div>
-                  {/* <div id="category">
-                    <TextField
-                      onChange={(e) => {
-                        this.setState({ category: e.target.value });
-                      }}
-                      style={{
-                        marginLeft: "3%",
-                        marginRight: "3%",
-                        marginTop: "3%",
-                        width: "94%",
-                      }}
-                      id="category"
-                      label="category"
-                      variant="filled"
-                    />
-                  </div> */}
                   {contentType === "image" ?
                     (<div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
                       <div id="format">
@@ -288,7 +273,33 @@ class Newpost extends React.Component {
                       />
                     </div>
                   )}
-
+                  <div id="category">
+                    <div style={{marginLeft: "10%", marginTop: "20px"}}>
+                      {categories.length !== 0 && categories.map((cate, index) => <Chip style={{margin: "3px"}} label={cate} onDelete={() => {
+                        categories.splice(index, 1);
+                        this.setState({categories});
+                      }} color="primary" />)}
+                    </div>
+                    <TextField
+                      onKeyDown={(key) => {
+                        if (key.keyCode === 13) {
+                          categories.push(currCategory);
+                          this.setState({categories, currCategory: ""});
+                        }
+                      }}
+                      value={currCategory}
+                      onChange={(e) => this.setState({currCategory: e.target.value})}
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "20%",
+                      }}
+                      id="category"
+                      label="category"
+                      variant="filled"
+                    />
+                  </div>
                   <div id="visibility">
                     <FormControl
                       component="fieldset"
@@ -372,7 +383,6 @@ class Newpost extends React.Component {
                 </Paper>
               </Grid>
             </Grid>
-          </form>
         </div>
       </div>
     );

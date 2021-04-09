@@ -4,6 +4,7 @@ import CommentForm from "../components/commentForm";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
+import Chip from '@material-ui/core/Chip';
 import ShareIcon from "@material-ui/icons/Share";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import IconButton from "@material-ui/core/IconButton";
@@ -35,6 +36,8 @@ class PostDetail extends React.Component {
       commentOpen: false,
       editOpen: false,
       imageLocal: true,
+      categories: [],
+      currCategory: "",
       domain: props.match.params.domain,
       authorId: props.match.params.authorId,
       postId: props.match.params.postId,
@@ -61,6 +64,8 @@ class PostDetail extends React.Component {
 
     const doc = await axios.get(post_id, config);
 
+    console.log(doc.data);
+
     let post = null;
     if (doc.data.length === undefined) {
       post = doc.data;
@@ -72,7 +77,7 @@ class PostDetail extends React.Component {
       post?.visibility === "PUBLIC" ||
       (post?.author_id === currentUser?.id || post?.author === currentUser?.id )
     ) {
-      this.setState({ post, contentType: post.contentType, title: post.title, content: post.content, description: post.description });
+      this.setState({ post, categories: JSON.parse(post.categorie), contentType: post.contentType, title: post.title, content: post.content, description: post.description });
     }
 
     const doc2 = await axios.get(post_id + "comments/", config);
@@ -159,7 +164,7 @@ class PostDetail extends React.Component {
   };
 
   handleSubmitEdit = async () => {
-    const { post, title, content, description, domain, authorId, postId } = this.state;
+    const { post, title, content, description, domain, authorId, postId, categories } = this.state;
     const {  domains } = this.props;
     let auth = null;
     domains.map(d => {
@@ -176,7 +181,7 @@ class PostDetail extends React.Component {
 
     console.log("content: ", content);
 
-    await axios.put(post.id + "/", {...post, title, description, content }, config);
+    await axios.put(post.id + "/", {...post, title, description, content, categorie: JSON.stringify(categories) }, config);
     window.location = "/posts/" + domain + "/" + authorId + "/" + postId;
   };
 
@@ -202,7 +207,7 @@ class PostDetail extends React.Component {
   };
 
   render() {
-    const { imageLocal, post, title, contentType, description, content, editOpen, commentOpen, author, domain, authorId, postId } = this.state;
+    const { currCategory, categories, imageLocal, post, title, contentType, description, content, editOpen, commentOpen, author, domain, authorId, postId } = this.state;
     const { currentUser } = this.props;
 
     return (
@@ -333,6 +338,43 @@ class PostDetail extends React.Component {
                         ) : (
                           <Typography>Content: {post.content}</Typography>
                         )
+                    }
+                  </div>
+                  <br />
+                  <div id="category">
+                    {
+                      !editOpen ? (
+                        <div style={{marginLeft: "10%", marginTop: "20px"}}>
+                          {categories.length !== 0 && categories.map((cate, index) => <Chip style={{margin: "3px"}} label={cate} color="primary" />)}
+                        </div>
+                      ) : (<div>
+                        <div style={{marginLeft: "10%", marginTop: "20px"}}>
+                          {categories.length !== 0 && categories.map((cate, index) => <Chip style={{margin: "3px"}} label={cate} onDelete={() => {
+                            categories.splice(index, 1);
+                            this.setState({categories});
+                          }} color="primary" />)}
+                        </div>
+                        <TextField
+                          onKeyDown={(key) => {
+                            if (key.keyCode === 13) {
+                              console.log("enter cate")
+                              categories.push(currCategory);
+                              this.setState({categories, currCategory: ""});
+                            }
+                          }}
+                          value={currCategory}
+                          onChange={(e) => this.setState({currCategory: e.target.value})}
+                          style={{
+                            marginLeft: "3%",
+                            marginRight: "3%",
+                            marginTop: "3%",
+                            width: "20%",
+                          }}
+                          id="category"
+                          label="category"
+                          variant="filled"
+                        /></div>
+                      )
                     }
                   </div>
                   <br />
