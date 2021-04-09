@@ -57,7 +57,7 @@ class Post(models.Model):
     categorie = models.JSONField(default=_list,blank = True, null = True)#team1 suggestion
     count = models.IntegerField(default=0,blank=True,null = True)
     size = models.IntegerField(default=0,blank=True,null = True)
-    unlisted = models.BooleanField(default = False)
+    unlisted = models.BooleanField(default = False,blank=True,null = True)
     image = models.FileField(null = True, blank = True)#image url: media/image name/
 
 
