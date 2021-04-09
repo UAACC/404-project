@@ -761,10 +761,10 @@ class LikesViewSet(viewsets.ModelViewSet):
         #current_user = request.user.username
         #print(current_user)
         #author = author_id
-        actor_name = liker.displayName
+        #actor_name = liker.displayName
         
         if is_comments:
-            summary = str(actor_name) + ' liked your comment. '#liker.displayname or some name
+            summary = str(liker) + ' liked your comment. '#liker.displayname or some name
             likes_data = {'type': 'Like', 'summary': summary, 'author': liker, 'object': comment_id, 'context': context}
             Likes.objects.create(summary=summary, author=liker, object=comment_id, context=context)#create author who is an actor
 
@@ -780,7 +780,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             'context': context
             })
         else:
-            summary = str(actor_name) + ' liked your post. ' 
+            summary = str(liker) + ' liked your post. ' 
             likes_data = {'type': 'Like', 'summary': summary, 'author': liker, 'object': post_id, 'context': context}
             Likes.objects.create(summary=summary, author=liker, object=post_id, context=context)
 
