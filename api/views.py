@@ -339,25 +339,40 @@ class PostViewSet(viewsets.ModelViewSet):
                 description = description
                 )
 
-            post.description = description
+            
 
         if contentType:
-            post.contentType = contentType
+            Post.objects.filter(pk=post_id).update(
+                contentType = contentType
+                )
+            
         
         if content:
-            post.content = content
+            Post.objects.filter(pk=post_id).update(
+                content = content
+                )
 
         if count:
-            post.count = count
+            Post.objects.filter(pk=post_id).update(
+                count = count
+                )
         if size:
-            post.size = size
+            Post.objects.filter(pk=post_id).update(
+                size = size
+                )
         
         if categories:
+            Post.objects.filter(pk=post_id).update(
+                categorie = categories
+                )
 
-            post.categorie = categories
+            
 
         if visibility:
-            post.visibility = visibility
+            Post.objects.filter(pk=post_id).update(
+                visibility = visibility
+                )
+           
 
         #post.author = Author.objects.get(id=author_id)
         
