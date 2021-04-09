@@ -235,8 +235,15 @@ class PostViewSet(viewsets.ModelViewSet):
         comments_id = f'{host}/author/{author_uid}/posts/{post_uid}/comments'
 
         title = request.data.get('title')
-        source = request.data.get('source')
-        origin = request.data.get('origin')
+        if request.data.get('source'):
+            source = request.data.get('source')
+        else:
+            source = post_id
+    
+        if request.data.get('origin'):
+            origin = request.data.get('origin')
+        else:
+            origin = post_id
         description = request.data.get('description')
         contentType = request.data.get('contentType')
         content = request.data.get('content')
@@ -252,12 +259,13 @@ class PostViewSet(viewsets.ModelViewSet):
         print('file',file_1)
         img = request.FILES.get('image')
         print('img',img)
+        
 
         Post.objects.create(
             id= post_id,
             title = title,
-            source = post_id,#fix this 
-            origin = post_id,#fix this
+            source = source,#fix this 
+            origin = origin,#fix this
             description = description,
             contentType = contentType,
             content = content,
