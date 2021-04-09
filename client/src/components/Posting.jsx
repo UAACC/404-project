@@ -67,7 +67,7 @@ export default function RecipeReviewCard(props) {
         }
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            {props.post.content}
+            {props.post.contentType !== "image" && props.post.content}
           </Typography>
         </CardContent>
       </CardActionArea>

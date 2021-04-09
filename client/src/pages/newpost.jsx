@@ -29,10 +29,9 @@ class Newpost extends React.Component {
       category: [],
       published: "",
       format: "",
-      image: "",
-      visibility: null,
-      unlisted: null,
-      image: null
+      imageLocal: true,
+      visibility: "PUBLIC",
+      unlisted: false
     };
   }
 
@@ -51,7 +50,7 @@ class Newpost extends React.Component {
       reader.onload = () => {
         var Base64 = reader.result;
         // console.log(Base64);
-        this.setState({ image: Base64 });
+        this.setState({ content: Base64 });
       };
       reader.onerror = (error) => {
         console.log("error: ", error);
@@ -65,7 +64,7 @@ class Newpost extends React.Component {
       return window.alert("You have not filed the form completely.");
     }
     const { domains, currentUser } = this.props;
-    const { title, description, content, contentType, visibility, unlisted, image } = this.state;
+    const { title, description, content, contentType, visibility, unlisted } = this.state;
 
     let auth = null;
     domains.map(d => {
@@ -80,31 +79,19 @@ class Newpost extends React.Component {
       },
     };
 
-    // console.log("image;", image);
-    let doc;
-
-    if (contentType === "image") {
-      doc = await axios.post(
-        currentUser?.id + "/posts/",
-        { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content: image, visibility, unlisted, contentType, published: new Date(), author: currentUser?.id, unlisted: false },
-        config
-      );
-    } else {
-      doc = await axios.post(
+    const doc = await axios.post(
         currentUser?.id + "/posts/",
         { title, source: "", origin: "", categorie: "web", count: 1, size: 1, description, content, visibility, unlisted, contentType, published: new Date(), author: currentUser?.id, unlisted: false },
         config
       );
-    }
-
     
-    // if (doc.data?.id) {
-    //   window.location = `/posts/nofun.herokuapp.com/${currentUser?.id.split("/")[4]}/${doc.data.id.split("/")[6]}/`;
-    // }
+    if (doc.data?.id) {
+      window.location = `/posts/nofun.herokuapp.com/${currentUser?.id.split("/")[4]}/${doc.data.id.split("/")[6]}/`;
+    }
   };
 
   render() {
-    const { title, description, content, contentType, image } = this.state;
+    const { title, description, content, contentType, unlisted, visibility, imageLocal } = this.state;
     return (
       <div>
         <Header />
@@ -160,6 +147,7 @@ class Newpost extends React.Component {
                       <RadioGroup row aria-label="visible" name="visible">
                         <FormControlLabel
                           value="text/plain"
+                          checked={contentType === "text/plain"}
                           control={<Radio />}
                           label="Plain Text"
                         />
@@ -168,33 +156,30 @@ class Newpost extends React.Component {
                           control={<Radio />}
                           label="Image"
                         />
-                        {/* <FormControlLabel
-                          value="markdown"
-                          control={<Radio />}
-                          label="Markdown"
-                        /> */}
                       </RadioGroup>
                     </FormControl>
                   </div>
                   <div id="desc">
-                    <TextField
-                      onChange={(e) => {
-                        this.setState({ description: e.target.value });
-                      }}
-                      id="description"
-                      name="description"
-                      style={{
-                        marginLeft: "3%",
-                        marginRight: "3%",
-                        marginTop: "3%",
-                        width: "94%",
-                      }}
-                      label="Description"
-                      value={description}
-                      multiline
-                      rows={6}
-                      variant="outlined"
-                    />
+                    {
+                      contentType === "image" && 
+                      <TextField
+                        onChange={(e) => {
+                          this.setState({ description: e.target.value });
+                        }}
+                        id="description"
+                        name="description"
+                        style={{
+                          marginLeft: "3%",
+                          marginRight: "3%",
+                          marginTop: "3%",
+                          width: "94%",
+                        }}
+                        label="Description"
+                        value={description}
+                        multiline
+                        rows={2}
+                        variant="outlined"
+                      />}
                   </div>
                   {/* <div id="category">
                     <TextField
@@ -214,11 +199,53 @@ class Newpost extends React.Component {
                   </div> */}
                   {contentType === "image" ?
                     <div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
+                      <div id="format">
+                    <FormControl
+                      component="fieldset"
+                      style={{
+                        marginLeft: "3%",
+                        marginRight: "3%",
+                        marginTop: "3%",
+                        width: "94%",
+                      }}
+                      onChange={(e) => {
+                        this.setState({ imageLocal: e.target.value === "true" });
+                      }}
+                    >
                       <FormLabel component="legend">
-                        Upload an image
+                        How do you want to upload the image?
+                      </FormLabel>
+                      <RadioGroup row aria-label="visible" name="visible">
+                        <FormControlLabel
+                          value={"true"}
+                          checked={imageLocal}
+                          control={<Radio />}
+                          label="Local Image"
+                        />
+                        <FormControlLabel
+                          value={"false"}
+                          checked={!imageLocal}
+                          control={<Radio />}
+                          label="URL"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                  {
+                    imageLocal ?
+                      <div>
+                      <FormLabel style={{marginRight: "20px"}}>
+                        Upload an Image from local machine
                       </FormLabel>
                       <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
-                      {image && <img src={image} style={{width: "40%"}} />}
+                      </div>
+                      :
+                      <div>
+                        <FormLabel style={{marginTop: "30px", marginRight: "20px"}}>Input image URL</FormLabel>
+                        <TextField style={{width: "80%"}} label="Image" onChange={(e) => this.setState({content: e.target.value})}/>
+                      </div>
+                  }
+                      {content && <img src={content} style={{width: "40%"}} />}
                     </div>
                     :
                     <div id="content">
@@ -262,6 +289,7 @@ class Newpost extends React.Component {
                       <RadioGroup row aria-label="visible" name="visible">
                         <FormControlLabel
                           value="PUBLIC"
+                          checked={visibility === 'PUBLIC'}
                           control={<Radio />}
                           label="Public"
                         />
@@ -269,11 +297,6 @@ class Newpost extends React.Component {
                           value="FRIENDS"
                           control={<Radio />}
                           label="Only for friends"
-                        />
-                        <FormControlLabel
-                          value="PRIVATE"
-                          control={<Radio />}
-                          label="Private"
                         />
                       </RadioGroup>
                     </FormControl>
@@ -301,6 +324,7 @@ class Newpost extends React.Component {
                       <RadioGroup row aria-label="unlisted" name="unlisted">
                         <FormControlLabel
                           value="false"
+                          checked={!unlisted}
                           control={<Radio />}
                           label="Yes"
                         />

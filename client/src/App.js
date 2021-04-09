@@ -3,13 +3,12 @@ import { Route, BrowserRouter, Switch } from "react-router-dom";
 import Main from "./pages/main";
 import SignIn from "./pages/signin";
 import SignUp from "./pages/signup";
-import Header from "./components/Header";
 import Newpost from "./pages/newpost";
 import Editpost from "./pages/editpost";
 import Inbox from "./pages/inbox";
 import ProfilePage from "./pages/profile";
 import PostDetail from "./pages/post-detail";
-// import RemotePostDetail from "./pages/remote-post-detail";
+import ImageDetail from "./pages/image-page";
 import axios from "axios";
 import { connect } from "react-redux";
 import { setCurrentDomain } from "./redux/domain/domain-actions";
@@ -46,8 +45,8 @@ class App extends React.Component {
           <Route path="/authors/:domain/:id" component={ProfilePage} />
           <Route exact path="/posts" component={Main} />
           <Route path="/posts/edit/:id" component={Editpost} />
+          <Route path="/posts/:domain/:authorId/:postId/image" component={ImageDetail} />
           <Route path="/posts/:domain/:authorId/:postId" component={PostDetail} />
-          {/* <Route path="/remotepostdetail/:id" component={RemotePostDetail} /> */}
         </Switch>
       </BrowserRouter>
     );

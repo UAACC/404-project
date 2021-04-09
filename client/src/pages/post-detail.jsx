@@ -1,8 +1,6 @@
 import React from "react";
 import CommentCard from "../components/commentCard";
 import CommentForm from "../components/commentForm";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
@@ -14,6 +12,13 @@ import { Container, TextField, Avatar } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Header from "../components/Header";
 import { connect } from "react-redux";
+import Radio from "@material-ui/core/Radio";
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
 
 
 class PostDetail extends React.Component {
@@ -29,6 +34,7 @@ class PostDetail extends React.Component {
       description: "",
       commentOpen: false,
       editOpen: false,
+      imageLocal: true,
       domain: props.match.params.domain,
       authorId: props.match.params.authorId,
       postId: props.match.params.postId,
@@ -63,10 +69,10 @@ class PostDetail extends React.Component {
     }
 
     if (
-      post.visibility === "PUBLIC" ||
-      (post.visibility === "PUBLIC" && (post.author_id === currentUser?.id || post.author === currentUser?.id ))
+      post?.visibility === "PUBLIC" ||
+      (post?.author_id === currentUser?.id || post?.author === currentUser?.id )
     ) {
-      this.setState({ post, title: post.title, content: post.content, description: post.description });
+      this.setState({ post, contentType: post.contentType, title: post.title, content: post.content, description: post.description });
     }
 
     const doc2 = await axios.get(post_id + "comments/", config);
@@ -130,6 +136,20 @@ class PostDetail extends React.Component {
     this.componentDidMount();
   };
 
+  encodeFileBase64 = (file) => {
+    var reader = new FileReader();
+    if (file) {
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        var Base64 = reader.result;
+        this.setState({ content: Base64 });
+      };
+      reader.onerror = (error) => {
+        console.log("error: ", error);
+      };
+    }
+  };
+
   handleEdit = () => {
     const { post } = this.state;
     const { id } = this.props.currentUser;
@@ -153,6 +173,9 @@ class PostDetail extends React.Component {
         "Authorization": auth,
       },
     };
+
+    console.log("content: ", content);
+
     await axios.put(post.id + "/", {...post, title, description, content }, config);
     window.location = "/posts/" + domain + "/" + authorId + "/" + postId;
   };
@@ -179,7 +202,7 @@ class PostDetail extends React.Component {
   };
 
   render() {
-    const { post, title, description, content, editOpen, commentOpen, author } = this.state;
+    const { imageLocal, post, title, contentType, description, content, editOpen, commentOpen, author, domain, authorId, postId } = this.state;
     const { currentUser } = this.props;
 
     return (
@@ -209,7 +232,11 @@ class PostDetail extends React.Component {
                     <Typography>{post.published.split("T")[0]}</Typography>
                     <Typography>Type: {post.contentType}</Typography>
                     {post.contentType.includes("image") && (
-                      <img src={post.content} style={{ width: "500px" }} />
+                      !editOpen && <img src={post.content} style={{ width: "500px" }} onClick={
+                        () => {
+                          window.location = "/posts/" + domain + "/" + authorId + "/" + postId +"/image/"
+                        }
+                      }/>
                     )}
                     {editOpen ? (
                       <TextField
@@ -224,7 +251,7 @@ class PostDetail extends React.Component {
                         Title: {post.title}
                       </Typography>
                     )}
-                    {editOpen ? (
+                    {contentType === "image" && (editOpen ? (
                       <TextField
                         label="description"
                         value={description}
@@ -234,18 +261,79 @@ class PostDetail extends React.Component {
                       />
                     ) : (
                       <Typography>Description: {post.description}</Typography>
-                    )}
-                    {editOpen ? (
-                      <TextField
-                        label="content"
-                        value={content}
-                        onChange={(e) =>
-                          this.setState({ content: e.target.value })
-                        }
-                      />
-                    ) : (
-                      <Typography>Content: {post.content}</Typography>
-                    )}
+                    ))}
+                    {
+                      contentType === "image" ?
+                        editOpen && (
+                          <div className="row" id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
+                            <FormControl
+                              component="fieldset"
+                              style={{
+                                marginLeft: "3%",
+                                marginRight: "3%",
+                                marginTop: "3%",
+                                width: "94%",
+                              }}
+                              onChange={(e) => {
+                                this.setState({ imageLocal: e.target.value === "true" });
+                              }}
+                            >
+                              <FormLabel component="legend">
+                                How do you want to upload the image?
+                              </FormLabel>
+                              <RadioGroup row aria-label="visible" name="visible">
+                                <FormControlLabel
+                                  value={"true"}
+                                  checked={imageLocal}
+                                  control={<Radio />}
+                                  label="Local Image"
+                                />
+                                <FormControlLabel
+                                  value={"false"}
+                                  checked={!imageLocal}
+                                  control={<Radio />}
+                                  label="URL"
+                                />
+                              </RadioGroup>
+                            </FormControl>
+                            {
+                              imageLocal ?
+                                <div>
+                                <FormLabel style={{marginRight: "20px"}}>
+                                  Upload an Image from local machine
+                                </FormLabel>
+                                <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
+                                </div>
+                                :
+                                <div>
+                                  <FormLabel style={{marginTop: "30px", marginRight: "20px"}}>Input image URL</FormLabel>
+                                  <TextField style={{width: "80%"}} label="Image" onChange={(e) => this.setState({content: e.target.value})}/>
+                                </div>
+                            }
+                            {content && <div>
+                              <img src={content} style={{width: "40%"}} />
+                              <IconButton
+                                style={{ marginLeft: "3%", color: "red" }}
+                                onClick={() => this.setState({content: ""})}
+                              >
+                                X
+                              </IconButton>
+                            </div>}
+                          </div>
+                        )
+                        :
+                        editOpen ? (
+                          <TextField
+                            label="content"
+                            value={content}
+                            onChange={(e) =>
+                              this.setState({ content: e.target.value })
+                            }
+                          />
+                        ) : (
+                          <Typography>Content: {post.content}</Typography>
+                        )
+                    }
                   </div>
                   <br />
                   <br />
