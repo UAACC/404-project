@@ -298,7 +298,7 @@ class PostViewSet(viewsets.ModelViewSet):
         # print(followers_request)
         followers = []
         for request in followers_request:
-            followers.append(request["from_user_id"])
+            followers.append(request["from_user"])
         print(followers)
         post_data2 = {'type': 'post','title': title,'source': source,
                      'origin': origin, 'description': description, 'contentType': contentType,
@@ -481,15 +481,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = real_post_id
         comment_uuid = uuid.uuid4().hex
         comment_id = post_id + "/comments/" + comment_uuid
-        # current_user_id = request.user.id
+        current_user_id = request.user.id
         
         comment = request.data.get('comment')
         contentType = request.data.get('contentType')
 
-        comment_data = {'type': 'comment', 'author': real_author_id, 'post': post_id, 
+        comment_data = {'type': 'comment', 'author': current_user_id, 'post': post_id, 
                         'comment': comment, 'contentType': contentType, 'id': comment_id}
 
-        Comment.objects.create( author= real_author_id, post= post_id, 
+        Comment.objects.create( author= current_user_id, post= post_id, 
                         comment=comment, contentType=contentType, id=comment_id)
 
 
@@ -757,79 +757,78 @@ class LikesViewSet(viewsets.ModelViewSet):
             comment_id = post_id + "/comments/" + comment_uuid
 
         context = ''
+        current_user = request.user.username
+        print(current_user)
         author = author_id
         if is_comments:
-            summary = 'An author liked your comment. '
-            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': comment_id, 'context': context}
+            summary = str(current_user) + ' liked your comment. '
+            likes_data = {'type': 'Like', 'summary': summary, 'author': author, 'object': comment_id, 'context': context}
             Likes.objects.create(summary=summary, author=author, object=comment_id, context=context)
+
+            # add to object author's inbox
+            receiver_id = author_id
+            Inbox.objects.create(author=receiver_id, items=likes_data)
+
+            return Response({
+            'type': 'Like', 
+            'summary': summary, 
+            'author': author, 
+            'object': comment_id, 
+            'context': context
+            })
         else:
-            summary = 'An author liked your post. ' 
-            likes_data = {'type': Like, 'summary': summary, 'author': author, 'object': post_id, 'context': context}
+            summary = str(current_user) + ' liked your post. ' 
+            likes_data = {'type': 'Like', 'summary': summary, 'author': author, 'object': post_id, 'context': context}
             Likes.objects.create(summary=summary, author=author, object=post_id, context=context)
 
+            # add to object author's inbox
+            receiver_id = author_id
+            Inbox.objects.create(author=receiver_id, items=likes_data)
 
-        return Response(list(likes_data))
+            return Response({
+                'type': 'Like', 
+                'summary': summary, 
+                'author': author, 
+                'object': post_id, 
+                'context': context
+            })
+        
 
+    # get a list of likes for this post
+    def get_postLike_list(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        post_uuid = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
 
-# class LikeViewSet(viewsets.ModelViewSet):
-#     queryset = Like.objects.all()
-#     serializer_class = LikeSerializer
-#     #authentication_classes = (TokenAuthentication, )
-#     # permission_classes = (AllowAny, )
-
-#     def create(self, request):
-#         author = Author.objects.get(username=request.user)
-#         try:
-#             commentId = request.data['comment']
-#             comment = Comment.objects.get(id=commentId)
-#             try:
-#                 like = Like.objects.get(author=author, comment=comment)
-#                 like.delete()
-
-#                 return HttpResponse('Good request, like is deleted')
-#             except:
-#                 Like.objects.create(author=author, comment=comment)
-#                 return HttpResponse('Good request, like is created')
-#         except:
-#             try:
-#                 postId = request.data['post']
-#                 post = Post.objects.get(id=postId)
-#                 try:
-#                     like = Like.objects.get(author=author, post=post)
-#                     like.delete()
-#                     return HttpResponse('Good request, like is deleted')
-#                 except:
-#                     Like.objects.create(author=author, post=post)
-#                     return HttpResponse('Good request, like is created')
-#             except:
-#                 return HttpResponse('Bad request')
-
-
-@api_view(['GET'])
-def postLike(request, *args, **kwargs):
-    request_str = str(request)
-    # author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
-    response_body = []
-    if Like.objects.filter(post=Post.objects.get(id=post_id)).exists():
-        item =  Like.objects.filter(post=Post.objects.get(id=post_id)).values()
+        author_id = host + "author/" + author_uuid
+        post_id = author_id + "/posts/" + post_uuid
+        
+        response_body = []
+        item =  Likes.objects.filter(object=post_id).values()
         response_body.append(item)
         return Response(response_body)
-    return Response("No like for this post")
 
 
-@api_view(['GET'])
-def commentLike(request, *args, **kwargs):
-    request_str = str(request)
-    # author_id = request_str.split("/")[2]   # currently the author_id is the pure UUID
-    post_id = request_str.split("/")[4]     # post_id: 1, 2, 3, ...
-    comment_id = request_str.split("/")[6]
-    response_body = []
-    if Like.objects.filter(post=Post.objects.get(id=post_id), comment=Comment.objects.get(id=comment_id)).exists():
-        item =  Like.objects.filter(post=Post.objects.get(id=post_id), comment=Comment.objects.get(id=comment_id)).values()
+    # get a list of like for this comment
+    def get_commentLike_list(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        post_uuid = request_str.split("/")[4]     
+        host = "https://nofun.herokuapp.com/"
+
+        author_id = host + "author/" + author_uuid
+        post_id = author_id + "/posts/" + post_uuid
+        is_comments = False
+        if '/comments/' in request_str:
+            is_comments = True
+            comment_uuid = request_str.split("/")[6]
+            comment_id = post_id + "/comments/" + comment_uuid
+
+        response_body = []
+        item =  Likes.objects.filter(object=comment_id).values()
         response_body.append(item)
         return Response(response_body)
-    return Response("No like for this post")
 
 
 @api_view(['GET'])
@@ -869,13 +868,7 @@ class InboxViewSet(viewsets.ModelViewSet):
             request_list = FriendRequest.objects.filter(to_user=author_id, status="R").values()
 
 
-        #TODO get likes info from database(only retrive)
-
-        #TODO get share posts info from database(only retrive)
-
-        #TODO get comments info from database(only retrive)
-
-        #TODO get posts info from database(only retrive)
+        #TODO get likes, comment, posts info from inbox
         item_list = Inbox.objects.filter(author=author_id).values()
 
         # return all info with chain(queryset1, queryset2, ...)

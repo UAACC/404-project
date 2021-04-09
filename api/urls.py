@@ -45,8 +45,8 @@ urlpatterns = [
 
 
      # Like/Likes/Liked
-     path("author/<str:author_id>/posts/<str:post_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),     # wrong
-     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", LikesViewSet.as_view({'post': 'create_likes'})),       #wrong
+     path("author/<str:author_id>/posts/<str:post_id>/likes/", LikesViewSet.as_view({'post': 'create_likes', 'get': 'get_postLike_list'})),   
+     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/", LikesViewSet.as_view({'post': 'create_likes', 'get': 'get_commentLike_list'})),   
      path("author/<str:author_id>/liked/", views.likedList),        
 
 
