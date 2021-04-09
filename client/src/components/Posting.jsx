@@ -47,7 +47,7 @@ export default function RecipeReviewCard(props) {
       <CardActionArea onClick={() => props.handleClick()}>
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
+          <Avatar aria-label="recipe" style={{backgroundColor: "grey"}} className={classes.avatar}>
           </Avatar>
         }
         action={
