@@ -58,7 +58,7 @@ urlpatterns = [
      path("friendrequest/delete/", FriendRequestViewSet.as_view({"patch": "delete"})),  
      path("author/<str:author_id>/followers/", FriendRequestViewSet.as_view({"get": "get_follower_list"})),
      path("author/<str:author_id>/followers/<str:foreign_author_id>/", FriendRequestViewSet.as_view({"get": "is_follower", "put": "put_follower", "delete": "remove_follower"})), 
-
+     path("author/<str:author_id>/friends/", FriendRequestViewSet.as_view({"get": "get_friend_list"})),
 
      # Inbox URL
      path("author/<str:author_id>/inbox/", InboxViewSet.as_view({"get": "all_info_list"})),

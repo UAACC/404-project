@@ -620,6 +620,25 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             'items': items
         })
 
+
+    def get_friend_list(self, request, *args, **kwargs):
+        # get list of friend only
+        request = str(request)
+        author_uuid = request.split("/")[2]
+        host = "https://nofun.herokuapp.com/"
+        author_id = host + "author/" + author_uuid
+        current_user = Author.objects.get(id=author_id)
+        items = []
+        # follower_list = {"type": "followers", "items": []}
+        for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
+            follower_id=item["from_user_id"]
+            this_follower = Author.objects.filter(id=follower_id)
+            items.append(this_follower.values()[0])
+        return Response({
+            'type': 'followers',
+            'items': items
+        })
+
     
     def is_follower(self, request, *args, **kwargs):
         # check if author2 is author1's follower
