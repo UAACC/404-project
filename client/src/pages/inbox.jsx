@@ -95,10 +95,12 @@ class Inbox extends React.Component {
     this.setState({ requests: requests_list });
 
     //literate through items and append displayname to each item
-    for (let req of requests_list) {
-      var docc = await axios.get(req.from_user_id, config);
-      var request_username = docc.data.displayName;
-      req.name = request_username;
+    if (requests_list != null) {
+      for (let req of requests_list) {
+        var docc = await axios.get(req.from_user_id, config);
+        var request_username = docc.data.displayName;
+        req.name = request_username;
+      }
     }
     this.setState({ request: requests_list });
     console.log(this.state.requests);
@@ -212,14 +214,18 @@ class Inbox extends React.Component {
           >
             <Tab label="comments" {...a11yProps(0)} />
             <Tab label="likes" {...a11yProps(1)} />
-            <Tab
-              label={
-                <Badge badgeContent={requests.length} color="primary">
-                  Friend Requsets
-                </Badge>
-              }
-              {...a11yProps(2)}
-            />
+            {requests != null && requests.length < 1 ? (
+              <Tab
+                label={
+                  <Badge badgeContent={requests.length} color="primary">
+                    Friend Requsets
+                  </Badge>
+                }
+                {...a11yProps(2)}
+              />
+            ) : (
+              <Tab label="Friend Requsets" {...a11yProps(2)} />
+            )}
           </Tabs>
           <TabPanel value={this.state.value} index={0}>
             comments
@@ -235,7 +241,7 @@ class Inbox extends React.Component {
               alignItems="flex-start"
             >
               <Grid item xs={12}>
-                {requests.length !== 0 ? (
+                {requests != null && requests.length < 1 ? (
                   requests.map((doc) => (
                     <Card style={{ marginTop: "2%" }}>
                       <CardActions>

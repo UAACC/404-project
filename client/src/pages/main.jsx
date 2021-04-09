@@ -11,13 +11,13 @@ import Typography from "@material-ui/core/Typography";
 import axios from "axios";
 
 class Followers extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       items: [],
       currCategory: "",
-      friends:[]
-    }
+      friends: [],
+    };
   }
 
   componentDidMount = async () => {
@@ -26,20 +26,24 @@ class Followers extends React.Component {
     const id = currentUser.id;
 
     const id_digit = id.split("/")[4];
-    
-    const doc = await axios.get(`https://nofun.herokuapp.com/author/${id_digit}/followers/`);
+
+    const doc = await axios.get(
+      `https://nofun.herokuapp.com/author/${id_digit}/followers/`
+    );
     if (doc.data) {
-      this.setState({items: doc.data.items});
+      this.setState({ items: doc.data.items });
     }
 
-    const frienddoc = await axios.get(`https://nofun.herokuapp.com/author/${id_digit}/friends/`);
-    if(doc.data) {
-      this.setState({friends: frienddoc.data.items})
+    const frienddoc = await axios.get(
+      `https://nofun.herokuapp.com/author/${id_digit}/friends/`
+    );
+    if (doc.data) {
+      this.setState({ friends: frienddoc.data.items });
     }
   };
 
   render() {
-    const { items,friends }  = this.state;
+    const { items, friends, currCategory } = this.state;
     return (
       <div>
         <Header />
@@ -54,13 +58,15 @@ class Followers extends React.Component {
             alignItems="flex-start"
           >
             <Grid item xs={10} sm={8}>
-              <PostsScroll currCategory={currCategory}/>
+              <PostsScroll currCategory={currCategory} />
             </Grid>
             <Grid item xs={10} sm={4}>
-              <h5>Search Posts by Category</h5>
+              <h6>Search Posts by Category</h6>
               <TextField
                 value={currCategory}
-                onChange={(e) => this.setState({currCategory: e.target.value})}
+                onChange={(e) =>
+                  this.setState({ currCategory: e.target.value })
+                }
                 style={{
                   marginLeft: "3%",
                   marginRight: "3%",
@@ -71,31 +77,32 @@ class Followers extends React.Component {
                 label="category"
                 variant="filled"
               />
-              <br /><br />
-              <h5>Followers: {items.length} person(s)</h5>
-              {
-                items.map(f => {
-                  return <Card>
-                  <CardContent width={1}>
-                    <Typography color="textSecondary">
-                      {f.displayName}
-                    </Typography>
-                  </CardContent>
-                </Card>
-                })
-              }
-              <h5>Friends: {items.length} person(s)</h5>
-              {
-                friends.map(f => {
-                  return <Card>
-                  <CardContent width={1}>
-                    <Typography color="textSecondary">
-                      {f.displayName}
-                    </Typography>
-                  </CardContent>
-                </Card>
-                })
-              }
+              <br />
+              <br />
+              <h7>Followers: {items.length} person(s)</h7>
+              {items.map((f) => {
+                return (
+                  <Card>
+                    <CardContent width={1}>
+                      <Typography color="textSecondary">
+                        {f.displayName}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              <h7>Friends: {friends.length} person(s)</h7>
+              {friends.map((f) => {
+                return (
+                  <Card>
+                    <CardContent width={1}>
+                      <Typography color="textSecondary">
+                        {f.displayName}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </Grid>
           </Grid>
         </div>
@@ -104,10 +111,8 @@ class Followers extends React.Component {
   }
 }
 
-
 // redux
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
 });
 export default connect(mapStateToProps)(Followers);
-
