@@ -235,6 +235,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comments_id = f'{host}/author/{author_uid}/posts/{post_uid}/comments'
 
         title = request.data.get('title')
+        
         if request.data.get('source'):
             source = request.data.get('source')
         else:
