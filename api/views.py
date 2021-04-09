@@ -757,7 +757,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             comment_id = post_id + "/comments/" + comment_uuid
 
         context = ''
-        liker = request.data.get（'liker',None)# author ID
+        liker = request.data.get('liker',None)# author ID
         #current_user = request.user.username
         #print(current_user)
         #author = author_id
