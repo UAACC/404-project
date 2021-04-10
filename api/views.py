@@ -777,20 +777,8 @@ class LikesViewSet(viewsets.ModelViewSet):
             comment_id = post_id + "/comments/" + comment_uuid
 
         context = ''
-        actor = request.data.get('actor',None)# author ID
+        actor = request.data.get('author',None)# author ID
 
-        try:
-
-            actor = Author.objects.get(pk = actor)
-
-        except:
-
-            pass
-        
-        #current_user = request.user.username
-        #print(current_user)
-        #author = author_id
-        #actor_name = liker.displayName
         
         if is_comments:
             summary = str(actor) + ' liked your comment. '#actor.displayname or some name
