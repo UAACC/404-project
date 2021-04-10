@@ -580,7 +580,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         # accept incoming friend request
         # request_from_user_id = Author.objects.get(id=request.data["from_user"])
         request_from_user_id = request.data["from_user"]
-        current_user_id = Author.objects.get(id=request.data["to_user"])
+        current_user_id = request.data["to_user"])
 
         if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
             # Check if the request has already been accepted
@@ -601,7 +601,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         # decline incoming friend request
         # request_from_user_id = Author.objects.get(id=request.data["from_user"])
         request_from_user_id = request.data["from_user"]
-        current_user_id = Author.objects.get(id=request.data["to_user"])
+        current_user_id = request.data["to_user"]
         if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
             # Check if the request has already been accepted
             return Response("Unable to decline because you had already accepted it!")
@@ -622,7 +622,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         # delete friend(only available when the status of request is 'Accepted')
         # user_1 = Author.objects.get(id=request.data["from_user"])
         user_1 = request.data["from_user"]
-        user_2 = Author.objects.get(id=request.data["to_user"])
+        user_2 = request.data["to_user"]
         if FriendRequest.objects.filter(from_user=user_1, to_user=user_2, status='A').exists():
             # user1 create the friend request and user1 delete
             FriendRequest.objects.filter(
@@ -644,7 +644,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         host = "https://nofun.herokuapp.com/"
         author_id = host + "author/" + author_uuid
         #print('22222',author_id)
-        current_user = Author.objects.get(id=author_id)
+        #current_user = Author.objects.get(id=author_id)
         #print('1111',current_user)
         items = []
         for item in FriendRequest.objects.filter(to_user=author_id, status='R').values():
@@ -673,10 +673,10 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         author_uuid = request.split("/")[2]
         host = "https://nofun.herokuapp.com/"
         author_id = host + "author/" + author_uuid
-        current_user = Author.objects.get(id=author_id)
+        
         items = []
         # follower_list = {"type": "followers", "items": []}
-        for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
+        for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
             follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
