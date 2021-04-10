@@ -6,6 +6,6 @@ django-cors-headers
 django-heroku
 gunicorn
 Pillow==8.0.1
-
+numpy
 
 

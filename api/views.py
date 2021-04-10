@@ -16,6 +16,7 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_list_or_404, get_object_or_404
 import uuid
 from itertools import chain
+import numpy as np
 
 
 # =====================================================================================================================================
@@ -657,10 +658,19 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
+
         for item in FriendRequest.objects.filter(to_user=author_id, status='D').values():
             follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
+
+        for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
+            follower_id=item["to_user"]
+            this_follower = Author.objects.filter(id=follower_id)
+            items.append(this_follower.values()[0])
+            
+        items = np.unique(items)
+
         return Response({
             'type': 'followers',
             'items': items
@@ -680,8 +690,15 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
+        for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
+            follower_id=item["to_user"]
+            this_follower = Author.objects.filter(id=follower_id)
+            items.append(this_follower.values()[0])
+        
+        items = np.unique(items)
+        
         return Response({
-            'type': 'followers',
+            'type': 'friends',
             'items': items
         })
 
