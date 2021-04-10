@@ -673,7 +673,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         items = []
         # follower_list = {"type": "followers", "items": []}
         for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
-            follower_id=item["from_user_id"]
+            follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
         return Response({
