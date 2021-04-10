@@ -646,15 +646,15 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         current_user = Author.objects.get(id=author_id)
         items = []
         for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
-            follower_id=item["from_user_id"]
+            follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
         for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
-            follower_id=item["from_user_id"]
+            follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
         for item in FriendRequest.objects.filter(to_user=current_user, status='D').values():
-            follower_id=item["from_user_id"]
+            follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
         return Response({
