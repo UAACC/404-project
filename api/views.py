@@ -580,7 +580,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         # accept incoming friend request
         # request_from_user_id = Author.objects.get(id=request.data["from_user"])
         request_from_user_id = request.data["from_user"]
-        current_user_id = request.data["to_user"])
+        current_user_id = request.data["to_user"]
 
         if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
             # Check if the request has already been accepted
