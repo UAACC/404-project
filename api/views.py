@@ -668,8 +668,8 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             follower_id=item["to_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
-            
-        items = np.unique(items)
+
+        
 
         return Response({
             'type': 'followers',
@@ -695,7 +695,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
         
-        items = np.unique(items)
+        
         
         return Response({
             'type': 'friends',
