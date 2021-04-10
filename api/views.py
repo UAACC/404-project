@@ -481,15 +481,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = real_post_id
         comment_uuid = uuid.uuid4().hex
         comment_id = post_id + "/comments/" + comment_uuid
-        current_user_id = request.user.id
+        author = request.data.get('author')
         
         comment = request.data.get('comment')
         contentType = request.data.get('contentType')
 
-        comment_data = {'type': 'comment', 'author': current_user_id, 'post': post_id, 
+        comment_data = {'type': 'comment', 'author': author, 'post': post_id, 
                         'comment': comment, 'contentType': contentType, 'id': comment_id}
 
-        Comment.objects.create( author= current_user_id, post= post_id, 
+        Comment.objects.create( author= author, post= post_id, 
                         comment=comment, contentType=contentType, id=comment_id)
 
 
@@ -764,7 +764,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             actor = Author.objects.get(pk = actor)
 
         except:
-            
+
             pass
         
         #current_user = request.user.username
