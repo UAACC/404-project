@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
-from .serializers import NodeSerializer, AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer, LikesSerializer, InboxSerializer
+from .serializers import NodeSerializer, AuthorSerializer, PostSerializer, CommentSerializer, LikeSerializer, LikesSerializer, InboxSerializer,Author_neat_Serializer
 from .models import Node, Author, Post, Like, Comment, FriendRequest, Likes, Inbox
 from .serializers import FriendRequestSerializer
 from django.http import JsonResponse, HttpResponse
@@ -47,13 +47,14 @@ class AuthorViewSet(viewsets.ModelViewSet):
         #request_str = str(request)
         #author_id = request_str.split("/")[2]
         #print(author_id)
-        #self.static_author_id = author_id#give global to use
+        #self.static_author_id = author_id
+        #give global to use
         host = 'https://nofun.herokuapp.com'
         author_id= f'{host}/author/{author_uid}'
         queryset = Author.objects.get(id=author_id)
         
-        serializer = AuthorSerializer(queryset)
-        return Response(serializer.data)
+        serializer = Author_neat_Serializer(queryset)
+        return Response(serializer.data)#t5
 
     def create_1(self, request, *args, **kwargs):
         display_name = request.data.get('displayName')

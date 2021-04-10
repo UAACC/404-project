@@ -25,6 +25,11 @@ class CommentSerializer(serializers.ModelSerializer):
         # fields = ['id', 'content', 'author', 'post', 'likes', 'published']
         fields = ['type', 'author', 'post', 'comment', 'contentType', 'published', 'id']
 
+class Author_neat_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ('type','id', 'host', 'displayName', 'url', 'github','username')
+
 
 class AuthorSerializer(serializers.ModelSerializer):
 
