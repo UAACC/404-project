@@ -758,6 +758,8 @@ class LikesViewSet(viewsets.ModelViewSet):
 
         context = ''
         actor = request.data.get('actor',None)# author ID
+        try:
+            actor = Author.objects.get(pk = actor)
         
         #current_user = request.user.username
         #print(current_user)
