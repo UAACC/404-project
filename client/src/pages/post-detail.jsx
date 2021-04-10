@@ -45,7 +45,7 @@ class PostDetail extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { currentUser, domains } = this.props;
+    const { currentUser, domains, userFriends } = this.props;
     const { domain, authorId, postId } = this.state;
     let auth = null;
     domains.map(d => {
@@ -64,18 +64,17 @@ class PostDetail extends React.Component {
 
     const doc = await axios.get(post_id, config);
 
-    console.log(doc.data);
-
     let post = null;
     if (doc.data.length === undefined) {
       post = doc.data;
     } else {
       post = doc.data[0];
     }
-
+    
     if (
-      post?.visibility === "PUBLIC" ||
-      (post?.author_id === currentUser?.id || post?.author === currentUser?.id )
+      (post?.visibility === "PUBLIC" && !post?.unlisted) ||
+      (post?.author_id === currentUser?.id || post?.author === currentUser?.id ) ||
+      (userFriends?.includes(post?.author ?? post?.author_id) && !post?.unlisted)
     ) {
       this.setState({ post, categories: JSON.parse(post.categorie), contentType: post.contentType, title: post.title, content: post.content, description: post.description });
     }
@@ -505,6 +504,7 @@ class PostDetail extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  userFriends: state.user.userFriends,
   domains: state.domain.domains
 });
 

@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import { TextField } from "@material-ui/core";
 import Link from "@material-ui/core/Link";
 import { connect } from "react-redux";
-import { setCurrentUser } from "../redux/user/useractions";
+import { setCurrentUser, setUserFriends } from "../redux/user/useractions";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 class SignInPage extends React.Component {
@@ -29,7 +29,6 @@ class SignInPage extends React.Component {
 
   handleSaveUser = async (data) => {
     await this.props.setCurrentUser(data);
-    window.location = "/";
   };
 
   handleSubmit = async (event) => {
@@ -57,9 +56,12 @@ class SignInPage extends React.Component {
         config
       );
       console.log(doc.data);
-      doc.data === false
-        ? window.alert("You have to wait for admin to approve your account!")
-        : this.handleSaveUser(doc.data);
+      if (doc.data === false) {
+        window.alert("You have to wait for admin to approve your account!")
+      } else {
+        await this.handleSaveUser(doc.data);
+        window.location = "/";
+      }
     } catch {
       window.alert("Wrong crendentials!");
     }
@@ -147,6 +149,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+  setUserFriends: (friends) => dispatch(setUserFriends(friends))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignInPage);

@@ -82,7 +82,7 @@ class Followers extends React.Component {
               <h7>Followers: {items.length} person(s)</h7>
               {items.map((f) => {
                 return (
-                  <Card>
+                  <Card style={{margin: "5px"}} onClick={() => window.location = "/authors/" + f.id.split("/")[2] + "/" + f.id.split("/")[4]}>
                     <CardContent width={1}>
                       <Typography color="textSecondary">
                         {f.displayName}
@@ -91,11 +91,12 @@ class Followers extends React.Component {
                   </Card>
                 );
               })}
+              <br />
               <h7>Friends: {friends.length} person(s)</h7>
               {friends.map((f) => {
                 return (
-                  <Card>
-                    <CardContent width={1}>
+                  <Card style={{margin: "5px"}} onClick={() => window.location = "/authors/" + f.id.split("/")[2] + "/" + f.id.split("/")[4]}>
+                    <CardContent  width={1}>
                       <Typography color="textSecondary">
                         {f.displayName}
                       </Typography>

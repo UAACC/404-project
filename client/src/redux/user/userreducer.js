@@ -2,6 +2,7 @@ import { UserActionTypes } from "./usertypes";
 
 const INITIAL_STATE = {
   currentUser: false,
+  userFriends: []
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
@@ -11,6 +12,11 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         currentUser: action.payload,
       };
+    case UserActionTypes.SET_USER_FRIENDS:
+      return {
+        ...state,
+        userFriends: action.payload
+      }
     default:
       return state;
   }

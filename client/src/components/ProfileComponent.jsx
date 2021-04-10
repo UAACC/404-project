@@ -30,9 +30,8 @@ class ProfileCard extends React.Component {
   }
 
   handleEditProfile = async () => {
-    const { id } = this.state;
     const { domains, domain } = this.props;
-    const { email, github, password, displayName } = this.state;
+    const { id, email, github, password, displayName } = this.state;
     let auth = null;
 
     domains.map(d => {
@@ -43,7 +42,7 @@ class ProfileCard extends React.Component {
 
     const config = {
       headers: {
-        Authorization: auth,
+        "Authorization": auth,
       },
     };
 
@@ -57,9 +56,7 @@ class ProfileCard extends React.Component {
 
   handleAddFriend = async () => {
     const {  id } = this.state;
-    const { domain } = this.props;
-    const { currentUser } = this.props;
-    const { domains } = this.props;
+    const { domain, currentUser, domains } = this.props;
 
     let auth = null;
 
@@ -69,18 +66,11 @@ class ProfileCard extends React.Component {
       }
     })
 
-    console.log("---",auth.split(" ")[1]);
-
     const config = {
       headers: {
         Authorization: auth.split(" ")[1],
       },
     };
-
-    //console.log("---",auth.split(" ")[1]);
-    console.log(currentUser.displayName);
-    console.log(currentUser.id);
-    console.log("-------",id);
 
     const doc = await axios.post("https://" + domain + "/friendrequest/", {
       from_user: currentUser.id,
@@ -108,21 +98,22 @@ class ProfileCard extends React.Component {
 
     const config = {
       headers: {
-        Authorization: auth,
+        "Authorization": auth,
       },
     };
 
-    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/delete", {from_user: currentUser.id, to_user: id}, config);
+    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/delete/", {from_user: currentUser.id, to_user: id}, config);
     if (doc.data) {
       window.alert(doc.data);
+      window.location = "/" + domain + "/" + id.split("/")[4];
     }
   }
 
   
 
   render(){
-    const { editOpen, displayName, email, password, url, username, github, host} = this.state;
-    const { currentUser } = this.props;
+    const { id, editOpen, displayName, email, password, url, username, github, host} = this.state;
+    const { currentUser, userFriends } = this.props;
     return (
       <Paper style={{ overflow: "auto" }}>
         <Card >
@@ -190,8 +181,12 @@ class ProfileCard extends React.Component {
               </Button>
               :
               <div>
-                <Button color="primary" variant="contained" onClick={this.handleAddFriend}>Add</Button>
-                {/* <Button color="secondary" variant="contained" style={{marginLeft: 15}} onClick={this.handleDeleteFriend}>Delete</Button> */}
+                {
+                  userFriends?.includes(id) ? 
+                  <Button color="secondary" variant="contained" style={{marginLeft: 15}} onClick={this.handleDeleteFriend}>Delete</Button>
+                  :
+                  <Button color="primary" variant="contained" onClick={this.handleAddFriend}>Add</Button>
+                }
               </div>
             }
           </CardActions>
@@ -203,6 +198,7 @@ class ProfileCard extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  userFriends: state.user.userFriends,
   domains: state.domain.domains
 });
 

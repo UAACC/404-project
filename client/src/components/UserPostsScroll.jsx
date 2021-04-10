@@ -17,7 +17,7 @@ class PostsScroll extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { user, domains } = this.props;
+    const { user, domains, currentUser, userFriends } = this.props;
 
     let auth = null;
     domains.map(d => {
@@ -33,16 +33,23 @@ class PostsScroll extends React.Component {
     }
 
     const doc = await axios.get(user.id + "/posts/", config);
-    
     const posts = doc.data;
-    const publicPosts = posts.filter((post) => post.visibility === "PUBLIC");
-    console.log(publicPosts)
+    
+    const publicPosts = posts.filter((post) => {
+      return (
+        (post?.visibility === "PUBLIC" && !post?.unlisted) ||
+        (post?.author_id === currentUser?.id || post?.author === currentUser?.id ) ||
+        (userFriends?.includes(user.id) && !post?.unlisted)
+      )
+    });
+    
+    console.log(publicPosts);
     this.setState({ posts: publicPosts });
   };
 
   render() {
     const { posts } = this.state;
-    const { user } = this.props;
+    const { user, currentUser } = this.props;
     return (
       <div className="row">
         {posts.length !== 0 ? (
@@ -64,7 +71,7 @@ class PostsScroll extends React.Component {
               fontSize="small"
               style={{ marginTop: 50 }}
             ></HourglassEmptyIcon>
-            {user && posts.length === 0 ? (
+            {user?.id === currentUser?.id && posts.length === 0 ? (
               <div>
                 <Typography variant="h7" style={{ marginTop: 30 }}>
                   You have not posted any content yet, let's post!
@@ -93,7 +100,9 @@ class PostsScroll extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  domains: state.domain.domains
+  domains: state.domain.domains,
+  userFriends: state.user.userFriends,
+  currentUser: state.user.currentUser
 });
 
 export default connect(mapStateToProps)(PostsScroll);

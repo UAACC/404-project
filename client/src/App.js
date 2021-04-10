@@ -12,11 +12,19 @@ import ImageDetail from "./pages/image-page";
 import axios from "axios";
 import { connect } from "react-redux";
 import { setCurrentDomain } from "./redux/domain/domain-actions";
+import { setUserFriends } from "./redux/user/useractions";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  hanldeSaveFriends = async (authorId) => {
+    const doc = await axios.get(authorId + "/friends/");
+    let friends = doc.data.items ?? [];
+    friends = friends.map(friend => friend.id);
+    await this.props.setUserFriends(friends);
   }
 
   componentDidMount = async () => {
@@ -25,6 +33,11 @@ class App extends React.Component {
       console.log(doc.data);
       const domains = doc.data
       this.props.setCurrentDomain(domains);
+    }
+
+    const { currentUser } = this.props;
+    if (currentUser) {
+      this.hanldeSaveFriends(currentUser.id);
     }
   };
 
@@ -53,8 +66,14 @@ class App extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  setCurrentDomain: (domain) => dispatch(setCurrentDomain(domain)),
+
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser
 });
 
-export default connect(null, mapDispatchToProps)(App);
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentDomain: (domain) => dispatch(setCurrentDomain(domain)),
+  setUserFriends: (friends) => dispatch(setUserFriends(friends))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
