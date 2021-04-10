@@ -291,11 +291,6 @@ class PostViewSet(viewsets.ModelViewSet):
                      'visibility': visibility, 'unlisted': unlisted, 'id':post_id}
 
 
-        # add this new post into your follower's inbox
-        # print(author_id)
-        current_user = Author.objects.get(id=author_id) # print username
-        # print(current_user)
-        
         followers = []
         followers_request_1 = FriendRequest.objects.filter(to_user = current_user).values()
         for request in followers_request_1:
