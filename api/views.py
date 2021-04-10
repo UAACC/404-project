@@ -546,7 +546,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         # create friend request
         # from_user_id = Author.objects.get(id=request.data["from_user"])
         from_user_id = request.data["from_user"]
-        to_user_id = Author.objects.get(id=request.data["to_user"])
+        to_user_id = request.data["to_user"]
 
         if FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="R").exists():
             # Check if the request alreay exists and status is "requested".
@@ -643,17 +643,21 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         author_uuid = request.split("/")[2]
         host = "https://nofun.herokuapp.com/"
         author_id = host + "author/" + author_uuid
+        #print('22222',author_id)
         current_user = Author.objects.get(id=author_id)
+        #print('1111',current_user)
         items = []
-        for item in FriendRequest.objects.filter(to_user=current_user, status='R').values():
+        for item in FriendRequest.objects.filter(to_user=author_id, status='R').values():
+            #print(item)
+            follower_id=item["from_user"]
+            #print('11111',follower_id)
+            this_follower = Author.objects.filter(id=follower_id)
+            items.append(this_follower.values()[0])
+        for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
             follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
-        for item in FriendRequest.objects.filter(to_user=current_user, status='A').values():
-            follower_id=item["from_user"]
-            this_follower = Author.objects.filter(id=follower_id)
-            items.append(this_follower.values()[0])
-        for item in FriendRequest.objects.filter(to_user=current_user, status='D').values():
+        for item in FriendRequest.objects.filter(to_user=author_id, status='D').values():
             follower_id=item["from_user"]
             this_follower = Author.objects.filter(id=follower_id)
             items.append(this_follower.values()[0])
@@ -690,13 +694,13 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         host = "https://nofun.herokuapp.com/"
         author_1_id = host + "author/" + author_1_uuid
         author_2_id = host + "author/" + author_2_uuid
-        current_user = Author.objects.get(id=author_1_id)
-        foreign_user = Author.objects.get(id=author_2_id)
-        if FriendRequest.objects.filter(to_user=current_user, from_user=foreign_user, status='R').exists():
+        # current_user = Author.objects.get(id=author_1_id)
+        # foreign_user = Author.objects.get(id=author_2_id)
+        if FriendRequest.objects.filter(to_user=author_1_id, from_user=author_2_id, status='R').exists():
             return Response({'is_follower': True})
-        elif FriendRequest.objects.filter(to_user=current_user, from_user=foreign_user, status='A').exists():
+        elif FriendRequest.objects.filter(to_user=author_1_id, from_user=author_2_id, status='A').exists():
             return Response({'is_follower': True})
-        elif FriendRequest.objects.filter(to_user=foreign_user, from_user=current_user, status='A').exists():
+        elif FriendRequest.objects.filter(to_user=author_2_id, from_user=author_1_id, status='A').exists():
             return Response({'is_follower': True})
         else:
             return Response({'is_follower': False})
@@ -710,10 +714,10 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         host = "https://nofun.herokuapp.com/"
         author_1_id = host + "author/" + author_1_uuid
         author_2_id = host + "author/" + author_2_uuid
-        current_user = Author.objects.get(id=author_1_id)
-        foreign_user = Author.objects.get(id=author_2_id)
-        if not FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='R').exists():
-            FriendRequest.objects.create(from_user=foreign_user, to_user=current_user, status='R')
+        # current_user = Author.objects.get(id=author_1_id)
+        # foreign_user = Author.objects.get(id=author_2_id)
+        if not FriendRequest.objects.filter(from_user=author_2_id, to_user=author_1_id, status='R').exists():
+            FriendRequest.objects.create(from_user=author_2_id, to_user=author_1_id, status='R')
             return Response("Successfully add this follower.")
         else:
             return Response("")
@@ -726,11 +730,11 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         host = "https://nofun.herokuapp.com/"
         author_1_id = host + "author/" + author_1_uuid
         author_2_id = host + "author/" + author_2_uuid
-        current_user = Author.objects.get(id=author_1_id)
-        foreign_user = Author.objects.get(id=author_2_id)
-        FriendRequest.objects.filter(from_user=current_user, to_user=foreign_user, status='A').delete()
-        FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='A').delete()
-        FriendRequest.objects.filter(from_user=foreign_user, to_user=current_user, status='R').delete()
+        # current_user = Author.objects.get(id=author_1_id)
+        # foreign_user = Author.objects.get(id=author_2_id)
+        FriendRequest.objects.filter(from_user=author_1_id, to_user=author_2_id, status='A').delete()
+        FriendRequest.objects.filter(from_user=author_2_id, to_user=author_1_id, status='A').delete()
+        FriendRequest.objects.filter(from_user=author_2_id, to_user=author_1_id, status='R').delete()
         return Response("Successfully removed this follower.")
 
 
