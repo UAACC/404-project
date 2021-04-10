@@ -758,13 +758,14 @@ class LikesViewSet(viewsets.ModelViewSet):
 
         context = ''
         actor = request.data.get('actor',None)# author ID
+        
         #current_user = request.user.username
         #print(current_user)
         #author = author_id
         #actor_name = liker.displayName
         
         if is_comments:
-            summary = str(actor) + ' liked your comment. '#liker.displayname or some name
+            summary = str(actor) + ' liked your comment. '#actor.displayname or some name
             likes_data = {'type': 'Like', 'summary': summary, 'author': actor, 'object': comment_id, 'context': context}
             Likes.objects.create(summary=summary, author=actor, object=comment_id, context=context)#create author who is an actor
 
