@@ -213,6 +213,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post_id = f'{host}/author/{author_uid}/posts/{post_id}'
         author_id= f'{host}/author/{author_uid}'
         return Response(Post.objects.filter(author=author_id, id = post_id).values())
+
     # DELETE a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
     def delete(self, request, author_uid=None,  post_id = None, *args, **kwargs):
@@ -649,26 +650,32 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         #current_user = Author.objects.get(id=author_id)
         #print('1111',current_user)
         items = []
-        for item in FriendRequest.objects.filter(to_user=author_id, status='R').values():
+        if FriendRequest.objects.filter(to_user=author_id, status='R').exists():
+            for item in FriendRequest.objects.filter(to_user=author_id, status='R').values():
             #print(item)
-            follower_id=item["from_user"]
-            #print('11111',follower_id)
-            this_follower = Author.objects.filter(id=follower_id)
-            items.append(this_follower.values()[0])
-        for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
-            follower_id=item["from_user"]
-            this_follower = Author.objects.filter(id=follower_id)
-            items.append(this_follower.values()[0])
+                follower_id=item["from_user"]
+                #print('11111',follower_id)
+                this_follower = Author.objects.filter(id=follower_id)
+                items.append(this_follower.values()[0])
+        
 
-        for item in FriendRequest.objects.filter(to_user=author_id, status='D').values():
-            follower_id=item["from_user"]
-            this_follower = Author.objects.filter(id=follower_id)
-            items.append(this_follower.values()[0])
+        if FriendRequest.objects.filter(to_user=author_id, status='A').exists():
+            for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
+                follower_id=item["from_user"]
+                this_follower = Author.objects.filter(id=follower_id)
+                items.append(this_follower.values()[0])
 
-        for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
-            follower_id=item["to_user"]
-            this_follower = Author.objects.filter(id=follower_id)
-            items.append(this_follower.values()[0])
+        if FriendRequest.objects.filter(to_user=author_id, status='D').exists():
+            for item in FriendRequest.objects.filter(to_user=author_id, status='D').values():
+                follower_id=item["from_user"]
+                this_follower = Author.objects.filter(id=follower_id)
+                items.append(this_follower.values()[0])
+
+        if FriendRequest.objects.filter(from_user=author_id, status='A').exists():
+            for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
+                follower_id=item["to_user"]
+                this_follower = Author.objects.filter(id=follower_id)
+                items.append(this_follower.values()[0])
 
         
 
