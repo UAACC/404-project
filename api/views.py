@@ -126,6 +126,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
                     
                 else:
                     return Response(False)
+            else:
+                return Response(None)
 
 
         except:
