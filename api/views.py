@@ -295,12 +295,16 @@ class PostViewSet(viewsets.ModelViewSet):
         # print(author_id)
         current_user = Author.objects.get(id=author_id) # print username
         # print(current_user)
-        followers_request = FriendRequest.objects.filter(to_user = current_user).values()
-        # print(followers_request)
+        
         followers = []
-        for request in followers_request:
+        followers_request_1 = FriendRequest.objects.filter(to_user = current_user).values()
+        for request in followers_request_1:
             followers.append(request["from_user"])
+        followers_request_2 = FriendRequest.objects.filter(from_user = current_user, status = 'A').values()
+        for request in followers_request_2:
+            followers.append(request["to_user"])
         print(followers)
+
         post_data2 = {'type': 'post','title': title,'source': source,
                      'origin': origin, 'description': description, 'contentType': contentType,
                      'content': content, 'author': author_id, 'categories': categories,
