@@ -292,10 +292,10 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
         followers = []
-        followers_request_1 = FriendRequest.objects.filter(to_user = current_user).values()
+        followers_request_1 = FriendRequest.objects.filter(to_user = author_id).values()
         for request in followers_request_1:
             followers.append(request["from_user"])
-        followers_request_2 = FriendRequest.objects.filter(from_user = current_user, status = 'A').values()
+        followers_request_2 = FriendRequest.objects.filter(from_user = author_id, status = 'A').values()
         for request in followers_request_2:
             followers.append(request["to_user"])
         print(followers)
