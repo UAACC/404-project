@@ -78,7 +78,7 @@ class Inbox extends React.Component {
     await this.handleFriendRequest(config);
     await this.handlePostInbox(config);
     await this.handleCommentInbox(config);
-    await this.handleLikeInbox(config);
+    // await this.handleLikeInbox(config);
   };
 
   handleFriendRequest = async (config) => {
@@ -215,26 +215,23 @@ class Inbox extends React.Component {
     const { currentUser, domains } = this.props;
     const doc = await axios.get("https://nofun.herokuapp.com/author/" + currentUser?.id.split("/")[4] + "/inbox/", config);
 
-    let comments = doc.data?.items.map(item => {
+    let likes = doc.data?.items.map(item => {
       const stuff = item.items.split(",");
       const type = stuff[0].split("'")[3];
 
-      if (type === "like") {
-        console.log(stuff)
-        // const authorId = stuff[1]?.split("'")[3];
-        // const postId = stuff[2]?.split("'")[3];
-        // const comment = stuff[3]?.split("'")[3];
-        // const commentId = stuff[5]?.split("'")[3];
-        // return {
-        //   authorId, postId, commentId, comment
-        // };
+      if (type === "Like") {
+        const authorId = stuff[2]?.split("'")[3];
+        const objectId = stuff[3]?.split("'")[3];
+        return {
+          authorId, objectId
+        };
       }
     });
 
-    comments = comments.filter(p => !!p);
-    
+    likes = likes.filter(p => !!p);
+    console.log(likes);
     let auth;
-    const APIs = comments.map(comment => {
+    const APIs1 = likes.map(comment => {
       const domain = comment.authorId.split("/")[2];
       domains.map((d) => {
         if (d.domain === domain) {
@@ -249,16 +246,40 @@ class Inbox extends React.Component {
       return axios.get(comment.authorId, config);
     });
 
-    let res = await Promise.all(APIs);
-    res = res.map(d => d.data);
-    comments = comments.map((comment, i) => {
+    let res1 = await Promise.all(APIs1);
+    res1 = res1.map(d => d.data);
+    likes = likes.map((comment, i) => {
       return {
         ...comment,
-        author: res[i]
+        author: res1[i]
       }
     })
-    console.log(comments);
-    this.setState({ comments });
+
+    const APIs2 = likes.map(comment => {
+      const domain = comment.objectId.split("/")[2];
+      domains.map((d) => {
+        if (d.domain === domain) {
+          auth = d.auth;
+        }
+      });
+      const config = {
+        headers: {
+          "Authorization": auth
+        },
+      };
+      return axios.get(comment.objectId, config);
+    });
+
+    let res2 = await Promise.all(APIs2);
+    res2 = res2.map(d => d.data);
+    likes = likes.map((comment, i) => {
+      return {
+        ...comment,
+        object: res2[i]
+      }
+    })
+
+    this.setState({ likes });
   }
 
   //"from_user_domain" distinguish the domain name no matter what server this "from user" is from
@@ -376,27 +397,27 @@ class Inbox extends React.Component {
             )}
           </Tabs>
           <TabPanel value={this.state.value} index={0}>
-          <Grid
-              container
-              spacing={2}
-              direction="horizenol"
-              alignItems="flex-start"
-            >
-              <Grid item xs={12}>
-                {posts?.length >= 1 ? (
-                  posts.map((post) => (
-                    <Card style={{ marginTop: "2%", width: "80%", marginLeft: "10%" }}>
-                      <CardActions onClick={() => window.location = "/posts/" + post.postId.split("/")[2] + "/" + post.postId.split("/")[4] + "/" + post.postId.split("/")[6] + "/"}>
-                        <p><b>{post.author.displayName}</b>{" "}created a post (click to check it)</p>
-                        {post.contentType === "image" ? <img src={post.content} style={{width: "80%"}} /> : <p><b>Content</b>: {post.content}</p>}
-                      </CardActions>
-                    </Card>
-                  ))
-                ) : (
-                  <h7>You have not had any post created by your friends yet!</h7>
-                )}
+            <Grid
+                container
+                spacing={2}
+                direction="horizenol"
+                alignItems="flex-start"
+              >
+                <Grid item xs={12}>
+                  {posts?.length >= 1 ? (
+                    posts.map((post) => (
+                      <Card style={{ marginTop: "2%", width: "80%", marginLeft: "10%" }}>
+                        <CardActions onClick={() => window.location = "/posts/" + post.postId.split("/")[2] + "/" + post.postId.split("/")[4] + "/" + post.postId.split("/")[6] + "/"}>
+                          <p><b>{post.author.displayName}</b>{" "}created a post (click to check it)</p>
+                          {post.contentType === "image" ? <img src={post.content} style={{width: "80%"}} /> : <p><b>Content</b>: {post.content}</p>}
+                        </CardActions>
+                      </Card>
+                    ))
+                  ) : (
+                    <h7>You have not had any post created by your friends yet!</h7>
+                  )}
+                </Grid>
               </Grid>
-            </Grid>
           </TabPanel>
           <TabPanel value={this.state.value} index={1}>
           <Grid
@@ -422,7 +443,26 @@ class Inbox extends React.Component {
             </Grid>
           </TabPanel>
           <TabPanel value={this.state.value} index={2}>
-            likes
+          <Grid
+              container
+              spacing={2}
+              direction="horizenol"
+              alignItems="flex-start"
+            >
+              <Grid item xs={12}>
+                {likes?.length >= 1 ? (
+                  likes.map((like) => (
+                    <Card style={{ marginTop: "2%", width: "80%", marginLeft: "10%" }}>
+                      <CardActions onClick={() => window.location = "/posts/" + like.objectId.split("/")[2] + "/" + like.objectId.split("/")[4] + "/" + like.objectId.split("/")[6] + "/"}>
+                        <p><b>{like.author.displayName}</b>{" "}liked your post/comment (click to check it)</p>
+                      </CardActions>
+                    </Card>
+                  ))
+                ) : (
+                  <h7>You have not received any like!</h7>
+                )}
+              </Grid>
+            </Grid>
           </TabPanel>
           <TabPanel value={this.state.value} index={3}>
             <Grid

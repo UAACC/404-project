@@ -119,26 +119,31 @@ class PostDetail extends React.Component {
     );
   };
 
-  // handleLike = async () => {
-  //   const { domains } = this.props;
-  //   const { domain, post } = this.state;
-  //   let auth = null;
+  handleLike = async () => {
+    const { domains, currentUser } = this.props;
+    const { domain, post } = this.state;
+    let auth = null;
 
-  //   domains.map(d => {
-  //     if (d.domain === domain) {
-  //       auth = d.auth;
-  //     }
-  //   });
+    domains.map(d => {
+      if (d.domain === domain) {
+        auth = d.auth;
+      }
+    });
 
-  //   const config = {
-  //     headers: {
-  //       "Authorization": auth,
-  //     },
-  //   };
+    const config = {
+      headers: {
+        "Authorization": auth,
+      },
+    };
+    console.log(currentUser?.id);
 
-  //   await axios.post(post.id + "/likes/", config);
-  //   this.componentDidMount();
-  // };
+    try {
+      await axios.post(post.id + "/likes/", { actor: currentUser?.id, author: currentUser?.id }, config);
+      window.alert("Liked!")
+    } catch {
+      window.alert("Someting wrong, please try later!");
+    }
+  };
 
   handleShare = async () => {
     const { post } = this.state;
