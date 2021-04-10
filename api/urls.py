@@ -60,7 +60,7 @@ urlpatterns = [
      path("author/<str:author_id>/friends/", FriendRequestViewSet.as_view({"get": "get_friend_list"})),
 
      # Inbox URL
-     path("author/<str:author_id>/inbox/", InboxViewSet.as_view({"get": "all_info_list"})),
+     path("author/<str:author_id>/inbox/", InboxViewSet.as_view({"get": "all_info_list", "post": "send_into_inbox"})),
      path("author/<str:author_id>/inbox/request-list/", InboxViewSet.as_view({"get": "current_user_requests"})), # for test
 
 ]

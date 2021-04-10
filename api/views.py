@@ -879,6 +879,19 @@ def likedList(request, *args, **kwargs):
 # =====================================================================================================================================
 class InboxViewSet(viewsets.ModelViewSet):
     serializer_class = InboxSerializer
+    def send_into_inbox(self, request, *args, **kwargs):
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        host = "https://nofun.herokuapp.com/"
+        author_id = host + "author/" + author_uuid
+        request_body_data = request.data
+        Inbox.objects.create(author=author_id, items=request_body_data)
+        return Response({
+            "type": "inbox",
+            "author": author_id,
+            "items": request_body_data
+        })
+
 
     def all_info_list(self, request, *args, **kwargs):
         request_str = str(request)
