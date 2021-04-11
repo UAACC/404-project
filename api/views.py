@@ -528,6 +528,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                         comment=comment, contentType=contentType, id=comment_id)
 
         post = Post.objects.get(pk = post_id)
+        post.size = len(comment)
         post.count += 1
         post.save()
 
