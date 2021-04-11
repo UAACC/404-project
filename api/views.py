@@ -202,11 +202,13 @@ class PostViewSet(viewsets.ModelViewSet):
     def post_list(self, request, author_uid=None, *args, **kwargs):
         host = 'https://nofun.herokuapp.com'
         author_id= f'{host}/author/{author_uid}'
-        post = Post.objects.filter(author=Author.objects.get(id=author_id)).values()
-        
+        post = Post.objects.filter(author=Author.objects.get(id=author_id))
+        serializer = PostSerializer(post, many=True)
+        print(serializer)
         # serializer = PostSerializer(post)
-        # return Response(serializer.data)
-        return Response(post)
+        return Response(serializer.data)
+        # return Response(post)
+
         
         #return Response(Post.objects.filter(author=author_id).values())
         
@@ -217,7 +219,9 @@ class PostViewSet(viewsets.ModelViewSet):
         host = 'https://nofun.herokuapp.com'
         post_id = f'{host}/author/{author_uid}/posts/{post_id}'
         author_id= f'{host}/author/{author_uid}'
-        return Response(Post.objects.filter(author=author_id, id = post_id).values())
+        post = Post.objects.get(id=post_id)
+        data = PostSerializer(post)
+        return Response(data.data)
 
     # DELETE a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
