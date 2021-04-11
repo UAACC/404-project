@@ -52,12 +52,12 @@ class ProfilePage extends React.Component {
               justify="center"
               alignItems="flex-start"
             >
-              <Grid item sm={3}>
+              <Grid item sm={4}>
                 <Paper>
                   <ProfileComponent user={user} domain={this.props.match.params.domain}/>
                 </Paper>
               </Grid>
-              <Grid item sm={7}>
+              <Grid item sm={8}>
                 <Paper style={{ height: "710px", overflow: "auto" }}>
                   <PostsScroll user={user} />
                 </Paper>

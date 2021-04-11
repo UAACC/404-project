@@ -35,7 +35,7 @@ class PostsScroll extends React.Component {
     resArray.map((doc) => {
       posts = posts.concat(doc.data);
     });
-    const publicPosts = posts.filter((post) => post.visibility === "PUBLIC" && post.unlisted === false);
+    const publicPosts = posts.filter((post) => post.visibility === "PUBLIC");
 
     this.setState({ posts: publicPosts });
   };

@@ -20,6 +20,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
+import ReactMarkdown from "react-markdown";
 
 
 class PostDetail extends React.Component {
@@ -72,9 +73,10 @@ class PostDetail extends React.Component {
     }
     
     if (
-      (post?.visibility === "PUBLIC" && !post?.unlisted) ||
+      (post?.visibility === "PUBLIC" || post?.visibility === "UNLISTED") ||
       (post?.author_id === currentUser?.id || post?.author === currentUser?.id ) ||
-      (userFriends?.includes(post?.author ?? post?.author_id) && !post?.unlisted)
+      (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author ?? post?.author_id)) ||
+      (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
       this.setState({ post, categories: JSON.parse(post.categorie), contentType: post.contentType, title: post.title, content: post.content, description: post.description });
     }
@@ -90,6 +92,10 @@ class PostDetail extends React.Component {
     const author = authorDoc.data;
 
     this.setState({ author });
+
+    // get likes
+    const likeDoc = await axios.get(post_id + "likes/", config);
+    this.setState({ likes: likeDoc.data});
   };
 
   getAllComments = () => {
@@ -140,6 +146,7 @@ class PostDetail extends React.Component {
     try {
       await axios.post(post.id + "/likes/", { actor: currentUser?.id, author: currentUser?.id }, config);
       window.alert("Liked!")
+      this.componentDidMount();
     } catch {
       window.alert("Someting wrong, please try later!");
     }
@@ -253,7 +260,7 @@ class PostDetail extends React.Component {
   };
 
   render() {
-    const { currCategory, categories, imageLocal, post, title, contentType, description, content, editOpen, commentOpen, author, domain, authorId, postId } = this.state;
+    const { likes, currCategory, categories, imageLocal, post, title, contentType, description, content, editOpen, commentOpen, author, domain, authorId, postId } = this.state;
     const { currentUser } = this.props;
 
     return (
@@ -382,7 +389,7 @@ class PostDetail extends React.Component {
                             }
                           />
                         ) : (
-                          <Typography>Content: {post.content}</Typography>
+                          <Typography>Content: <ReactMarkdown>{post.content}</ReactMarkdown></Typography>
                         )
                     }
                   </div>
@@ -446,6 +453,9 @@ class PostDetail extends React.Component {
                 onClick={this.handleLike}
               >
                 <FavoriteIcon color="secondary" size="large" />
+                <Typography variant="h7" style={{ marginLeft: 20 }}>
+                  {post.visibility !== "PUBLIC" && likes && likes[0].length}
+                </Typography>
               </IconButton>
               <IconButton
                 style={{ marginLeft: "3%" }}

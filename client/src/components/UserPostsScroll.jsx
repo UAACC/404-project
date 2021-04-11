@@ -37,13 +37,13 @@ class PostsScroll extends React.Component {
     
     const publicPosts = posts.filter((post) => {
       return (
-        (post?.visibility === "PUBLIC" && !post?.unlisted) ||
+        (post?.visibility === "PUBLIC") ||
         (post?.author_id === currentUser?.id || post?.author === currentUser?.id ) ||
-        (userFriends?.includes(user.id) && !post?.unlisted)
+        (post?.visibility === "FRIENDS" && userFriends?.includes(user.id)) ||
+        (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
       )
     });
-    
-    console.log(publicPosts);
+
     this.setState({ posts: publicPosts });
   };
 

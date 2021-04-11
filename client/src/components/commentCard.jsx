@@ -12,6 +12,8 @@ import Paper from "@material-ui/core/Paper";
 import { connect } from "react-redux";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
+import ReactMarkdown from "react-markdown";
+
 
 class CommentCard extends React.Component {
   constructor(props) {
@@ -109,11 +111,10 @@ class CommentCard extends React.Component {
               <div className="row">
                 <div className="col-9">
                   <Typography variant="body1" component="h4">
-                    User Name:{" "}
                     <b>{author?.displayName}</b>
                   </Typography>
                   <Typography variant="body1" component="h4">
-                    Content: {comment ? comment.comment : "Loading ... "}
+                    <Typography>Content: <ReactMarkdown>{comment ? comment.comment : "Loading ... "}</ReactMarkdown></Typography>
                   </Typography>
                 </div>
                 <div className="col-3">

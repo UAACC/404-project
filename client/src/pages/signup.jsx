@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 import Link from "@material-ui/core/Link";
 import { setCurrentUser } from "../redux/user/useractions";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import { Octokit } from "@octokit/core";
+
 
 class SignUpPage extends React.Component {
   constructor(props) {
@@ -24,13 +26,54 @@ class SignUpPage extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
+
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value,
     });
   }
+
+  handleVerifyGithubAccount = async () => {
+    const octokit = new Octokit({ auth: `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` });
+    if (this.state.github.split("/")[3]) {
+      try {
+        const doc = await octokit.request('GET /users/' + this.state.github.split("/")[3]);
+        console.log("Github", doc.data);
+        if (doc.data) {
+          window.alert("Verified Github account successfully!");
+          return true;
+        } else {
+          window.alert("Sorry, this account does not exist");
+          this.setState({github: ""});
+          return false;
+        }
+      } catch {
+        window.alert("Sorry, this account does not exist");
+        this.setState({github: ""});
+        return false;
+      }
+    } else {
+      window.alert("Sorry, this account does not exist");
+        this.setState({github: ""});
+        return false;
+    }
+  }
+
   handleSubmit = async (event) => {
     event.preventDefault();
+    const { github } = this.state;
+    console.log(github);
+    if (!github) {
+      this.handleSignUp();
+    } else {
+      const res = await this.handleVerifyGithubAccount();
+      if (res){
+        this.handleSignUp();
+      }
+    }
+  }
+
+  handleSignUp = async () => {
     const { username, password, displayName, email, github } = this.state;
     const { domains } = this.props;
 
@@ -58,6 +101,7 @@ class SignUpPage extends React.Component {
     window.alert(
       "Your request has been sent to admin, you can login after the approval by admin"
     );
+    window.location = "/signin";
   };
 
   render() {
@@ -127,7 +171,7 @@ class SignUpPage extends React.Component {
                       variant="outlined"
                       fullWidth
                       id="github"
-                      label="Github Link"
+                      label="Github"
                       name="github"
                       value={this.state.github}
                       onChange={this.handleChange}

@@ -55,9 +55,11 @@ class SignInPage extends React.Component {
         { username, password },
         config
       );
-      console.log(doc.data);
+
       if (doc.data === false) {
         window.alert("You have to wait for admin to approve your account!")
+      } else if (typeof doc.data === "string") {
+        window.alert("Wrong crendentials!");
       } else {
         await this.handleSaveUser(doc.data);
         window.location = "/";

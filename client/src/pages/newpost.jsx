@@ -32,18 +32,19 @@ class Newpost extends React.Component {
       format: "",
       imageLocal: true,
       visibility: "PUBLIC",
-      unlisted: false
+      unlisted: false,
+      specificPeople: [],
+      currPeople: ""
     };
   }
 
   checkValidation = () => {
-    const { title, content, description, visibility, unlisted } = this.state;
+    const { title, content, description, visibility } = this.state;
     if (
       title === null ||
       content === null ||
       description === null ||
-      visibility === null ||
-      unlisted === null
+      visibility === null
     ) {
       return false;
     }
@@ -71,7 +72,7 @@ class Newpost extends React.Component {
       return window.alert("You have not filed the form completely.");
     }
     const { domains, currentUser } = this.props;
-    const { title, description, content, contentType, visibility, unlisted, categories } = this.state;
+    const { title, description, content, contentType, visibility, specificPeople, unlisted, categories } = this.state;
 
     let auth = null;
     domains.map((d) => {
@@ -94,7 +95,7 @@ class Newpost extends React.Component {
           size: 1,
           description,
           content,
-          visibility,
+          visibility: visibility === "SPECIFIC" ? JSON.stringify(specificPeople) : visibility,
           unlisted,
           contentType,
           published: new Date(),
@@ -110,7 +111,7 @@ class Newpost extends React.Component {
   };
 
   render() {
-    const { title, description, content, contentType, unlisted, visibility, imageLocal, currCategory, categories } = this.state;
+    const { title, description, content, contentType, specificPeople, currPeople, visibility, imageLocal, currCategory, categories } = this.state;
     return (
       <div>
         <Header />
@@ -167,7 +168,7 @@ class Newpost extends React.Component {
                           value="text/plain"
                           checked={contentType === "text/plain"}
                           control={<Radio />}
-                          label="Plain Text"
+                          label="Text or MarkDown"
                         />
                         <FormControlLabel
                           value="image"
@@ -325,44 +326,48 @@ class Newpost extends React.Component {
                           control={<Radio />}
                           label="Only for friends"
                         />
-                      </RadioGroup>
-                    </FormControl>
-                  </div>
-                  <div id="unlisted">
-                    <FormControl
-                      component="fieldset"
-                      style={{
-                        marginLeft: "3%",
-                        marginRight: "3%",
-                        marginTop: "3%",
-                        width: "94%",
-                      }}
-                      onChange={(e) => {
-                        if (e.target.value === "false") {
-                          this.setState({ unlisted: false });
-                        } else {
-                          this.setState({ unlisted: true });
-                        }
-                      }}
-                    >
-                      <FormLabel component="legend">
-                        Do you want to list this post?
-                      </FormLabel>
-                      <RadioGroup row aria-label="unlisted" name="unlisted">
-                        <FormControlLabel
-                          value="false"
-                          checked={!unlisted}
+                         <FormControlLabel
+                          value="UNLISTED"
                           control={<Radio />}
-                          label="Yes"
+                          label="Do not list"
                         />
-                        <FormControlLabel
-                          value="true"
+                         <FormControlLabel
+                          value={"SPECIFIC"}
                           control={<Radio />}
-                          label="No"
+                          label="Only for specific people"
                         />
                       </RadioGroup>
                     </FormControl>
                   </div>
+                  {
+                    visibility === 'SPECIFIC' &&
+                    <div id="specificPeople">
+                      <div style={{marginLeft: "10%", marginTop: "10px"}}>
+                        {specificPeople.length !== 0 && specificPeople.map((cate, index) => <Chip style={{margin: "3px"}} label={cate} onDelete={() => {
+                          specificPeople.splice(index, 1);
+                          this.setState({specificPeople});
+                        }} color="primary" />)}
+                      </div>
+                      <TextField
+                        onKeyDown={(key) => {
+                          if (key.keyCode === 13) {
+                            specificPeople.push(currPeople);
+                            this.setState({specificPeople, currPeople: ""});
+                          }
+                        }}
+                        value={currPeople}
+                        onChange={(e) => this.setState({currPeople: e.target.value})}
+                        style={{
+                          marginLeft: "3%",
+                          marginRight: "3%",
+                          width: "20%",
+                        }}
+                        id="Specific People"
+                        label="Specific People"
+                        variant="filled"
+                      />
+                    </div>
+                  }
                   <div id="button">
                     <Button
                       onClick={this.handleSubmit}

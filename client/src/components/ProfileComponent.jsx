@@ -11,6 +11,7 @@ import Paper from "@material-ui/core/Paper";
 import axios from "axios";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
+import { Octokit } from "@octokit/core";
 
 
 class ProfileCard extends React.Component {
@@ -19,17 +20,27 @@ class ProfileCard extends React.Component {
     this.state = {
       editOpen: false,
       id: props.user.id,
-      token: props.user.token,
-      username: props.user.username,
-      email: props.user.email,
       github: props.user.github,
-      password: props.user.password,
+      password: props.user.password ?? "",
+      email: props.user.email ?? "",
       host: props.user.host,
+      url: props.user.url,
       displayName: props.user.displayName
     }
   }
 
-  handleEditProfile = async () => {
+  componentDidMount = () => {
+    const { currentUser } = this.props;
+    const { id } = this.state;
+    if (currentUser?.id === id) {
+      this.setState({
+        email: currentUser?.email,
+        password: currentUser?.password
+      });
+    }
+  }
+
+  handleUpdateProfile = async () => {
     const { domains, domain } = this.props;
     const { id, email, github, password, displayName } = this.state;
     let auth = null;
@@ -45,12 +56,47 @@ class ProfileCard extends React.Component {
         "Authorization": auth,
       },
     };
-
     
-    const doc = await axios.put(id + "/", { displayName, email, github, password }, config);
+    const doc = await axios.put(id + "/", { email, displayName, github, password }, config);
     if (doc.data) {
       await this.props.setCurrentUser(doc.data);
       window.location = `/authors/${id.split("/")[2]}/${id.split("/")[4]}/`;
+    }
+  }
+
+  handleVerifyGithubAccount = async () => {
+    const octokit = new Octokit({ auth: `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` });
+    if (this.state.github.split("/")[3]) {
+      try {
+        const doc = await octokit.request('GET /users/' + this.state.github.split("/")[3]);
+        console.log("Github", doc.data);
+        if (doc.data) {
+          window.alert("Verified Github account successfully!");
+          return true;
+        } else {
+          window.alert("Sorry, this account does not exist");
+          this.setState({github: ""});
+          return false;
+        }
+      } catch {
+        window.alert("Sorry, this account does not exist");
+        this.setState({github: ""});
+        return false;
+      }
+    } else {
+      window.alert("Sorry, this account does not exist");
+        this.setState({github: ""});
+        return false;
+    }
+  }
+
+  handleEditProfile = async () => {
+    const { github } = this.state;
+    if (github) {
+      const res = await this.handleVerifyGithubAccount();
+      if (res) this.handleUpdateProfile();
+    } else {
+      this.handleUpdateProfile();
     }
   }
 
@@ -112,11 +158,11 @@ class ProfileCard extends React.Component {
   
 
   render(){
-    const { id, editOpen, displayName, email, password, url, username, github, host} = this.state;
+    const { id, email, editOpen, displayName, password, url, github, host} = this.state;
     const { currentUser, userFriends } = this.props;
     return (
       <Paper style={{ overflow: "auto" }}>
-        <Card >
+        <Card style={{overflow: "scroll"}}>
           <CardContent width={1}>
             <Typography
               color="textSecondary"
@@ -128,21 +174,15 @@ class ProfileCard extends React.Component {
             {
               editOpen ?
               <div>
-                <TextField label="Email" value={email} onChange={(e) => this.setState({email: e.target.value})} />
                 <TextField label="DisplayName" value={displayName} onChange={(e) => this.setState({displayName: e.target.value})} />
-                <TextField label="Password" value={password} onChange={(e) => this.setState({password: e.target.value})} />
                 <TextField label="Github" value={github} onChange={(e) => this.setState({github: e.target.value})} />
+                <TextField label="Email" value={email} onChange={(e) => this.setState({email: e.target.value})} />
+                <TextField label="Password" value={password} onChange={(e) => this.setState({password: e.target.value})} />
               </div>
               :
               <div>
                 <Typography variant="body1" component="h4">
-                  Email: {email}
-                </Typography>
-                <Typography variant="body1" component="h4">
                   DisplayName: {displayName}
-                </Typography>
-                <Typography variant="body1" component="h4">
-                  UserName: {username}
                 </Typography>
                 <Typography variant="body1" component="h4">
                   Github: {github}

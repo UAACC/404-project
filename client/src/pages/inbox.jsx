@@ -7,9 +7,9 @@ import {
   Typography,
   Button,
   Grid,
+  Avatar,
 } from "@material-ui/core";
 import axios from "axios";
-import PropTypes from "prop-types";
 import Badge from "@material-ui/core/Badge";
 import { connect } from "react-redux";
 import Header from "../components/Header";
@@ -17,46 +17,26 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
+import { Octokit } from "@octokit/core";
+import Pagination from "@material-ui/lab/Pagination";
+import { TabPanel } from "../assets/Tab";
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `vertical-tab-${index}`,
-    "aria-controls": `vertical-tabpanel-${index}`,
-  };
-}
 
 class Inbox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       requests: [],
-      value: "",
+      posts: [],
+      likes: [],
+      githubAcivities: [],
+      comments: [],
+      value: 0,
+      postPage: 1, 
+      commentPage: 1, 
+      likePage: 1, 
+      githubPage: 1, 
+      requestpage: 1
     };
   }
 
@@ -78,15 +58,22 @@ class Inbox extends React.Component {
     await this.handleFriendRequest(config);
     await this.handlePostInbox(config);
     await this.handleCommentInbox(config);
-    // await this.handleLikeInbox(config);
+    await this.handleLikeInbox(config);
+    await this.handleGithubActivities(currentUser?.github);
   };
+
+  handleGithubActivities = async (github) => {
+    const octokit = new Octokit({ auth: `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` });
+    const doc = await octokit.request('GET /users/' + github.split("/")[3] + "/events");
+
+    this.setState({githubAcivities: doc.data ?? []});
+  }
 
   handleFriendRequest = async (config) => {
     const { currentUser, domains } = this.props;
     // get the nofun token from redux
     // get the host matches the currentUser
     const doc = await axios.get(currentUser.id + "/inbox/request-list", config);
-    console.log(doc);
 
     //put all request item in state
     const requests = doc.data?.items ?? [];
@@ -106,7 +93,7 @@ class Inbox extends React.Component {
         const request_displayName = r.displayName;
         requests[index].name = request_displayName;
       })
-      console.log(requests);
+
     }
     this.setState({ requests });
   }
@@ -116,6 +103,10 @@ class Inbox extends React.Component {
     const doc = await axios.get("https://nofun.herokuapp.com/author/" + currentUser?.id.split("/")[4] + "/inbox/", config);
 
     let posts = doc.data?.items.map(item => {
+
+      if (item.status) {
+        return null;
+      }
       const stuff = item.items.split(",");
       const type = stuff[0].split("'")[3];
 
@@ -166,11 +157,14 @@ class Inbox extends React.Component {
     const doc = await axios.get("https://nofun.herokuapp.com/author/" + currentUser?.id.split("/")[4] + "/inbox/", config);
 
     let comments = doc.data?.items.map(item => {
+      if (item.status) {
+        return null;
+      }
       const stuff = item.items.split(",");
       const type = stuff[0].split("'")[3];
 
       if (type === "comment") {
-        console.log(stuff)
+
         const authorId = stuff[1]?.split("'")[3];
         const postId = stuff[2]?.split("'")[3];
         const comment = stuff[3]?.split("'")[3];
@@ -207,7 +201,7 @@ class Inbox extends React.Component {
         author: res[i]
       }
     })
-    console.log(comments);
+
     this.setState({ comments });
   }
 
@@ -216,11 +210,15 @@ class Inbox extends React.Component {
     const doc = await axios.get("https://nofun.herokuapp.com/author/" + currentUser?.id.split("/")[4] + "/inbox/", config);
 
     let likes = doc.data?.items.map(item => {
+      if (item.status) {
+        return null;
+      }
       const stuff = item.items.split(",");
       const type = stuff[0].split("'")[3];
-
+      console.log(stuff);
       if (type === "Like") {
         const authorId = stuff[2]?.split("'")[3];
+        console.log(authorId)
         const objectId = stuff[3]?.split("'")[3];
         return {
           authorId, objectId
@@ -229,7 +227,7 @@ class Inbox extends React.Component {
     });
 
     likes = likes.filter(p => !!p);
-    console.log(likes);
+
     let auth;
     const APIs1 = likes.map(comment => {
       const domain = comment.authorId.split("/")[2];
@@ -302,7 +300,7 @@ class Inbox extends React.Component {
         "Authorization": auth,
       },
     };
-    console.log(from_user, currentUser.id);
+
     const doc = await axios.patch(
       "https://" + from_user_domain + "/friendrequest/accept/",
       {
@@ -314,7 +312,6 @@ class Inbox extends React.Component {
 
     if (doc) {
       this.componentDidMount();
-      console.log(doc.data);
     }
   };
 
@@ -349,7 +346,6 @@ class Inbox extends React.Component {
 
     if (doc) {
       this.componentDidMount();
-      console.log(doc.data);
     }
   };
 
@@ -357,8 +353,70 @@ class Inbox extends React.Component {
     this.setState({ value });
   };
 
+  renderPages = () => {
+    const { value, likes, posts, comments, githubAcivities, requests, postPage, commentPage, likePage, githubPage, requestpage } = this.state;
+    let pages = 1;
+    console.log(value);
+    switch(value){
+      case 0:
+        pages = Number(posts.length / 10) + 1;
+        const array1 = [];
+        for (let i = 0; i <= pages; i++) {
+          array1.push(i);
+        }
+        return <div>
+          {array1.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        </div>;
+      case 1:
+        pages = Number(comments.length / 10) + 1;
+        const array2 = [];
+        for (let i = 0; i <= pages; i++) {
+          array2.push(i);
+        }
+        return <div>
+          {array2.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        </div>;
+      case 2:
+        pages = Number(likes.length / 10) + 1;
+        const array3 = [];
+        for (let i = 0; i <= pages; i++) {
+          array3.push(i);
+        }
+        return <div>
+          {array3.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        </div>;
+      case 3:
+        pages = Number(requests.length / 10) + 1;
+        const array4 = [];
+        for (let i = 0; i <= pages; i++) {
+          array4.push(i);
+        }
+        return <div>
+          {array4.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        </div>;
+      case 4:
+        pages = Number(githubAcivities.length / 10) + 1;
+        const array5 = [];
+        for (let i = 0; i <= pages; i++) {
+          array5.push(i);
+        }
+        return <div>
+          {array5.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary" variant="contained">{i+1}</Button>)}
+        </div>;
+      default:
+        return null;
+    }
+  }
+
+  a11yProps = (index) => {
+    return {
+      id: `vertical-tab-${index}`,
+      "aria-controls": `vertical-tabpanel-${index}`,
+    };
+  }
+
   render() {
-    const { requests, posts, likes, comments } = this.state;
+    const { requests, posts, likes, comments, githubAcivities, value } = this.state;
     return (
       <div>
         <Header />
@@ -371,7 +429,7 @@ class Inbox extends React.Component {
           }}
         >
           <Tabs
-            value={this.state.value}
+            value={value}
             onChange={this.handleChange}
             aria-label="tabs"
             orientation="vertical"
@@ -380,23 +438,14 @@ class Inbox extends React.Component {
               paddingRight: "2%",
             }}
           >
-            <Tab label="posts" {...a11yProps(0)} />
-            <Tab label="comments" {...a11yProps(1)} />
-            <Tab label="likes" {...a11yProps(2)} />
-            {requests != null && requests.length < 1 ? (
-              <Tab
-                label={
-                  <Badge badgeContent={requests.length} color="primary">
-                    Friend Requsets
-                  </Badge>
-                }
-                {...a11yProps(3)}
-              />
-            ) : (
-              <Tab label="Friend Requsets" {...a11yProps(3)} />
-            )}
+            <Tab label="posts" {...this.a11yProps(0)} />
+            <Tab label="comments" {...this.a11yProps(1)} />
+            <Tab label="likes" {...this.a11yProps(2)} />
+            <Tab label="Friend Requsets" {...this.a11yProps(3)} />
+            <Tab label="Github Activity" {...this.a11yProps(4)} />
           </Tabs>
-          <TabPanel value={this.state.value} index={0}>
+          
+          <TabPanel value={value} index={0}>
             <Grid
                 container
                 spacing={2}
@@ -419,7 +468,7 @@ class Inbox extends React.Component {
                 </Grid>
               </Grid>
           </TabPanel>
-          <TabPanel value={this.state.value} index={1}>
+          <TabPanel value={value} index={1}>
           <Grid
               container
               spacing={2}
@@ -442,8 +491,8 @@ class Inbox extends React.Component {
               </Grid>
             </Grid>
           </TabPanel>
-          <TabPanel value={this.state.value} index={2}>
-          <Grid
+          <TabPanel value={value} index={2}>
+            <Grid
               container
               spacing={2}
               direction="horizenol"
@@ -464,7 +513,7 @@ class Inbox extends React.Component {
               </Grid>
             </Grid>
           </TabPanel>
-          <TabPanel value={this.state.value} index={3}>
+          <TabPanel value={value} index={3}>
             <Grid
               container
               spacing={2}
@@ -512,6 +561,33 @@ class Inbox extends React.Component {
               </Grid>
             </Grid>
           </TabPanel>
+          <TabPanel value={value} index={4}>
+            <Grid
+              container
+              spacing={2}
+              direction="horizenol"
+              alignItems="flex-start"
+            >
+              <Grid item xs={12}>
+                {githubAcivities?.length >= 1 ? (
+                  githubAcivities.map((activity) => (
+                    <Card style={{ marginTop: "2%", width: "80%", marginLeft: "10%" }}>
+                      <CardActions onClick={() => window.location = activity.repo.url}>
+                        <Avatar src={activity.actor.avatar_url}/>
+                        <p>Time: {activity.created_at.split("T")[0]}</p>
+                        <p>Activity: {activity.type}</p>
+                      </CardActions>
+                    </Card>
+                  ))
+                ) : (
+                  <h7>You do not have github activity or you have not verify your github accuont!</h7>
+                )}
+              </Grid>
+            </Grid>
+          </TabPanel>
+        </div>
+        <div id='page' style={{ display: "flex", flexDirection: "row" }}>
+          {this.renderPages()}
         </div>
       </div>
     );

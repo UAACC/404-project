@@ -49,6 +49,7 @@ class CommentForm extends React.Component {
     if (doc.data) {
       this.props.handleClick();
     }
+    this.setState({comment: ""});
   };
 
   render() {
