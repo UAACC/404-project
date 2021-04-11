@@ -145,8 +145,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
         author = Author.objects.get(id=author_id)
         #print(author.id)
         name = request.data.get('displayName', None)
-        #email = request.data.get('email',None)
-        #password = request.data.get('password',None)
+        email = request.data.get('email',None)
+        password = request.data.get('password',None)
         github = request.data.get('github', None)
         author.displayName = name   
         author.github = github
