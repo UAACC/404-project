@@ -757,11 +757,26 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         # current_user = Author.objects.get(id=author_1_id)
         # foreign_user = Author.objects.get(id=author_2_id)
         if FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='R').exists():
-            return Response({'is_follower': True})
+            return Response({
+                'is_follower': True,
+                'actor': author_2_id,
+                'object': author_1_id,
+                'status': 'R'
+                })
         elif FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='A').exists():
-            return Response({'is_follower': True})
+            return Response({
+                'is_follower': True,
+                'actor': author_2_id,
+                'object': author_1_id,
+                'status': 'A'
+                })
         elif FriendRequest.objects.filter(object=author_2_id, actor=author_1_id, status='A').exists():
-            return Response({'is_follower': True})
+            return Response({
+                'is_follower': True,
+                'actor': author_1_id,
+                'object': author_2_id,
+                'status': 'A'
+                })
         else:
             return Response({'is_follower': False})
 
