@@ -297,7 +297,8 @@ class PostViewSet(viewsets.ModelViewSet):
         # print('file',file_1)
         # # img = request.FILES.get('image')
         # print('img',img)
-        
+        size = Post._meta.get_field('size').get_default()
+        count = Post._meta.get_field('count').get_default()
 
         Post.objects.create(
             id= post_id,
@@ -307,8 +308,8 @@ class PostViewSet(viewsets.ModelViewSet):
             description = description,
             contentType = contentType,
             content = content,
-            count = Post._meta.get_field('count').get_default(),
-            size = Post._meta.get_field('size').get_default(),
+            count = count,
+            size = size,
             categories = categories,
             comment = comment,
             visibility = visibility,
