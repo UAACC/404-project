@@ -91,14 +91,13 @@ class Like(models.Model):
 
 class FriendRequest(models.Model):
     class Meta:
-        unique_together = (("from_user", "to_user"),)
+        unique_together = (("actor", "object"),)
 
     Friendship_status = (("R", "Requested"),
                          ("A", "Accepted"), ("D", "Declined"))
-    from_user = models.CharField(max_length=256, blank=False)
-    # from_user = models.ForeignKey(
-    #     Author, related_name='from_user', on_delete=models.CASCADE)
-    to_user = models.CharField(max_length=256, blank=False)
+    actor = models.CharField(max_length=256, blank=False)
+    
+    object = models.CharField(max_length=256, blank=False)
     status = models.CharField(
         choices=Friendship_status, default="Requested", max_length=1)
 

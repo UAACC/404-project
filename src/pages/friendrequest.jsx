@@ -19,15 +19,15 @@ class FriendsRequest extends React.Component {
     const { currentUser } = this.props;
     const api_requests  = [];
     for (let request of doc.data) {
-      if (request.status === "R" && request.to_user === currentUser.id) {
-        api_requests.push(axios.get("https://nofun.herokuapp.com/author/"+request.from_user+"/"));
+      if (request.status === "R" && request.object === currentUser.id) {
+        api_requests.push(axios.get("https://nofun.herokuapp.com/author/"+request.actor+"/"));
       }
     }
     const requests = await Promise.all(api_requests);
     this.setState({ requests });
   };
 
-  handleAccept = async (from_user) => {
+  handleAccept = async (actor) => {
     const { id } = this.props.currentUser;
     const csrftoken = Cookies.get('csrftoken');
     const config = {
@@ -36,7 +36,7 @@ class FriendsRequest extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/accept/", {from_user, to_user: id}, config);
+    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/accept/", {actor, object: id}, config);
     if (doc.data) {
       await window.alert(doc.data);
       this.componentDidMount();
@@ -44,7 +44,7 @@ class FriendsRequest extends React.Component {
     
   }
 
-  handleReject = async (from_user) => {
+  handleReject = async (actor) => {
     const { id } = this.props.currentUser;
     const csrftoken = Cookies.get('csrftoken');
     const config = {
@@ -53,7 +53,7 @@ class FriendsRequest extends React.Component {
         'Content-Type': 'application/json'
       }
     }
-    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/decline/", {from_user, to_user: id}, config);
+    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/decline/", {actor, object: id}, config);
     if (doc.data) {
       await window.alert(doc.data);
       this.componentDidMount();

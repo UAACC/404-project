@@ -201,8 +201,8 @@ class FriendRequestTestCase(APITestCase):
     def test_create_friend_request(self):
         # test creating a new friend request
         request_body = {
-            "from_user": [str(self.friend_test_user1.id)], 
-            "to_user": [str(self.friend_test_user2.id)]
+            "actor": [str(self.friend_test_user1.id)], 
+            "object": [str(self.friend_test_user2.id)]
             }
         response = self.client.post("/api/friendrequest", request_body)
         self.assertEqual(response.status_code, 200)
@@ -210,14 +210,14 @@ class FriendRequestTestCase(APITestCase):
     def test_accept_incoming_request(self):
         # test to accept a new friend request from others
         request_body = {
-            "from_user": [str(self.friend_test_user1.id)], 
-            "to_user": [str(self.friend_test_user2.id)]
+            "actor": [str(self.friend_test_user1.id)], 
+            "object": [str(self.friend_test_user2.id)]
             }
         response = self.client.post("/api/friendrequest", request_body)
 
         request_body2 = {
-            "from_user": [str(self.friend_test_user1.id)], 
-            "to_user": [str(self.friend_test_user2.id)]
+            "actor": [str(self.friend_test_user1.id)], 
+            "object": [str(self.friend_test_user2.id)]
             }
         response2 = self.client.patch("/api/friendrequest/accept", request_body2)
         self.assertEqual(response2.status_code, 200)
@@ -225,14 +225,14 @@ class FriendRequestTestCase(APITestCase):
     def test_decline_incoming_request(self):
         # test to decline a new friend request from others
         request_body = {
-            "from_user": [str(self.friend_test_user1.id)], 
-            "to_user": [str(self.friend_test_user2.id)]
+            "actor": [str(self.friend_test_user1.id)], 
+            "object": [str(self.friend_test_user2.id)]
             }
         response = self.client.post("/api/friendrequest", request_body)
 
         request_body2 = {
-            "from_user": [str(self.friend_test_user2.id)], 
-            "to_user": [str(self.friend_test_user1.id)]
+            "actor": [str(self.friend_test_user2.id)], 
+            "object": [str(self.friend_test_user1.id)]
             }
         response2 = self.client.post("/api/friendrequest/decline", request_body2)
         self.assertEqual(response.status_code, 200)
@@ -241,14 +241,14 @@ class FriendRequestTestCase(APITestCase):
     def test_delete(self):
         # test to delete friendship
         request_body = {
-            "from_user": [str(self.friend_test_user1.id)], 
-            "to_user": [str(self.friend_test_user2.id)]
+            "actor": [str(self.friend_test_user1.id)], 
+            "object": [str(self.friend_test_user2.id)]
             }
         response = self.client.post("/api/friendrequest", request_body)
 
         request_body2 = {
-            "from_user": [str(self.friend_test_user1.id)], 
-            "to_user": [str(self.friend_test_user2.id)]
+            "actor": [str(self.friend_test_user1.id)], 
+            "object": [str(self.friend_test_user2.id)]
             }
         response2 = self.client.post("/api/friendrequest/delete", request_body2)
         self.assertEqual(response.status_code, 200)

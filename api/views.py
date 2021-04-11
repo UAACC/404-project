@@ -298,12 +298,12 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
         followers = []
-        followers_request_1 = FriendRequest.objects.filter(to_user = author_id).values()
+        followers_request_1 = FriendRequest.objects.filter(object = author_id).values()
         for request in followers_request_1:
-            followers.append(request["from_user"])
-        followers_request_2 = FriendRequest.objects.filter(from_user = author_id, status = 'A').values()
+            followers.append(request["actor"])
+        followers_request_2 = FriendRequest.objects.filter(actor = author_id, status = 'A').values()
         for request in followers_request_2:
-            followers.append(request["to_user"])
+            followers.append(request["object"])
         print(followers)
 
         post_data2 = {'type': 'post','title': title,'source': source,
@@ -550,35 +550,35 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # create friend request
-        # from_user_id = Author.objects.get(id=request.data["from_user"])
-        from_user_id = request.data["from_user"]
-        to_user_id = request.data["to_user"]
+        # from_user_id = Author.objects.get(id=request.data["actor"])
+        from_user_id = request.data["actor"]
+        to_user_id = request.data["object"]
 
 
 
 
 
-        if FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="R").exists():
+        if FriendRequest.objects.filter(actor=from_user_id, object=to_user_id, status="R").exists():
             # Check if the request alreay exists and status is "requested".
             return Response("Unable to send friend request because the friend request alreay exists!")
-        elif FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="A").exists():
+        elif FriendRequest.objects.filter(actor=from_user_id, object=to_user_id, status="A").exists():
             # Check if the request exists and status is "A"
             return Response("Unable to send friend request because you have already become friends!")
-        elif FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").exists():
+        elif FriendRequest.objects.filter(actor=from_user_id, object=to_user_id, status="D").exists():
             # If your reuqest was declined and send again
-            FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="D").update(
-                from_user=from_user_id, to_user=to_user_id, status='R')
+            FriendRequest.objects.filter(actor=from_user_id, object=to_user_id, status="D").update(
+                actor=from_user_id, object=to_user_id, status='R')
             return Response("Successfully create the friend request!")
-        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").exists():
+        elif FriendRequest.objects.filter(actor=to_user_id, object=from_user_id, status="R").exists():
             # if he already send the request to you and status is R, then you become friend automatically
-            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="R").update(
-                from_user=to_user_id, to_user=from_user_id, status='A')
+            FriendRequest.objects.filter(actor=to_user_id, object=from_user_id, status="R").update(
+                actor=to_user_id, object=from_user_id, status='A')
             return Response("He/She had sent the request to you and you become friend automatically!")
-        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="A").exists():
+        elif FriendRequest.objects.filter(actor=to_user_id, object=from_user_id, status="A").exists():
             return Response("Unable to send friend request because you have already become friends!")
-        elif FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").exists():
-            FriendRequest.objects.filter(from_user=to_user_id, to_user=from_user_id, status="D").update(
-                from_user=to_user_id, to_user=from_user_id, status='R')
+        elif FriendRequest.objects.filter(actor=to_user_id, object=from_user_id, status="D").exists():
+            FriendRequest.objects.filter(actor=to_user_id, object=from_user_id, status="D").update(
+                actor=to_user_id, object=from_user_id, status='R')
             return Response("Successfully create the friend request!")
         else:
 
@@ -586,26 +586,26 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
 
             friend_request = FriendRequest.objects.create(
-                from_user=from_user_id, to_user=to_user_id, status='R')
+                actor=from_user_id, object=to_user_id, status='R')
             return Response("Successfully create the friend request!")
 
 
     def accept_incoming_request(self, request, *args, **kwargs):
         # accept incoming friend request
-        # request_from_user_id = Author.objects.get(id=request.data["from_user"])
-        request_from_user_id = request.data["from_user"]
-        current_user_id = request.data["to_user"]
+        # request_from_user_id = Author.objects.get(id=request.data["actor"])
+        request_from_user_id = request.data["actor"]
+        current_user_id = request.data["object"]
 
-        if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
+        if FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='A').exists():
             # Check if the request has already been accepted
             return Response("Unable to accept, because you had already accepted it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='D').exists():
+        elif FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='D').exists():
             # Check if the request has already been declined
             return Response("Unable to accept, because you had already declined it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
+        elif FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='R').exists():
             # If request exists and status is Requested, then able to accept:
-            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
-                from_user=request_from_user_id, to_user=current_user_id, status='A')
+            FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='R').update(
+                actor=request_from_user_id, object=current_user_id, status='A')
             return Response("Successfully accept the friend request!")
         else:
             return Response("Unable to accept because this request does not exist.")
@@ -613,19 +613,19 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def decline_incoming_request(self, request, *args, **kwargs):
         # decline incoming friend request
-        # request_from_user_id = Author.objects.get(id=request.data["from_user"])
-        request_from_user_id = request.data["from_user"]
-        current_user_id = request.data["to_user"]
-        if FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='A').exists():
+        # request_from_user_id = Author.objects.get(id=request.data["actor"])
+        request_from_user_id = request.data["actor"]
+        current_user_id = request.data["object"]
+        if FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='A').exists():
             # Check if the request has already been accepted
             return Response("Unable to decline because you had already accepted it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='D').exists():
+        elif FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='D').exists():
             # Check if the request has already been delined
             return Response("Unable to decline because you had already declined it!")
-        elif FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').exists():
+        elif FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='R').exists():
             # Successfully decline this friend request
-            FriendRequest.objects.filter(from_user=request_from_user_id, to_user=current_user_id, status='R').update(
-                from_user=request_from_user_id, to_user=current_user_id, status='D')
+            FriendRequest.objects.filter(actor=request_from_user_id, object=current_user_id, status='R').update(
+                actor=request_from_user_id, object=current_user_id, status='D')
             return Response("Successfully decline this friend request!")
         else:
             # Request does not exist
@@ -634,18 +634,18 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def delete(self, request, *args, **kwargs):
         # delete friend(only available when the status of request is 'Accepted')
-        # user_1 = Author.objects.get(id=request.data["from_user"])
-        user_1 = request.data["from_user"]
-        user_2 = request.data["to_user"]
-        if FriendRequest.objects.filter(from_user=user_1, to_user=user_2, status='A').exists():
+        # user_1 = Author.objects.get(id=request.data["actor"])
+        user_1 = request.data["actor"]
+        user_2 = request.data["object"]
+        if FriendRequest.objects.filter(actor=user_1, object=user_2, status='A').exists():
             # user1 create the friend request and user1 delete
             FriendRequest.objects.filter(
-                from_user=user_1, to_user=user_2, status='A').delete()
+                actor=user_1, object=user_2, status='A').delete()
             return Response("Successfully delete this friend!")
-        elif FriendRequest.objects.filter(from_user=user_2, to_user=user_1, status='A').exists():
+        elif FriendRequest.objects.filter(actor=user_2, object=user_1, status='A').exists():
             # user2 create the friend request and userr1 delete
             FriendRequest.objects.filter(
-                from_user=user_2, to_user=user_1, status='A').delete()
+                actor=user_2, object=user_1, status='A').delete()
             return Response("Successfully delete this friend!")
         else:
             return Response("Unable to delete because you are not friends.")
@@ -661,25 +661,25 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         #current_user = Author.objects.get(id=author_id)
         #print('1111',current_user)
         items = []
-        if FriendRequest.objects.filter(to_user=author_id, status='R').exists():
-            for item in FriendRequest.objects.filter(to_user=author_id, status='R').values():
+        if FriendRequest.objects.filter(object=author_id, status='R').exists():
+            for item in FriendRequest.objects.filter(object=author_id, status='R').values():
             #print(item)
-                items.append(item["from_user"])
+                items.append(item["actor"])
                 #print('11111',follower_id)
                 
         
 
-        if FriendRequest.objects.filter(to_user=author_id, status='A').exists():
-            for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
-                items.append(item["from_user"])
+        if FriendRequest.objects.filter(object=author_id, status='A').exists():
+            for item in FriendRequest.objects.filter(object=author_id, status='A').values():
+                items.append(item["actor"])
 
-        if FriendRequest.objects.filter(to_user=author_id, status='D').exists():
-            for item in FriendRequest.objects.filter(to_user=author_id, status='D').values():
-                items.append(item["from_user"])
+        if FriendRequest.objects.filter(object=author_id, status='D').exists():
+            for item in FriendRequest.objects.filter(object=author_id, status='D').values():
+                items.append(item["actor"])
 
-        if FriendRequest.objects.filter(from_user=author_id, status='A').exists():
-            for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
-                items.append(item["to_user"])
+        if FriendRequest.objects.filter(actor=author_id, status='A').exists():
+            for item in FriendRequest.objects.filter(actor=author_id, status='A').values():
+                items.append(item["object"])
         
 
         return Response({
@@ -697,10 +697,10 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         
         items = []
         # follower_list = {"type": "followers", "items": []}
-        for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
-            items.append(item["from_user"])
-        for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
-            items.append(item["to_user"])
+        for item in FriendRequest.objects.filter(object=author_id, status='A').values():
+            items.append(item["actor"])
+        for item in FriendRequest.objects.filter(actor=author_id, status='A').values():
+            items.append(item["object"])
         
         
         
@@ -720,11 +720,11 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         author_2_id = host + "author/" + author_2_uuid
         # current_user = Author.objects.get(id=author_1_id)
         # foreign_user = Author.objects.get(id=author_2_id)
-        if FriendRequest.objects.filter(to_user=author_1_id, from_user=author_2_id, status='R').exists():
+        if FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='R').exists():
             return Response({'is_follower': True})
-        elif FriendRequest.objects.filter(to_user=author_1_id, from_user=author_2_id, status='A').exists():
+        elif FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='A').exists():
             return Response({'is_follower': True})
-        elif FriendRequest.objects.filter(to_user=author_2_id, from_user=author_1_id, status='A').exists():
+        elif FriendRequest.objects.filter(object=author_2_id, actor=author_1_id, status='A').exists():
             return Response({'is_follower': True})
         else:
             return Response({'is_follower': False})
@@ -740,8 +740,8 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         author_2_id = host + "author/" + author_2_uuid
         # current_user = Author.objects.get(id=author_1_id)
         # foreign_user = Author.objects.get(id=author_2_id)
-        if not FriendRequest.objects.filter(from_user=author_2_id, to_user=author_1_id, status='R').exists():
-            FriendRequest.objects.create(from_user=author_2_id, to_user=author_1_id, status='R')
+        if not FriendRequest.objects.filter(actor=author_2_id, object=author_1_id, status='R').exists():
+            FriendRequest.objects.create(actor=author_2_id, object=author_1_id, status='R')
             return Response("Successfully add this follower.")
         else:
             return Response("")
@@ -756,9 +756,9 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         author_2_id = host + "author/" + author_2_uuid
         # current_user = Author.objects.get(id=author_1_id)
         # foreign_user = Author.objects.get(id=author_2_id)
-        FriendRequest.objects.filter(from_user=author_1_id, to_user=author_2_id, status='A').delete()
-        FriendRequest.objects.filter(from_user=author_2_id, to_user=author_1_id, status='A').delete()
-        FriendRequest.objects.filter(from_user=author_2_id, to_user=author_1_id, status='R').delete()
+        FriendRequest.objects.filter(actor=author_1_id, object=author_2_id, status='A').delete()
+        FriendRequest.objects.filter(actor=author_2_id, object=author_1_id, status='A').delete()
+        FriendRequest.objects.filter(actor=author_2_id, object=author_1_id, status='R').delete()
         return Response("Successfully removed this follower.")
 
 
@@ -907,8 +907,8 @@ class InboxViewSet(viewsets.ModelViewSet):
         all_info_list = []
         # add friends requests info
         request_list = []
-        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
-            request_list = FriendRequest.objects.filter(to_user=author_id, status="R").values()
+        if FriendRequest.objects.filter(object=author_id, status="R").exists():
+            request_list = FriendRequest.objects.filter(object=author_id, status="R").values()
 
 
         #TODO get likes, comment, posts info from inbox
@@ -937,8 +937,8 @@ class InboxViewSet(viewsets.ModelViewSet):
 
         # add friends requests info
         request_list = None
-        if FriendRequest.objects.filter(to_user=author_id, status="R").exists():
-            request_list = FriendRequest.objects.filter(to_user=author_id, status="R").values()
+        if FriendRequest.objects.filter(object=author_id, status="R").exists():
+            request_list = FriendRequest.objects.filter(object=author_id, status="R").values()
 
         # return request list
         return Response({
