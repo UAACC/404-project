@@ -51,8 +51,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
         #print(author_id)
         #self.static_author_id = author_id
         #give global to use
-        host = 'https://nofun.herokuapp.com'
-        author_id= f'{host}/author/{author_uid}'
+        host = 'https://nofun.herokuapp.com/'
+        author_id= f'{host} author/{author_uid}'
         queryset = Author.objects.get(id=author_id)
         
         serializer = Author_neat_Serializer(queryset)
@@ -65,8 +65,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
         author_uid = str(uuid.uuid4().hex)
-        host = 'https://nofun.herokuapp.com'
-        author_id= f'{host}/author/{author_uid}'
+        host = 'https://nofun.herokuapp.com/'
+        author_id= f'{host} author/{author_uid}'
         url = author_id
         email = request.data.get('email')
         username = request.data.get('username')
