@@ -100,6 +100,36 @@ class ProfileCard extends React.Component {
     }
   }
 
+  // handleAddFriend = async () => {
+  //   const {  id } = this.state;
+  //   const { domain, currentUser, domains } = this.props;
+
+  //   let auth = null;
+
+  //   domains.map(d => {
+  //     if (d.domain === domain) {
+  //       auth = d.auth;
+  //     }
+  //   })
+
+  //   const config = {
+  //     headers: {
+  //       Authorization: auth.split(" ")[1],
+  //     },
+  //   };
+
+  //   const doc = await axios.post("https://" + domain + "/friendrequest/", {
+  //     from_user: currentUser.id,
+  //     to_user: id
+  //   }, config);
+    
+  //   if (doc.data) {
+  //     window.alert(doc.data);
+  //   } else {
+  //     window.alert("Fail!");
+  //   }
+  // }
+
   handleAddFriend = async () => {
     const {  id } = this.state;
     const { domain, currentUser, domains } = this.props;
@@ -114,14 +144,30 @@ class ProfileCard extends React.Component {
 
     const config = {
       headers: {
-        Authorization: auth.split(" ")[1],
+        // Authorization: auth.split(" ")[1],
+        Authorization: auth,
       },
     };
 
-    const doc = await axios.post("https://" + domain + "/friendrequest/", {
-      from_user: currentUser.id,
-      to_user: id
-    }, config);
+    console.log(currentUser.id);
+    console.log(id);
+    
+    if(domain === "social-distribution-t1.herokuapp.com"){
+      const id_digits = id.split("/")[4];
+      var doc = await axios.post("https://social-distribution-t1.herokuapp.com/author/"+id_digits+"/inbox/",{
+        type: "follow",
+        actor: currentUser.id,
+        object: id,
+        summary:"friend request from team 20"
+      }, config);
+      
+    }else{
+      var doc = await axios.post("https://" + domain + "/friendrequest/", {
+        from_user: currentUser.id,
+        to_user: id
+      }, config);
+    }
+    
     
     if (doc.data) {
       window.alert(doc.data);
@@ -129,6 +175,7 @@ class ProfileCard extends React.Component {
       window.alert("Fail!");
     }
   }
+
 
   // TODO: delete a friend
   handleDeleteFriend = async () => {
