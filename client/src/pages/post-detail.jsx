@@ -151,6 +151,7 @@ class PostDetail extends React.Component {
       try {
         const likedoc = await axios.post(post.id + "/likes/", 
         { 
+          displayName: currentUser.displayName,
           actor: currentUser?.id,
           context: post.id,
           object: post.id,
