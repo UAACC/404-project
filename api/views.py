@@ -552,6 +552,10 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         from_user_id = request.data["from_user"]
         to_user_id = request.data["to_user"]
 
+
+
+
+
         if FriendRequest.objects.filter(from_user=from_user_id, to_user=to_user_id, status="R").exists():
             # Check if the request alreay exists and status is "requested".
             return Response("Unable to send friend request because the friend request alreay exists!")
@@ -575,6 +579,10 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
                 from_user=to_user_id, to_user=from_user_id, status='R')
             return Response("Successfully create the friend request!")
         else:
+
+
+
+
             friend_request = FriendRequest.objects.create(
                 from_user=from_user_id, to_user=to_user_id, status='R')
             return Response("Successfully create the friend request!")
@@ -654,30 +662,22 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         if FriendRequest.objects.filter(to_user=author_id, status='R').exists():
             for item in FriendRequest.objects.filter(to_user=author_id, status='R').values():
             #print(item)
-                follower_id=item["from_user"]
+                items.append(item["from_user"])
                 #print('11111',follower_id)
-                this_follower = Author.objects.filter(id=follower_id)
-                items.append(this_follower.values()[0])
+                
         
 
         if FriendRequest.objects.filter(to_user=author_id, status='A').exists():
             for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
-                follower_id=item["from_user"]
-                this_follower = Author.objects.filter(id=follower_id)
-                items.append(this_follower.values()[0])
+                items.append(item["from_user"])
 
         if FriendRequest.objects.filter(to_user=author_id, status='D').exists():
             for item in FriendRequest.objects.filter(to_user=author_id, status='D').values():
-                follower_id=item["from_user"]
-                this_follower = Author.objects.filter(id=follower_id)
-                items.append(this_follower.values()[0])
+                items.append(item["from_user"])
 
         if FriendRequest.objects.filter(from_user=author_id, status='A').exists():
             for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
-                follower_id=item["to_user"]
-                this_follower = Author.objects.filter(id=follower_id)
-                items.append(this_follower.values()[0])
-
+                items.append(item["to_user"])
         
 
         return Response({
@@ -696,13 +696,9 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         items = []
         # follower_list = {"type": "followers", "items": []}
         for item in FriendRequest.objects.filter(to_user=author_id, status='A').values():
-            follower_id=item["from_user"]
-            this_follower = Author.objects.filter(id=follower_id)
-            items.append(this_follower.values()[0])
+            items.append(item["from_user"])
         for item in FriendRequest.objects.filter(from_user=author_id, status='A').values():
-            follower_id=item["to_user"]
-            this_follower = Author.objects.filter(id=follower_id)
-            items.append(this_follower.values()[0])
+            items.append(item["to_user"])
         
         
         
