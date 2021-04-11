@@ -31,6 +31,7 @@ class PostDetail extends React.Component {
       author: null,
       comments: [],
       authorsList: [],
+      likes: [],
       title: "",
       content: "",
       description: "",
@@ -79,7 +80,13 @@ class PostDetail extends React.Component {
       (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author)) ||
       (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
-      this.setState({ post, categories: JSON.parse(post.categories), contentType: post.contentType, title: post.title, content: post.content, description: post.description });
+      const { categories, contentType, title, content, description } = post;
+      if (Array.isArray(post.categories)) {
+        this.setState({ post, categories, contentType, title, content, description });  
+      } else {
+        this.setState({ post, categories: JSON.parse(categories), contentType, title, content, description });  
+      }
+      
     }
 
     const doc2 = await axios.get(post_id + "comments/", config);
@@ -455,7 +462,7 @@ class PostDetail extends React.Component {
               >
                 <FavoriteIcon color="secondary" size="large" />
                 <Typography variant="h7" style={{ marginLeft: 20 }}>
-                  {post.visibility !== "PUBLIC" && likes && likes[0].length}
+                  {post.visibility !== "PUBLIC" && likes.length}
                 </Typography>
               </IconButton>
               <IconButton
