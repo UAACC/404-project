@@ -146,16 +146,36 @@ class PostDetail extends React.Component {
         "Authorization": auth,
       },
     };
-    console.log(currentUser?.id);
-
-    try {
-      await axios.post(post.id + "/likes/", { actor: currentUser?.id, author: currentUser?.id }, config);
-      window.alert("Liked!")
-      this.componentDidMount();
-    } catch {
-      window.alert("Someting wrong, please try later!");
+    
+    if(domain === "social-distribution-t1.herokuapp.com"){
+      try {
+        const likedoc = await axios.post(post.id + "/likes/", 
+        { 
+          actor: currentUser?.id,
+          context: post.id,
+          object: post.id,
+          type: "like",
+          summary: "like from team one"
+        }, 
+        config);
+        console.log("---team1 response---",likedoc);
+        window.alert("liked post in team1");
+        this.componentDidMount();
+      } catch {
+        window.alert("like team1 goes wrong, please try later");
+      }
+    } else{
+      try {
+        await axios.post(post.id + "/likes/", { actor: currentUser?.id, author: currentUser?.id }, config);
+        window.alert("Liked!")
+        this.componentDidMount();
+      } catch {
+        window.alert("Something wrong, please try later!");
+      }
     }
+    
   };
+
 
   handleShare = async () => {
     const { post } = this.state;
