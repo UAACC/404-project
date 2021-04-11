@@ -50,7 +50,7 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'size','comment','comments' , 'published', 'visibility', 'unlisted','image']
+        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'size','comment','comments' , 'published', 'visibility', 'unlisted']
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):

@@ -263,12 +263,7 @@ class PostViewSet(viewsets.ModelViewSet):
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
         
-        file_1 = request.data.get('file')
-        print('file',file_1)
-        img = request.FILES.get('image')
-        print('img',img)
-        
-
+       
         Post.objects.create(
             id= post_id,
             title = title,
@@ -285,7 +280,7 @@ class PostViewSet(viewsets.ModelViewSet):
             published = published,
             unlisted = unlisted,
             author = Author.objects.get(id=author_id),
-            image = img
+            
         )
         
 
@@ -343,7 +338,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comment = comments_id
         visibility = request.data.get('visibility')
         unlisted = post.unlisted
-        img = request.FILES.get('image')
+        
         
 
         post_data = {'title': title,'source': source,
@@ -361,10 +356,7 @@ class PostViewSet(viewsets.ModelViewSet):
             title = title
                 )
         
-        if img:
-            Post.objects.filter(pk=post_id).update(
-                image = img
-                )
+        
         
         post.source = post_id#fix this 
 
@@ -438,7 +430,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comment = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
-        img = request.FILES.get('image')
+        
 
         Post.objects.filter(pk=post_id).update(
             title = title,
@@ -455,7 +447,7 @@ class PostViewSet(viewsets.ModelViewSet):
             published = published,
             unlisted = unlisted,
             author = Author.objects.get(id=author_id),
-            image = img
+            
         )
 
        #return response
