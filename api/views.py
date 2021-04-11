@@ -286,9 +286,9 @@ class PostViewSet(viewsets.ModelViewSet):
         contentType = request.data.get('contentType')
         content = request.data.get('content')
         categories = request.data.get('categories')
-        count = request.data.get('count')
+        
         published = request.data.get('published')
-        size = request.data.get('size')
+        
         comment = comment
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
@@ -307,8 +307,7 @@ class PostViewSet(viewsets.ModelViewSet):
             description = description,
             contentType = contentType,
             content = content,
-            count = count,
-            size = size,
+            
             categories = categories,
             comment = comment,
             visibility = visibility,
