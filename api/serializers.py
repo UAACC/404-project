@@ -44,13 +44,13 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
 
-    comments = CommentSerializer(many=True, required=False)
+    # comments = CommentSerializer(many=True, required=False)
     #likes = LikeSerializer(many=True, required=False)
     author = AuthorSerializer(many=False, required=True)
     
     class Meta:
         model = Post
-        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'size','comment','comments' , 'published', 'visibility', 'unlisted']
+        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'size','comment', 'published', 'visibility', 'unlisted']
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):

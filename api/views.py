@@ -202,9 +202,11 @@ class PostViewSet(viewsets.ModelViewSet):
     def post_list(self, request, author_uid=None, *args, **kwargs):
         host = 'https://nofun.herokuapp.com'
         author_id= f'{host}/author/{author_uid}'
-        post = Post.objects.get(author=author_id)
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
+        post = Post.objects.filter(author=Author.objects.get(id=author_id)).values()
+        
+        # serializer = PostSerializer(post)
+        # return Response(serializer.data)
+        return Response(post)
         
         #return Response(Post.objects.filter(author=author_id).values())
         
@@ -239,7 +241,7 @@ class PostViewSet(viewsets.ModelViewSet):
         #author_id = f'{host}/author/{author_id}'
         post_id= f'{host}/author/{author_uid}/posts/{post_uid}'
         author_id= f'{host}/author/{author_uid}'
-        comments_id = f'{host}/author/{author_uid}/posts/{post_uid}/comments'
+        comment = f'{host}/author/{author_uid}/posts/{post_uid}/comments'
 
         title = request.data.get('title')
         
@@ -259,11 +261,16 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request.data.get('count')
         published = request.data.get('published')
         size = request.data.get('size')
-        comment = comments_id
+        comment = comment
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
         
-       
+        # file_1 = request.data.get('file')
+        # print('file',file_1)
+        # # img = request.FILES.get('image')
+        # print('img',img)
+        
+
         Post.objects.create(
             id= post_id,
             title = title,
@@ -280,7 +287,7 @@ class PostViewSet(viewsets.ModelViewSet):
             published = published,
             unlisted = unlisted,
             author = Author.objects.get(id=author_id),
-            
+            # image = img
         )
         
 
@@ -338,7 +345,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comment = comments_id
         visibility = request.data.get('visibility')
         unlisted = post.unlisted
-        
+        # img = request.FILES.get('image')
         
 
         post_data = {'title': title,'source': source,
@@ -356,7 +363,10 @@ class PostViewSet(viewsets.ModelViewSet):
             title = title
                 )
         
-        
+        # if img:
+        #     Post.objects.filter(pk=post_id).update(
+        #         image = img
+        #         )
         
         post.source = post_id#fix this 
 
@@ -430,7 +440,7 @@ class PostViewSet(viewsets.ModelViewSet):
         comment = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
-        
+        # img = request.FILES.get('image')
 
         Post.objects.filter(pk=post_id).update(
             title = title,
@@ -447,7 +457,7 @@ class PostViewSet(viewsets.ModelViewSet):
             published = published,
             unlisted = unlisted,
             author = Author.objects.get(id=author_id),
-            
+            # image = img
         )
 
        #return response
@@ -777,6 +787,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             comment_id = post_id + "/comments/" + comment_uuid
             comment_author = Comment.objects.get(id = comment_id)
             comment_author_id = comment_author.author
+            print(comment_author_id)
 
         context = ''
         actor = request.data.get('author',None)# author ID
@@ -786,7 +797,8 @@ class LikesViewSet(viewsets.ModelViewSet):
             summary = str(actor) + ' liked your comment. '#actor.displayname or some name
             likes_data = {'type': 'Like', 'summary': summary, 'author': actor, 'object': comment_id, 'context': context}
             Likes.objects.create(summary=summary, author=actor, object=comment_id, context=context)#create author who is an actor
-
+            print("111111")
+            print(comment_author_id)
             # add to object author's inbox
             receiver_id = comment_author_id
             Inbox.objects.create(author=receiver_id, items=likes_data)
@@ -826,10 +838,12 @@ class LikesViewSet(viewsets.ModelViewSet):
         author_id = host + "author/" + author_uuid
         post_id = author_id + "/posts/" + post_uuid
         
-        response_body = []
+        # response_body = []
         item =  Likes.objects.filter(object=post_id).values()
-        response_body.append(item)
-        return Response(response_body)
+        # response_body.append(item)
+
+        # return Response(response_body)
+        return Response(item)
 
 
     # get a list of like for this comment
@@ -847,10 +861,10 @@ class LikesViewSet(viewsets.ModelViewSet):
             comment_uuid = request_str.split("/")[6]
             comment_id = post_id + "/comments/" + comment_uuid
 
-        response_body = []
+        # response_body = []
         item =  Likes.objects.filter(object=comment_id).values()
-        response_body.append(item)
-        return Response(response_body)
+        # response_body.append(item)
+        return Response(item)
 
 
 @api_view(['GET'])

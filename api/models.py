@@ -41,10 +41,6 @@ class Post(models.Model):
 
     
 
-    VISIBILITY_CHOICES = (
-    ('PUBLIC', 'public'),
-    ('PRIVATE', 'private'),
-)
     type = "post"
 
 
@@ -56,15 +52,14 @@ class Post(models.Model):
     contentType = models.CharField(max_length=55,default = '')
     content = models.TextField(blank=True)
     visibility = models.CharField(max_length=256,
-                  choices=VISIBILITY_CHOICES,
                   default="PUBLIC")
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="posts",max_length=256)
     published = models.DateTimeField(default=timezone.now)
     comment = models.URLField(max_length=256, default = '')#it is url 
     
-    comments = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, related_name="comments",max_length=1024)
+    # comments = models.ForeignKey(
+    #     Comment, on_delete=models.CASCADE, related_name="comments", blank=True, max_length=1024)
 
     categories = models.JSONField(default=_list,blank = True, null = True)#team1 suggestion
     count = models.IntegerField(default=0,blank=True,null = True)
