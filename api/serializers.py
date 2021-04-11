@@ -6,7 +6,7 @@ class NodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Node
-        fields = ['id', 'domain','auth']
+        fields = ['id', 'domain', 'auth']
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -23,12 +23,14 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         # fields = ['id', 'content', 'author', 'post', 'likes', 'published']
-        fields = ['type', 'author', 'post', 'comment', 'contentType', 'published', 'id']
+        fields = ['type', 'author', 'post', 'comment',
+                  'contentType', 'published', 'id']
+
 
 class Author_neat_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ('type','id', 'host', 'displayName', 'url', 'github')
+        fields = ('type', 'id', 'host', 'displayName', 'url', 'github')
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -39,28 +41,33 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ('id','type', 'host', 'displayName', 'url', 'github','email','username','password','is_approved')
-        
+        fields = ('id', 'type', 'host', 'displayName', 'url',
+                  'github', 'email', 'username', 'password', 'is_approved')
+
 
 class PostSerializer(serializers.ModelSerializer):
 
     # comments = CommentSerializer(many=True, required=False)
     #likes = LikeSerializer(many=True, required=False)
     author = AuthorSerializer(many=False, required=True)
-    
+
     class Meta:
         model = Post
-        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories','count', 'size','comment', 'published', 'visibility', 'unlisted']
+        fields = ['id', 'type', 'title', 'source', 'origin', 'description', 'contentType', 'content',
+                  'author', 'categories', 'count', 'size', 'comment', 'published', 'visibility', 'unlisted']
+
 
 class Post_response_Serializer(serializers.ModelSerializer):
 
     # comments = CommentSerializer(many=True, required=False)
     #likes = LikeSerializer(many=True, required=False)
     author = AuthorSerializer(many=False, required=True)
-    
+
     class Meta:
         model = Post
-        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories','count', 'size','comment', 'published', 'visibility', 'unlisted']
+        fields = ['id', 'type', 'title', 'source', 'origin', 'description', 'contentType', 'content',
+                  'author', 'categories', 'count', 'size', 'comment', 'published', 'visibility', 'unlisted']
+
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -78,10 +85,3 @@ class InboxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inbox
         fields = ['type', 'author', 'items']
-
-# class ItemSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Inbox
-#         fields = ['type', 'author', 'items']
-
-
