@@ -1005,7 +1005,13 @@ class InboxViewSet(viewsets.ModelViewSet):
 
     def clear(self, request, *args, **kwargs):
     # clear the inbox database and decline all the requests
-        pass
+        request_str = str(request)
+        author_uuid = request_str.split("/")[2]
+        author_id = host + "author/" + author_uuid
+        Inbox.objects.filter(author=author_id).delete()
+        FriendRequest.objects.filter(object=author_id, status='R').update(status='D')
+        return Response({'Successfully clear the inbox. '})
+
 
     
 
