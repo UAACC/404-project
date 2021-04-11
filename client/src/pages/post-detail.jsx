@@ -72,11 +72,10 @@ class PostDetail extends React.Component {
     } else {
       post = doc.data[0];
     }
-
     console.log(post);
     if (
       (post?.visibility === "PUBLIC" || post?.visibility === "UNLISTED") ||
-      (post?.author === currentUser?.id ) ||
+      (post?.author === currentUser?.id || post?.author?.id === currentUser?.id ) ||
       (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author)) ||
       (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
@@ -86,11 +85,9 @@ class PostDetail extends React.Component {
       } else {
         this.setState({ post, categories: JSON.parse(categories), contentType, title, content, description });  
       }
-      
     }
 
     const doc2 = await axios.get(post_id + "comments/", config);
-
     this.setState({ comments: doc2.data });
 
     const authorDoc = await axios.get(
@@ -219,7 +216,7 @@ class PostDetail extends React.Component {
   handleEdit = () => {
     const { post } = this.state;
     const { id } = this.props.currentUser;
-    if (id === post.author) {
+    if (id === post.author || id === post.author.id) {
       this.setState({ editOpen: !this.state.editOpen });
     }
   };
@@ -474,13 +471,13 @@ class PostDetail extends React.Component {
                 <CommentIcon />
               </IconButton>
               {
-                !(post.author === currentUser?.id ) && <IconButton style={{ marginLeft: "3%" }}>
+                (post.author !== currentUser?.id && post.author?.id !== currentUser?.id ) && <IconButton style={{ marginLeft: "3%" }}>
                   <ShareIcon onClick={this.handleShare} />
                 </IconButton>
               }
               
 
-              {(currentUser && post.author === currentUser?.id) && (
+              {(post.author === currentUser?.id && post.author?.id === currentUser?.id) && (
                 editOpen ? (
                   <IconButton
                     style={{ marginLeft: "3%", color: "green" }}
@@ -497,7 +494,7 @@ class PostDetail extends React.Component {
                   </IconButton>
                 )
               )}
-              {(currentUser && post.author === currentUser?.id ) && (
+              {(post.author === currentUser?.id && post.author?.id === currentUser?.id) && (
                 <IconButton
                   style={{ marginLeft: "3%", color: "red" }}
                   onClick={this.handleDelete}

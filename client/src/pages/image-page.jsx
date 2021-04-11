@@ -36,7 +36,7 @@ class ImageDetail extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { currentUser, domains } = this.props;
+    const { currentUser, domains, userFriends } = this.props;
     const { domain, authorId, postId } = this.state;
     let auth = null;
     domains.map(d => {
@@ -63,8 +63,10 @@ class ImageDetail extends React.Component {
     }
 
     if (
-      post.visibility === "PUBLIC" ||
-      (post.visibility === "PUBLIC" && post.author === currentUser?.id )
+      (post?.visibility === "PUBLIC" || post?.visibility === "UNLISTED") ||
+      (post?.author === currentUser?.id || post?.author?.id === currentUser?.id ) ||
+      (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author)) ||
+      (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
       this.setState({ content: post.content });
     }
@@ -88,6 +90,7 @@ class ImageDetail extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  userFriends: state.user.userFriends,
   domains: state.domain.domains
 });
 
