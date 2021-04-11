@@ -307,8 +307,8 @@ class PostViewSet(viewsets.ModelViewSet):
             description = description,
             contentType = contentType,
             content = content,
-            count = Post._meta.get_field('count').get_default()
-            size = Post._meta.get_field('size').get_default()
+            count = Post._meta.get_field('count').get_default(),
+            size = Post._meta.get_field('size').get_default(),
             categories = categories,
             comment = comment,
             visibility = visibility,
