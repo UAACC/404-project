@@ -28,7 +28,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class Author_neat_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ('type','id', 'host', 'displayName', 'url', 'github','username')
+        fields = ('type','id', 'host', 'displayName', 'url', 'github')
 
 
 class AuthorSerializer(serializers.ModelSerializer):
