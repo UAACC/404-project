@@ -864,7 +864,7 @@ def likedList(request, *args, **kwargs):
     host = "https://nofun.herokuapp.com/"
     author_id = host + "author/" + author_uuid
 
-    item = Like.objects.filter(author_id=Author.objects.get(id=author_id)).values()
+    item = Likes.objects.filter(author=author_id).values()
     return Response(item)
 
 
