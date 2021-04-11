@@ -100,7 +100,7 @@ class Newpost extends React.Component {
           contentType,
           published: new Date(),
           author: currentUser?.id,
-          categorie: JSON.stringify(categories)
+          categories: JSON.stringify(categories)
         },
         config
       );

@@ -64,7 +64,7 @@ class ImageDetail extends React.Component {
 
     if (
       post.visibility === "PUBLIC" ||
-      (post.visibility === "PUBLIC" && (post.author_id === currentUser?.id || post.author === currentUser?.id ))
+      (post.visibility === "PUBLIC" && post.author === currentUser?.id )
     ) {
       this.setState({ content: post.content });
     }

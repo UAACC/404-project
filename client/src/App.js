@@ -22,8 +22,7 @@ class App extends React.Component {
 
   hanldeSaveFriends = async (authorId) => {
     const doc = await axios.get(authorId + "/friends/");
-    let friends = doc.data.items ?? [];
-    friends = friends.map(friend => friend.id);
+    const friends = doc.data?.items ?? [];
     await this.props.setUserFriends(friends);
   }
 

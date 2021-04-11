@@ -65,7 +65,7 @@ class ProfileCard extends React.Component {
   }
 
   handleVerifyGithubAccount = async () => {
-    const octokit = new Octokit({ auth: `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` });
+    const octokit = new Octokit({ auth: `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` });
     if (this.state.github.split("/")[3]) {
       try {
         const doc = await octokit.request('GET /users/' + this.state.github.split("/")[3]);
@@ -119,8 +119,8 @@ class ProfileCard extends React.Component {
     };
 
     const doc = await axios.post("https://" + domain + "/friendrequest/", {
-      from_user: currentUser.id,
-      to_user: id
+      actor: currentUser.id,
+      object: id
     }, config);
     
     if (doc.data) {
@@ -148,7 +148,7 @@ class ProfileCard extends React.Component {
       },
     };
 
-    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/delete/", {from_user: currentUser.id, to_user: id}, config);
+    const doc = await axios.patch("https://nofun.herokuapp.com/friendrequest/delete/", {actor: currentUser.id, object: id}, config);
     if (doc.data) {
       window.alert(doc.data);
       window.location = "/" + domain + "/" + id.split("/")[4];

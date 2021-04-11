@@ -14,7 +14,7 @@ class Followers extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: [],
+      followers: [],
       currCategory: "",
       friends: [],
     };
@@ -22,28 +22,67 @@ class Followers extends React.Component {
 
   componentDidMount = async () => {
     // extract user
-    const { currentUser } = this.props;
+    const { currentUser, domains } = this.props;
     const id = currentUser.id;
 
     const id_digit = id.split("/")[4];
 
-    const doc = await axios.get(
+    const followerDoc = await axios.get(
       `https://nofun.herokuapp.com/author/${id_digit}/followers/`
     );
-    if (doc.data) {
-      this.setState({ items: doc.data.items });
-    }
+    let followers = followerDoc.data?.items;
+    const FApis1 = followers.map(follower => {
+      let auth = null;
+      const domain = follower.split("/")[2];
+      domains.map((d) => {
+        if (d.domain === domain) {
+          auth = d.auth;
+        }
+      });
+      const config = {
+        headers: {
+          "Authorization": auth
+        },
+      };
+      return axios.get(follower, config);
+    })
 
-    const frienddoc = await axios.get(
+    let res = await Promise.all(FApis1);
+    res = res.map(d => d.data);
+    console.log(res);
+
+    this.setState({ followers: res });
+
+    // friends list
+    const friendDoc = await axios.get(
       `https://nofun.herokuapp.com/author/${id_digit}/friends/`
     );
-    if (doc.data) {
-      this.setState({ friends: frienddoc.data.items });
-    }
+    let friends = friendDoc.data?.items;
+    const FApis2 = friends.map(friend => {
+      let auth = null;
+      const domain = friend.split("/")[2];
+      domains.map((d) => {
+        if (d.domain === domain) {
+          auth = d.auth;
+        }
+      });
+      const config = {
+        headers: {
+          "Authorization": auth
+        },
+      };
+      return axios.get(friend, config);
+    })
+
+    res = await Promise.all(FApis2);
+    res = res.map(d => d.data);
+    console.log(res);
+
+    this.setState({ friends: res });
   };
 
   render() {
-    const { items, friends, currCategory } = this.state;
+    const { followers, friends, currCategory } = this.state;
     return (
       <div>
         <Header />
@@ -79,8 +118,8 @@ class Followers extends React.Component {
               />
               <br />
               <br />
-              <h7>Followers: {items.length} person(s)</h7>
-              {items.map((f) => {
+              <h7>Followers: {followers.length} person(s)</h7>
+              {followers.map((f) => {
                 return (
                   <Card style={{margin: "5px"}} onClick={() => window.location = "/authors/" + f.id.split("/")[2] + "/" + f.id.split("/")[4]}>
                     <CardContent width={1}>
@@ -115,5 +154,6 @@ class Followers extends React.Component {
 // redux
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  domains: state.domain.domains
 });
 export default connect(mapStateToProps)(Followers);

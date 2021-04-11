@@ -63,17 +63,20 @@ class Inbox extends React.Component {
   };
 
   handleGithubActivities = async (github) => {
-    const octokit = new Octokit({ auth: `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` });
-    const doc = await octokit.request('GET /users/' + github.split("/")[3] + "/events");
+    const octokit = new Octokit({ auth: `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` });
+    let doc = null;
+    if (github) {
+      doc = await octokit.request('GET /users/' + github.split("/")[3] + "/events");
+    }
 
-    this.setState({githubAcivities: doc.data ?? []});
+    this.setState({githubAcivities: doc ? doc.data : []});
   }
 
   handleFriendRequest = async (config) => {
     const { currentUser, domains } = this.props;
     // get the nofun token from redux
     // get the host matches the currentUser
-    const doc = await axios.get(currentUser.id + "/inbox/request-list", config);
+    const doc = await axios.get(currentUser.id + "/inbox/request-list/", config);
 
     //put all request item in state
     const requests = doc.data?.items ?? [];
@@ -81,8 +84,8 @@ class Inbox extends React.Component {
     //literate through items and append displayname to each item
     if (requests.length !== 0) {
       const ApiRequests = requests.map(req => {
-        if (req.from_user.includes("nofun")) {
-          return axios.get(req.from_user, config);
+        if (req.actor.includes("nofun")) {
+          return axios.get(req.actor, config);
         } else {
           // TODO: if the author is from team 17
         }
@@ -281,7 +284,7 @@ class Inbox extends React.Component {
   }
 
   //"from_user_domain" distinguish the domain name no matter what server this "from user" is from
-  handleAccept = async (from_user, from_user_domain) => {
+  handleAccept = async (actor, from_user_domain) => {
     let auth = null;
     const { currentUser } = this.props;
     const { domains } = this.props;
@@ -304,8 +307,8 @@ class Inbox extends React.Component {
     const doc = await axios.patch(
       "https://" + from_user_domain + "/friendrequest/accept/",
       {
-        from_user,
-        to_user: currentUser?.id,
+        actor,
+        object: currentUser?.id,
       },
       config
     );
@@ -315,7 +318,7 @@ class Inbox extends React.Component {
     }
   };
 
-  handleDecline = async (from_user, from_user_domain) => {
+  handleDecline = async (actor, from_user_domain) => {
     let auth = null;
     const { currentUser } = this.props;
     const { domains } = this.props;
@@ -338,8 +341,8 @@ class Inbox extends React.Component {
     const doc = await axios.patch(
       "https://" + from_user_domain + "/friendrequest/decline/",
       {
-        from_user,
-        to_user: currentUser.id,
+        actor,
+        object: currentUser.id,
       },
       config
     );
@@ -356,52 +359,52 @@ class Inbox extends React.Component {
   renderPages = () => {
     const { value, likes, posts, comments, githubAcivities, requests, postPage, commentPage, likePage, githubPage, requestpage } = this.state;
     let pages = 1;
-    console.log(value);
+
     switch(value){
       case 0:
-        pages = Number(posts.length / 10) + 1;
+        pages = Number(posts.length / 10);
         const array1 = [];
         for (let i = 0; i <= pages; i++) {
           array1.push(i);
         }
-        return <div>
-          {array1.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        return <div style={{marginLeft: "10%", marginRight: "10%"}}>
+          {array1.map((page, i) => <Button style={{height: "30px"}} color={i+1 === postPage ? "primary" : "default"} variant="contained" onClick={() => this.setState({postPage: i+1}) }>{i+1}</Button>)}
         </div>;
       case 1:
-        pages = Number(comments.length / 10) + 1;
+        pages = Number(comments.length / 10);
         const array2 = [];
         for (let i = 0; i <= pages; i++) {
           array2.push(i);
         }
-        return <div>
-          {array2.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        return <div style={{marginLeft: "10%", marginRight: "10%"}}>
+          {array2.map((page, i) => <Button value={i+1} style={{height: "30px"}} color={i+1 === commentPage ? "primary" : "default"} variant="contained" onClick={(e) => this.setState({ commentPage: i+1 })}>{i+1}</Button>)}
         </div>;
       case 2:
-        pages = Number(likes.length / 10) + 1;
+        pages = Number(likes.length / 10);
         const array3 = [];
         for (let i = 0; i <= pages; i++) {
           array3.push(i);
         }
-        return <div>
-          {array3.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        return <div style={{marginLeft: "10%", marginRight: "10%"}}>
+          {array3.map((page, i) => <Button value={i+1} style={{height: "30px"}} color={i+1 === likePage ? "primary" : "default"} variant="contained" onClick={(e) => this.setState({ likePage: i+1 })}>{i+1}</Button>)}
         </div>;
       case 3:
-        pages = Number(requests.length / 10) + 1;
+        pages = Number(requests.length / 10);
         const array4 = [];
         for (let i = 0; i <= pages; i++) {
           array4.push(i);
         }
-        return <div>
-          {array4.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary">{i+1}</Button>)}
+        return <div style={{marginLeft: "10%", marginRight: "10%"}}>
+          {array4.map((page, i) => <Button value={i+1} style={{height: "30px"}} color={i+1 === requestpage ? "primary" : "default"} variant="contained" onClick={(e) => this.setState({ requestpage: i+1 })}>{i+1}</Button>)}
         </div>;
       case 4:
-        pages = Number(githubAcivities.length / 10) + 1;
+        pages = Number(githubAcivities.length / 10);
         const array5 = [];
         for (let i = 0; i <= pages; i++) {
           array5.push(i);
         }
-        return <div>
-          {array5.map((page, i) => <Button style={{width: "15px", height: "15px"}} color="primary" variant="contained">{i+1}</Button>)}
+        return <div style={{marginLeft: "10%", marginRight: "10%"}}>
+          {array5.map((page, i) => <Button value={i+1} style={{height: "30px"}} color={i+1 === githubPage ? "primary" : "default"} variant="contained" onClick={(e) => this.setState({ githubPage: i+1 })}>{i+1}</Button>)}
         </div>;
       default:
         return null;
@@ -415,8 +418,18 @@ class Inbox extends React.Component {
     };
   }
 
+  handleClearInbox = async () => {
+    console.log("clear");
+  }
+
   render() {
-    const { requests, posts, likes, comments, githubAcivities, value } = this.state;
+    let { requests, posts, likes, comments, githubAcivities, value, postPage, commentPage, likePage, githubPage, requestpage } = this.state;
+    posts = posts.slice((postPage-1)*10, (postPage)*10);
+    comments = comments.slice((commentPage-1)*10, (commentPage)*10);
+    likes = likes.slice((likePage-1)*10, (likePage)*10);
+    githubAcivities = githubAcivities.slice((githubPage-1)*10, (githubPage)*10);
+    requests = requests.slice((requestpage-1)*10, (requestpage)*10);
+
     return (
       <div>
         <Header />
@@ -428,6 +441,7 @@ class Inbox extends React.Component {
             display: "flex",
           }}
         >
+         
           <Tabs
             value={value}
             onChange={this.handleChange}
@@ -532,8 +546,8 @@ class Inbox extends React.Component {
                           style={{ marginLeft: "30%" }}
                           onClick={() => {
                             this.handleAccept(
-                              doc.from_user,
-                              doc.from_user.split("/")[2]
+                              doc.actor,
+                              doc.actor.split("/")[2]
                             )
                           }}
                         >
@@ -545,8 +559,8 @@ class Inbox extends React.Component {
                           variant="contianed"
                           onClick={() =>
                             this.handleDecline(
-                              doc.from_user,
-                              doc.from_user.split("/")[2]
+                              doc.actor,
+                              doc.actor.split("/")[2]
                             )
                           }
                         >
@@ -585,8 +599,9 @@ class Inbox extends React.Component {
               </Grid>
             </Grid>
           </TabPanel>
+          <Button color="secondary" variant="contained" onClick={this.handleClearInbox}>Clear Inbox</Button>
         </div>
-        <div id='page' style={{ display: "flex", flexDirection: "row" }}>
+        <div id='page' style={{ display: "flex", flexDirection: "row", marginBottom: "5%" }}>
           {this.renderPages()}
         </div>
       </div>

@@ -71,14 +71,15 @@ class PostDetail extends React.Component {
     } else {
       post = doc.data[0];
     }
-    
+
+    console.log(post);
     if (
       (post?.visibility === "PUBLIC" || post?.visibility === "UNLISTED") ||
-      (post?.author_id === currentUser?.id || post?.author === currentUser?.id ) ||
-      (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author ?? post?.author_id)) ||
+      (post?.author === currentUser?.id ) ||
+      (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author)) ||
       (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
-      this.setState({ post, categories: JSON.parse(post.categorie), contentType: post.contentType, title: post.title, content: post.content, description: post.description });
+      this.setState({ post, categories: JSON.parse(post.categories), contentType: post.contentType, title: post.title, content: post.content, description: post.description });
     }
 
     const doc2 = await axios.get(post_id + "comments/", config);
@@ -184,7 +185,7 @@ class PostDetail extends React.Component {
         contentType: post.contentType,
         published: new Date(),
         author: currentUser?.id,
-        categorie: post.categorie
+        categories: post.categories
       },
       config
     );
@@ -211,7 +212,7 @@ class PostDetail extends React.Component {
   handleEdit = () => {
     const { post } = this.state;
     const { id } = this.props.currentUser;
-    if (id === post.author || id === post.author_id) {
+    if (id === post.author) {
       this.setState({ editOpen: !this.state.editOpen });
     }
   };
@@ -234,7 +235,7 @@ class PostDetail extends React.Component {
 
     console.log("content: ", content);
 
-    await axios.put(post.id + "/", {...post, title, description, content, categorie: JSON.stringify(categories) }, config);
+    await axios.put(post.id + "/", {...post, title, description, content, categories: JSON.stringify(categories) }, config);
     window.location = "/posts/" + domain + "/" + authorId + "/" + postId;
   };
 
@@ -466,13 +467,13 @@ class PostDetail extends React.Component {
                 <CommentIcon />
               </IconButton>
               {
-                !(post.author_id === currentUser?.id || post.author === currentUser?.id ) && <IconButton style={{ marginLeft: "3%" }}>
+                !(post.author === currentUser?.id ) && <IconButton style={{ marginLeft: "3%" }}>
                   <ShareIcon onClick={this.handleShare} />
                 </IconButton>
               }
               
 
-              {currentUser && (post.author_id === currentUser?.id || post.author === currentUser?.id ) && (
+              {(currentUser && post.author === currentUser?.id) && (
                 editOpen ? (
                   <IconButton
                     style={{ marginLeft: "3%", color: "green" }}
@@ -489,7 +490,7 @@ class PostDetail extends React.Component {
                   </IconButton>
                 )
               )}
-              {(currentUser && (post.author_id === currentUser?.id || post.author === currentUser?.id )) && (
+              {(currentUser && post.author === currentUser?.id ) && (
                 <IconButton
                   style={{ marginLeft: "3%", color: "red" }}
                   onClick={this.handleDelete}
