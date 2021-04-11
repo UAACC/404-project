@@ -50,7 +50,7 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories','comment', 'published', 'visibility', 'unlisted']
+        fields = ['id','type', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories','count', 'size','comment', 'published', 'visibility', 'unlisted']
 
 class Post_response_Serializer(serializers.ModelSerializer):
 
