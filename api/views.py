@@ -17,6 +17,8 @@ from django.shortcuts import get_list_or_404, get_object_or_404
 import uuid
 from itertools import chain
 import numpy as np
+from django.db.models import F
+
 
 
 # =====================================================================================================================================
@@ -148,11 +150,32 @@ class AuthorViewSet(viewsets.ModelViewSet):
         email = request.data.get('email',None)
         password = request.data.get('password',None)
         github = request.data.get('github', None)
-        author.displayName = name   
-        author.github = github
-        author.email = email
-        author.password =password
-        author.save()
+
+        
+        if name:
+            Author.objects.filter(pk=author_id).update(
+                displayName = name
+                )
+
+        if github:
+            Author.objects.filter(pk=author_id).update(
+                github = github
+                )
+
+            
+
+        if email:
+            Author.objects.filter(pk=author_id).update(
+                email = email
+                )
+
+
+        if password:
+            Author.objects.filter(pk=author_id).update(
+                password = password
+                )
+
+
         #return frontend need data
         serializer = AuthorSerializer(author)
         return Response(serializer.data)
@@ -503,6 +526,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         Comment.objects.create( author= author, post= post_id, 
                         comment=comment, contentType=contentType, id=comment_id)
+
+        post = Post.objects.get(pk = post_id)
+        post.count += 1
+        post.save()
 
 
         # add this comment to the post's owner's inbox

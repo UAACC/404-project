@@ -30,7 +30,7 @@ urlpatterns = [
     path('post-list/',PostViewSet.as_view({'get':"all_posts"})),
     path('author/login/', AuthorViewSet.as_view({'post':'author_login'})),
     path('author/', AuthorViewSet.as_view({'post':'create_1', 'get':"all_users"})),
-    path('author/<str:author_uid>/', AuthorViewSet.as_view({'get':'retrive', 'put':'update'})),
+    path('author/<str:author_uid>/', AuthorViewSet.as_view({'get':'retrive', 'post':'update'})),
     path('author/<str:author_uid>/posts/',
          PostViewSet.as_view({'get': 'post_list','post':'create_1'})),
     path('author/<str:author_uid>/posts/<str:post_id>/',
