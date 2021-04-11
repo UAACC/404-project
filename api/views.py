@@ -242,7 +242,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def post_list_id(self, request, author_uid=None,  post_id = None,*args, **kwargs):
         host = 'https://nofun.herokuapp.com'
         post_id = f'{host}/author/{author_uid}/posts/{post_id}'
-        author_id= f'{host}/author/{author_uid}'
+        #author_id= f'{host}/author/{author_uid}'
         post = Post.objects.get(id=post_id)
         data = PostSerializer(post)
         return Response(data.data)
