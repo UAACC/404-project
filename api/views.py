@@ -259,7 +259,7 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request.data.get('count')
         published = request.data.get('published')
         size = request.data.get('size')
-        comments = comments_id
+        comment = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
         
@@ -280,7 +280,7 @@ class PostViewSet(viewsets.ModelViewSet):
             count = count,
             size = size,
             categories = categories,
-            comment = comments,
+            comment = comment,
             visibility = visibility,
             published = published,
             unlisted = unlisted,
@@ -293,7 +293,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post_data = {'title': title,'source': source,
                      'origin': origin, 'description': description, 'contentType': contentType,
                      'content': content, 'author': author_id, 'categories': categories,
-                     'count': count, 'size': size, 'comments': comments,
+                     'count': count, 'size': size, 'comment': comment,
                      'visibility': visibility, 'unlisted': unlisted, 'id':post_id}
 
 
@@ -309,7 +309,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post_data2 = {'type': 'post','title': title,'source': source,
                      'origin': origin, 'description': description, 'contentType': contentType,
                      'content': content, 'author': author_id, 'categories': categories,
-                     'count': count, 'size': size, 'comments': comments,
+                     'count': count, 'size': size, 'comment': comment,
                      'visibility': visibility, 'unlisted': unlisted, 'id':post_id}
 
         for follower in followers:
@@ -340,7 +340,7 @@ class PostViewSet(viewsets.ModelViewSet):
         categories = request.data.get('categories')
         count = request.data.get('count')
         size = request.data.get('size')
-        comments = comments_id
+        comment = comments_id
         visibility = request.data.get('visibility')
         unlisted = post.unlisted
         img = request.FILES.get('image')
@@ -349,7 +349,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post_data = {'title': title,'source': source,
                     'origin': origin, 'description': description, 'contentType': contentType,
                     'content': content, 'author': author_id, 'categories': categories,
-                    'count': count, 'size': size, 'comments': comments,
+                    'count': count, 'size': size, 'comment': comment,
                     'visibility': visibility, 'unlisted': unlisted,'id':post_id}
 
         
@@ -435,7 +435,7 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request.data.get('count')
         published = request.data.get('published')
         size = request.data.get('size')
-        comments = comments_id
+        comment = comments_id
         visibility = request.data.get('visibility')
         unlisted = request.data.get('unlisted')
         img = request.FILES.get('image')
@@ -450,7 +450,7 @@ class PostViewSet(viewsets.ModelViewSet):
             count = count,
             size = size,
             categories = categories,
-            comment = comments,
+            comment = comment,
             visibility = visibility,
             published = published,
             unlisted = unlisted,
@@ -462,7 +462,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post_data = {'title': title,'source': source,
                      'origin': origin, 'description': description, 'contentType': contentType,
                      'content': content, 'author': author_id, 'categories': categories,
-                     'count': count, 'size': size, 'comments': comments,
+                     'count': count, 'size': size, 'comment': comment,
                      'visibility': visibility, 'unlisted': unlisted,'id':post_id}
 
         
@@ -797,7 +797,7 @@ class LikesViewSet(viewsets.ModelViewSet):
 
             # add to object author's inbox
             receiver_id = comment_author_id
-            Inbox.objects.create(author=comment_author_id, items=likes_data)
+            Inbox.objects.create(author=receiver_id, items=likes_data)
 
             return Response({
             'type': 'Like', 

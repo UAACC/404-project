@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 import uuid
 
+def _list():
+    return []
 
 class Node(models.Model):
     domain = models.CharField(max_length=256, unique=True)
@@ -22,11 +24,17 @@ class Author(AbstractUser):
     bio = models.TextField(null=True, blank=True)
     is_approved = models.BooleanField(default=False)
 
+class Comment(models.Model):
+    type = "comment"
+    author = models.CharField(max_length=256, default="")
+    post = models.CharField(max_length=256, default="")
+    comment = models.TextField()
+    contentType = models.CharField(max_length=256, default="")
+    published = models.DateTimeField(default=timezone.now)
+    id = models.CharField(primary_key=True, max_length=256)
 
 
 
-def _list():
-    return []
 
 class Post(models.Model):
 
@@ -53,12 +61,16 @@ class Post(models.Model):
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="posts",max_length=256)
     published = models.DateTimeField(default=timezone.now)
-    comment = models.URLField(max_length=256, default = '')
+    comment = models.URLField(max_length=256, default = '')#it is url 
+    
+    comments = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, related_name="comments",max_length=1024)
+
     categories = models.JSONField(default=_list,blank = True, null = True)#team1 suggestion
     count = models.IntegerField(default=0,blank=True,null = True)
     size = models.IntegerField(default=0,blank=True,null = True)
     unlisted = models.BooleanField(default = False,blank=True,null = True)
-    image = models.FileField(null = True, blank = True)#image url: media/image name/
+    
 
 
     #image = models.ImageField(null = True, blank = True, upload_to= "images/")
@@ -66,15 +78,9 @@ class Post(models.Model):
     def __str__(self):
         return self.title + ' | ' + str(self.id)
 
+    class Meta:
+            ordering = ['-published']
 
-class Comment(models.Model):
-    type = "comment"
-    author = models.CharField(max_length=256, default="")
-    post = models.CharField(max_length=256, default="")
-    comment = models.TextField()
-    contentType = models.CharField(max_length=256, default="")
-    published = models.DateTimeField(default=timezone.now)
-    id = models.CharField(primary_key=True, max_length=256)
 
 
 
