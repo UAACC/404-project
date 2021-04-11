@@ -54,7 +54,7 @@ class Post(models.Model):
         Author, on_delete=models.CASCADE, related_name="posts",max_length=256)
     published = models.DateTimeField(default=timezone.now)
     comment = models.URLField(max_length=256, default = '')
-    categorie = models.JSONField(default=_list,blank = True, null = True)#team1 suggestion
+    categories = models.JSONField(default=_list,blank = True, null = True)#team1 suggestion
     count = models.IntegerField(default=0,blank=True,null = True)
     size = models.IntegerField(default=0,blank=True,null = True)
     unlisted = models.BooleanField(default = False,blank=True,null = True)

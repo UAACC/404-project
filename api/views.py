@@ -202,9 +202,11 @@ class PostViewSet(viewsets.ModelViewSet):
     def post_list(self, request, author_uid=None, *args, **kwargs):
         host = 'https://nofun.herokuapp.com'
         author_id= f'{host}/author/{author_uid}'
+        post = Post.objects.get(author=author_id)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
         
-        
-        return Response(Post.objects.filter(author=author_id).values())
+        #return Response(Post.objects.filter(author=author_id).values())
         
 
         
@@ -253,7 +255,7 @@ class PostViewSet(viewsets.ModelViewSet):
         description = request.data.get('description')
         contentType = request.data.get('contentType')
         content = request.data.get('content')
-        categories = request.data.get('categorie')
+        categories = request.data.get('categories')
         count = request.data.get('count')
         published = request.data.get('published')
         size = request.data.get('size')
@@ -277,7 +279,7 @@ class PostViewSet(viewsets.ModelViewSet):
             content = content,
             count = count,
             size = size,
-            categorie = categories,
+            categories = categories,
             comment = comments,
             visibility = visibility,
             published = published,
@@ -335,7 +337,7 @@ class PostViewSet(viewsets.ModelViewSet):
         description = request.data.get('description')
         contentType = request.data.get('contentType')
         content = request.data.get('content')
-        categories = request.data.get('categorie')
+        categories = request.data.get('categories')
         count = request.data.get('count')
         size = request.data.get('size')
         comments = comments_id
@@ -395,7 +397,7 @@ class PostViewSet(viewsets.ModelViewSet):
         
 
         Post.objects.filter(pk=post_id).update(
-            categorie = categories
+            categories = categories
                 )
 
             
@@ -429,7 +431,7 @@ class PostViewSet(viewsets.ModelViewSet):
         description = request.data.get('description')
         contentType = request.data.get('contentType')
         content = request.data.get('content')
-        categories = request.data.get('categorie')
+        categories = request.data.get('categories')
         count = request.data.get('count')
         published = request.data.get('published')
         size = request.data.get('size')
@@ -447,7 +449,7 @@ class PostViewSet(viewsets.ModelViewSet):
             content = content,
             count = count,
             size = size,
-            categorie = categories,
+            categories = categories,
             comment = comments,
             visibility = visibility,
             published = published,
@@ -781,6 +783,8 @@ class LikesViewSet(viewsets.ModelViewSet):
             is_comments = True
             comment_uuid = request_str.split("/")[6]
             comment_id = post_id + "/comments/" + comment_uuid
+            comment_author = Comment.objects.get(id = comment_id)
+            comment_author_id = comment_author.author
 
         context = ''
         actor = request.data.get('author',None)# author ID
@@ -792,8 +796,8 @@ class LikesViewSet(viewsets.ModelViewSet):
             Likes.objects.create(summary=summary, author=actor, object=comment_id, context=context)#create author who is an actor
 
             # add to object author's inbox
-            receiver_id = author_id
-            Inbox.objects.create(author=receiver_id, items=likes_data)
+            receiver_id = comment_author_id
+            Inbox.objects.create(author=comment_author_id, items=likes_data)
 
             return Response({
             'type': 'Like', 
