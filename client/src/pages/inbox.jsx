@@ -63,7 +63,7 @@ class Inbox extends React.Component {
   };
 
   handleGithubActivities = async (github) => {
-    const octokit = new Octokit({ auth: `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` });
+    const octokit = new Octokit({ auth: `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` });
     let doc = null;
     if (github) {
       doc = await octokit.request('GET /users/' + github.split("/")[3] + "/events");
@@ -472,7 +472,7 @@ class Inbox extends React.Component {
                       <Card style={{ marginTop: "2%", width: "80%", marginLeft: "10%" }}>
                         <CardActions onClick={() => window.location = "/posts/" + post.postId.split("/")[2] + "/" + post.postId.split("/")[4] + "/" + post.postId.split("/")[6] + "/"}>
                           <p><b>{post.author.displayName}</b>{" "}created a post (click to check it)</p>
-                          {post.contentType === "image" ? <img src={post.content} style={{width: "80%"}} /> : <p><b>Content</b>: {post.content}</p>}
+                          {post.contentType.includes("image") ? <img src={post.content} style={{width: "80%"}} /> : <p><b>Title</b>: {post.title}</p>}
                         </CardActions>
                       </Card>
                     ))

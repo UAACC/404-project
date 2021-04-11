@@ -36,9 +36,10 @@ class PostsScroll extends React.Component {
     const posts = doc.data;
     
     const publicPosts = posts.filter((post) => {
+      console.log(post);
       return (
         (post?.visibility === "PUBLIC") ||
-        (post?.author === currentUser?.id || post?.author?.id === currentUser?.id ) ||
+        (post?.author === currentUser?.id || post?.author?.id === currentUser?.id) ||
         (post?.visibility === "FRIENDS" && userFriends?.includes(user.id)) ||
         (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
       )

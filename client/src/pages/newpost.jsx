@@ -127,6 +127,9 @@ class Newpost extends React.Component {
             >
               <Grid item xs={10}>
                 <Paper style={{ height: "90%" }}>
+                {
+                  contentType !== "image" ?
+                  <div>
                   <div id="title">
                     <TextField
                       onChange={(e) => {
@@ -171,16 +174,23 @@ class Newpost extends React.Component {
                           label="Text or MarkDown"
                         />
                         <FormControlLabel
-                          value="image"
+                          value="text/image"
+                          checked={contentType === "text/image"}
                           control={<Radio />}
-                          label="Image"
+                          label="Text with Image"
+                        />
+                          <FormControlLabel
+                          value="image"
+                          checked={contentType === "image"}
+                          control={<Radio />}
+                          label="Pure Image"
                         />
                       </RadioGroup>
                     </FormControl>
                   </div>
                   <div id="desc">
                     {
-                      contentType === "image" && 
+                      contentType.includes("image") && 
                       <TextField
                         onChange={(e) => {
                           this.setState({ description: e.target.value });
@@ -200,7 +210,7 @@ class Newpost extends React.Component {
                         variant="outlined"
                       />}
                   </div>
-                  {contentType === "image" ?
+                  {contentType.includes("image") ?
                     (<div id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
                       <div id="format">
                         <FormControl
@@ -368,23 +378,153 @@ class Newpost extends React.Component {
                       />
                     </div>
                   }
-                  <div id="button">
-                    <Button
-                      onClick={this.handleSubmit}
-                      variant="contained"
-                      color="primary"
-                      style={{
-                        marginLeft: "3%",
-                        marginTop: "3%",
-                        marginBottom: "3%",
-                      }}
-                    >
-                      Submit
-                    </Button>
+               </div>
+            :
+            <div>
+              <div id="format">
+                <FormControl
+                  component="fieldset"
+                  style={{
+                    marginLeft: "3%",
+                    marginRight: "3%",
+                    marginTop: "3%",
+                    width: "94%",
+                  }}
+                  onChange={(e) => {
+                    this.setState({ contentType: e.target.value });
+                  }}
+                >
+                  <FormLabel component="legend">
+                    What content do you want to post?
+                  </FormLabel>
+                  <RadioGroup row aria-label="visible" name="visible">
+                    <FormControlLabel
+                      value="text/plain"
+                      checked={contentType === "text/plain"}
+                      control={<Radio />}
+                      label="Text or MarkDown"
+                    />
+                    <FormControlLabel
+                      value="text/image"
+                      checked={contentType === "text/image"}
+                      control={<Radio />}
+                      label="Text with Image"
+                    />
+                      <FormControlLabel
+                      value="image"
+                      checked={contentType === "image"}
+                      control={<Radio />}
+                      label="Pure Image"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </div>
+              <div id="format">
+                <FormControl
+                  component="fieldset"
+                  style={{
+                    marginLeft: "3%",
+                    marginRight: "3%",
+                    marginTop: "3%",
+                    width: "94%",
+                  }}
+                  onChange={(e) => {
+                    this.setState({ imageLocal: e.target.value === "true" });
+                  }}
+                >
+                  <FormLabel component="legend">
+                    How do you want to upload the image?
+                  </FormLabel>
+                  <RadioGroup row aria-label="visible" name="visible">
+                    <FormControlLabel
+                      value={"true"}
+                      checked={imageLocal}
+                      control={<Radio />}
+                      label="Local Image"
+                    />
+                    <FormControlLabel
+                      value={"false"}
+                      checked={!imageLocal}
+                      control={<Radio />}
+                      label="URL"
+                    />
+                  </RadioGroup>
+                </FormControl>
+                </div>
+                {imageLocal ?
+                  <div>
+                    <FormLabel style={{marginRight: "20px"}}>
+                      Upload an Image from local machine
+                    </FormLabel>
+                    <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
                   </div>
-                </Paper>
-              </Grid>
-            </Grid>
+                  :
+                  <div>
+                    <FormLabel style={{marginTop: "30px", marginRight: "20px"}}>Input image URL</FormLabel>
+                    <TextField style={{width: "80%"}} label="Image" onChange={(e) => this.setState({content: e.target.value})}/>
+                  </div>
+                }
+                {content && <img src={content} style={{width: "40%"}} />}
+                <div id="visibility">
+                <FormControl
+                  component="fieldset"
+                  style={{
+                    marginLeft: "3%",
+                    marginRight: "3%",
+                    marginTop: "3%",
+                    width: "94%",
+                  }}
+                  onChange={(e) => {
+                    this.setState({ visibility: e.target.value });
+                  }}
+                >
+                  <FormLabel component="legend">
+                    Who can see this post?
+                  </FormLabel>
+                  <RadioGroup row aria-label="visible" name="visible">
+                    <FormControlLabel
+                      value="PUBLIC"
+                      checked={visibility === 'PUBLIC'}
+                      control={<Radio />}
+                      label="Public"
+                    />
+                    <FormControlLabel
+                      value="FRIENDS"
+                      control={<Radio />}
+                      label="Only for friends"
+                    />
+                      <FormControlLabel
+                      value="UNLISTED"
+                      control={<Radio />}
+                      label="Do not list"
+                    />
+                      <FormControlLabel
+                      value={"SPECIFIC"}
+                      control={<Radio />}
+                      label="Only for specific people"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </div>
+            </div>
+          }
+          <div id="button">
+            <Button
+              onClick={this.handleSubmit}
+              variant="contained"
+              color="primary"
+              style={{
+                marginLeft: "3%",
+                marginTop: "3%",
+                marginBottom: "3%",
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+            </Paper>
+          </Grid>
+          </Grid>
         </div>
       </div>
     );

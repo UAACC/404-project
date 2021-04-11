@@ -58,6 +58,7 @@ class ProfilePage extends React.Component {
                 </Paper>
               </Grid>
               <Grid item sm={8}>
+                <h3>My Post Stream</h3>
                 <Paper style={{ height: "710px", overflow: "auto" }}>
                   <PostsScroll user={user} />
                 </Paper>

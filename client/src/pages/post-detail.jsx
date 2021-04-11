@@ -76,7 +76,7 @@ class PostDetail extends React.Component {
     if (
       (post?.visibility === "PUBLIC" || post?.visibility === "UNLISTED") ||
       (post?.author === currentUser?.id || post?.author?.id === currentUser?.id ) ||
-      (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author)) ||
+      (post?.visibility === "FRIENDS" && (userFriends?.includes(post?.author) || userFriends?.includes(post?.author.id))) ||
       (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
       const { categories, contentType, title, content, description } = post;
@@ -274,6 +274,7 @@ class PostDetail extends React.Component {
         <div
           style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
         >
+          
           {post ? (
             <Grid
               container
@@ -283,6 +284,9 @@ class PostDetail extends React.Component {
               alignItems="flex-start"
             >
               <Grid item xs={8}>
+              <Typography style={{color: "blue", marginLeft: "10%", marginBottom: "5px"}}>{(post.author.id === post.origin.split("/")[0]+"/"+post.origin.split("/")[1]+"/"+post.origin.split("/")[2]+"/"+post.origin.split("/")[3]+"/"+post.origin.split("/")[4] || post.author === post.origin.split("/")[0]+"/"+post.origin.split("/")[1]+"/"+post.origin.split("/")[2]+"/"+post.origin.split("/")[3]+"/"+post.origin.split("/")[4] ) ? "Original" : "Shared"}</Typography>
+              {
+                contentType !== "image" ?
                 <Paper>
                   <div
                     style={{
@@ -291,6 +295,7 @@ class PostDetail extends React.Component {
                       paddingTop: "3%",
                     }}
                   >
+                   
                     <Typography variant="h6">{author?.displayName}</Typography>
                     <Typography>{post.published.split("T")[0]}</Typography>
                     <Typography>Type: {post.contentType}</Typography>
@@ -314,7 +319,7 @@ class PostDetail extends React.Component {
                         Title: {post.title}
                       </Typography>
                     )}
-                    {contentType === "image" && (editOpen ? (
+                    {contentType.includes("image") && (editOpen ? (
                       <TextField
                         label="description"
                         value={description}
@@ -326,7 +331,7 @@ class PostDetail extends React.Component {
                       <Typography>Description: {post.description}</Typography>
                     ))}
                     {
-                      contentType === "image" ?
+                      contentType.includes("image") ?
                         editOpen && (
                           <div className="row" id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
                             <FormControl
@@ -438,6 +443,77 @@ class PostDetail extends React.Component {
                   <br />
                   <br />
                 </Paper>
+                :
+                <Paper>
+                  {post.contentType.includes("image") && (
+                      !editOpen && <img src={post.content} style={{ width: "500px" }} onClick={
+                        () => {
+                          window.location = "/posts/" + domain + "/" + authorId + "/" + postId +"/image/"
+                        }
+                      }/>
+                    )}
+                  {
+                    editOpen && (
+                      <div className="row" id="image" style={{marginLeft: "3%", marginTop: "2%"}}>
+                        <FormControl
+                          component="fieldset"
+                          style={{
+                            marginLeft: "3%",
+                            marginRight: "3%",
+                            marginTop: "3%",
+                            width: "94%",
+                          }}
+                          onChange={(e) => {
+                            this.setState({ imageLocal: e.target.value === "true" });
+                          }}
+                        >
+                          <FormLabel component="legend">
+                            How do you want to upload the image?
+                          </FormLabel>
+                          <RadioGroup row aria-label="visible" name="visible">
+                            <FormControlLabel
+                              value={"true"}
+                              checked={imageLocal}
+                              control={<Radio />}
+                              label="Local Image"
+                            />
+                            <FormControlLabel
+                              value={"false"}
+                              checked={!imageLocal}
+                              control={<Radio />}
+                              label="URL"
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                        {
+                          imageLocal ?
+                            <div>
+                            <FormLabel style={{marginRight: "20px"}}>
+                              Upload an Image from local machine
+                            </FormLabel>
+                            <input type="file" onChange={(e) => this.encodeFileBase64(e.target.files[0])} />
+                            </div>
+                            :
+                            <div>
+                              <FormLabel style={{marginTop: "30px", marginRight: "20px"}}>Input image URL</FormLabel>
+                              <TextField style={{width: "80%"}} label="Image" onChange={(e) => this.setState({content: e.target.value})}/>
+                            </div>
+                        }
+                        {content && <div>
+                          <img src={content} style={{width: "40%"}} />
+                          <IconButton
+                            style={{ marginLeft: "3%", color: "red" }}
+                            onClick={() => this.setState({content: ""})}
+                          >
+                            X
+                          </IconButton>
+                        </div>}
+                      </div>
+                    )
+                  }
+                </Paper>
+              }
+                
               </Grid>
             </Grid>
           ) : (
@@ -477,7 +553,7 @@ class PostDetail extends React.Component {
               }
               
 
-              {(post.author === currentUser?.id && post.author?.id === currentUser?.id) && (
+              {(post.author === currentUser?.id || post.author?.id === currentUser?.id) && (
                 editOpen ? (
                   <IconButton
                     style={{ marginLeft: "3%", color: "green" }}
@@ -494,7 +570,7 @@ class PostDetail extends React.Component {
                   </IconButton>
                 )
               )}
-              {(post.author === currentUser?.id && post.author?.id === currentUser?.id) && (
+              {(post.author === currentUser?.id || post.author?.id === currentUser?.id) && (
                 <IconButton
                   style={{ marginLeft: "3%", color: "red" }}
                   onClick={this.handleDelete}

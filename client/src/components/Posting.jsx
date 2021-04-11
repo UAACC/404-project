@@ -67,9 +67,11 @@ export default function RecipeReviewCard(props) {
         }
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            {props.post.contentType !== "image" && props.post.content}
+            {!props.post.contentType.includes("image") && props.post.content}
           </Typography>
         </CardContent>
+        <Typography style={{color: "blue", marginLeft: "10%", marginBottom: "5px"}}>
+          {(props.post.author.id === props.post.origin.split("/")[0]+"/"+props.post.origin.split("/")[1]+"/"+props.post.origin.split("/")[2]+"/"+props.post.origin.split("/")[3]+"/"+props.post.origin.split("/")[4] || props.post.author === props.post.origin.split("/")[0]+"/"+props.post.origin.split("/")[1]+"/"+props.post.origin.split("/")[2]+"/"+props.post.origin.split("/")[3]+"/"+props.post.origin.split("/")[4] ) ? "Original" : "Shared"}</Typography>
       </CardActionArea>
     </Card>
   );

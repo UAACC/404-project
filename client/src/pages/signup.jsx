@@ -34,7 +34,7 @@ class SignUpPage extends React.Component {
   }
 
   handleVerifyGithubAccount = async () => {
-    const octokit = new Octokit({ auth: `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` });
+    const octokit = new Octokit({ auth: `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` });
     if (this.state.github.split("/")[3]) {
       try {
         const doc = await octokit.request('GET /users/' + this.state.github.split("/")[3]);

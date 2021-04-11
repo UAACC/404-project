@@ -122,7 +122,7 @@ class Header extends React.Component {
                     aria-current="page"
                     href={"/authors/nofun.herokuapp.com/" + currentUser.id.split("/")[4] + "/"}
                   >
-                    My profile
+                    My Dashboard
                   </a>
                 </li>
               ) : null}

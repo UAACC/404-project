@@ -65,7 +65,7 @@ class ImageDetail extends React.Component {
     if (
       (post?.visibility === "PUBLIC" || post?.visibility === "UNLISTED") ||
       (post?.author === currentUser?.id || post?.author?.id === currentUser?.id ) ||
-      (post?.visibility === "FRIENDS" && userFriends?.includes(post?.author)) ||
+      (post?.visibility === "FRIENDS" && (userFriends?.includes(post?.author) || userFriends?.includes(post?.author.id))) ||
       (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
       this.setState({ content: post.content });
