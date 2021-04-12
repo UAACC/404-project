@@ -34,7 +34,7 @@ open backend URL http:/127.0.0.1:8000/admin/<br/>
 Yanlin - Frontend:  Main page, Post Detail page, Comment and header components <br />
 Peiran - Frontend: Signin page, Signup page, Main page, User Profile Page<br />
 Xutong - Backend: Friend Request, Comment and Like  API<br />
-Dongheng - Backend: Post Author API and backend deploy<br />
+Dongheng - Backend: Post, Author API and backend deploy<br />
 Qi Song - Backend: All FRONT END  detail functions applications and connections to other group(main contributor)API <br />
 
 ## Frontend
