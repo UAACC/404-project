@@ -242,10 +242,10 @@ class PostViewSet(viewsets.ModelViewSet):
         post = get_object_or_404(Post, id=post_id)
 
         try:
-            author_items = Inbox.objects.filter(author=author_id)
+            author_items = Inbox.objects.filter(author=author_id).values()
             for item in author_items:
-                if item.items.object == post_id:
-                    item.delete()
+                if item["items"]["object"] == post_id:
+                    Inbox.objects.get(id=item["id"]).delete()
             post.delete()
         except ValueError:
             return Response("No such a post. Deletion fails.", 500)
@@ -323,20 +323,20 @@ class PostViewSet(viewsets.ModelViewSet):
                 type="post",
                 author=follower,
                 items={
-                    actor: author_id,
-                    object: post_id,
-                    title: title,
-                    source: source,
-                    origin: origin,
-                    content: content,
-                    description: description,
-                    contentType: contentType,
-                    categories: categories,
-                    count: count,
-                    size: size,
-                    comment: comment,
-                    visibility: visibility,
-                    unlisted: unlisted
+                    "actor": author_id,
+                    "object": post_id,
+                    "title": title,
+                    "source": source,
+                    "origin": origin,
+                    "content": content,
+                    "description": description,
+                    "contentType": contentType,
+                    "categories": categories,
+                    "count": count,
+                    "size": size,
+                    "comment": comment,
+                    "visibility": visibility,
+                    "unlisted": unlisted
                 }
             )
 
@@ -506,10 +506,10 @@ class CommentViewSet(viewsets.ModelViewSet):
             type="comment",
             author=receiver_id,
             items={
-                actor: author,
-                object: post_id,
-                comment: comment,
-                contentType: contentType
+                "actor": author,
+                "object": post_id,
+                "comment": comment,
+                "contentType": contentType
             }
         )
 
@@ -860,9 +860,9 @@ class LikesViewSet(viewsets.ModelViewSet):
                 type="Like",
                 author=receiver_id,
                 items={
-                    actor: actor,
-                    object: post_id,
-                    comment: comment_id
+                    "actor": actor,
+                    "object": post_id,
+                    "comment": comment_id
                 }
             )
 
@@ -886,8 +886,8 @@ class LikesViewSet(viewsets.ModelViewSet):
                 type="Like",
                 author=receiver_id,
                 items={
-                    actor: actor,
-                    object: post_id
+                    "actor": actor,
+                    "object": post_id
                 }
             )
 

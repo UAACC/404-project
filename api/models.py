@@ -110,3 +110,5 @@ class Inbox(models.Model):
     type = models.CharField(max_length=256, default='')
     author = models.CharField(max_length=256, default="")
     items = models.JSONField(null=True)
+
+
