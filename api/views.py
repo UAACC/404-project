@@ -213,13 +213,15 @@ class PostViewSet(viewsets.ModelViewSet):
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
     def delete(self, request, author_uid=None,  post_id=None, *args, **kwargs):
         host = 'https://nofun.herokuapp.com'
+        author_id = f'{host}/author/{author_uid}'
         post_id = f'{host}/author/{author_uid}/posts/{post_id}'
         post = get_object_or_404(Post, id=post_id)
 
         try:
-            items = Inbox.objects.filter(object=post_id)
-            for item in items:
-                item.delete()
+            author_items = Inbox.objects.filter(author=author_id)
+            for item in author_items:
+                if item.items.object == post_id:
+                    item.delete()
             post.delete()
         except ValueError:
             return Response("No such a post. Deletion fails.", 500)
@@ -296,20 +298,22 @@ class PostViewSet(viewsets.ModelViewSet):
             Inbox.objects.create(
                 type="post",
                 author=follower,
-                actor=author_id,
-                object=post_id,
-                title=title,
-                source=source,
-                origin=origin,
-                content=content,
-                description=description,
-                contentType=contentType,
-                categories=categories,
-                count=count,
-                size=size,
-                comment=comment,
-                visibility=visibility,
-                unlisted=unlisted
+                items={
+                    actor: author_id,
+                    object: post_id,
+                    title: title,
+                    source: source,
+                    origin: origin,
+                    content: content,
+                    description: description,
+                    contentType: contentType,
+                    categories: categories,
+                    count: count,
+                    size: size,
+                    comment: comment,
+                    visibility: visibility,
+                    unlisted: unlisted
+                }
             )
 
         return Response(post_data)
@@ -477,10 +481,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         Inbox.objects.create(
             type="comment",
             author=receiver_id,
-            actor=author,
-            object=post_id,
-            comment=comment,
-            contentType=contentType
+            items={
+                actor: author,
+                object: post_id,
+                comment: comment,
+                contentType: contentType
+            }
         )
 
         return Response(comment_data)
@@ -783,9 +789,11 @@ class LikesViewSet(viewsets.ModelViewSet):
             Inbox.objects.create(
                 type="Like",
                 author=receiver_id,
-                actor=actor,
-                object=post_id,
-                comment=comment_id
+                items={
+                    actor: actor,
+                    object: post_id,
+                    comment: comment_id
+                }
             )
 
             return Response({
@@ -807,8 +815,10 @@ class LikesViewSet(viewsets.ModelViewSet):
             Inbox.objects.create(
                 type="Like",
                 author=receiver_id,
-                actor=actor,
-                object=post_id,
+                items={
+                    actor: actor,
+                    object: post_id
+                }
             )
 
             return Response({
