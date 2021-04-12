@@ -189,6 +189,30 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = PostSerializer(queryset, many=True)
         return Response(serializer.data)
 
+
+    def all_friends_posts(self, request, *args, **kwargs):
+        # get list of friend only
+        request = str(request)
+        author_uuid = request.split("/")[2]
+        host = "https://nofun.herokuapp.com/"
+        author_id = host + "author/" + author_uuid
+
+        friends = []
+        # follower_list = {"type": "followers", "items": []}
+        for item in FriendRequest.objects.filter(object=author_id, status='A').values():
+            friends.append(item["actor"])
+        for item in FriendRequest.objects.filter(actor=author_id, status='A').values():
+            friends.append(item["object"])
+
+        posts = []
+        for author_id in friends:
+            post = Post.objects.filter(author=Author.objects.get(id=author_id))
+            serializer = PostSerializer(post, many=True)
+            posts.append(serializer.data)
+        return Response(posts)
+
+
+
     def post_list(self, request, author_uid=None, *args, **kwargs):
         host = 'https://nofun.herokuapp.com'
         author_id = f'{host}/author/{author_uid}'
@@ -703,6 +727,15 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
                 'object': author_2_id,
                 'status': 'A'
             })
+
+        elif FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='D').exists():
+            return Response({
+                'is_follower': True,
+                'actor': author_1_id,
+                'object': author_2_id,
+                'status': 'D'
+            })
+        
         else:
             return Response({'is_follower': False})
 
