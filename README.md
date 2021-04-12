@@ -21,10 +21,11 @@ cd backend<br/>
 git fetch<br/>
 git checkout backend<br/>
 // optional: use your VM<br/>
-python3 manage.py makemigrations<br/>
-python3 manage.py migrate<br/>
-python3 manage.py migrate --run-syncdb<br/>
-python3 manage.py runserver<br/>
+pip install -r requirements.txt
+python manage.py makemigrations<br/>
+python manage.py migrate<br/>
+python manage.py migrate --run-syncdb<br/>
+python manage.py runserver<br/>
 
 open frontend URL http://127.0.0.1:3000/<br/>
 open backend URL http:/127.0.0.1:8000/admin/<br/>
