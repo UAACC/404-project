@@ -707,7 +707,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         author_2_id = host + "author/" + author_2_uuid
         # current_user = Author.objects.get(id=author_1_id)
         # foreign_user = Author.objects.get(id=author_2_id)
-        for item in FriendRequest.objects.all():
+        for item in FriendRequest.objects.all().values():
             if author_1_uuid in item["object"] and author_2_uuid in item["actor"] and item["status"] == 'R':
                 return Response({
                     'is_follower': True,
