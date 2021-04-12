@@ -19,9 +19,9 @@ https://social-distribution-app.herokuapp.com
 ## Project1 - Tasks
 Yanlin - Frontend:  Main page, Post Detail page, Comment and header components <br />
 Peiran - Frontend: Signin page, Signup page, Main page, User Profile Page<br />
-Xutong - Backend: Friend Request API<br />
-Dongheng - Backend: Post API<br />
-Qi Song - Backend: Comment and Like API <br />
+Xutong - Backend: Friend Request, Comment and Like  API<br />
+Dongheng - Backend: Post Author API and backend deploy<br />
+Qi Song - Backend: All FRONT END  detail functions applications and connections to other group(main contributor)API <br />
 
 ## Frontend
 React
