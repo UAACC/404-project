@@ -33,6 +33,8 @@ urlpatterns = [
         'author/', AuthorViewSet.as_view({'post': 'create_1', 'get': "all_users"})),
     path('author/<str:author_uid>/',
          AuthorViewSet.as_view({'get': 'retrive', 'post': 'update'})),
+     path('author/<str:author_uid>/friendposts/', PostViewSet.as_view({'get': 'all_friends_posts'})),
+     
     path('author/<str:author_uid>/posts/',
          PostViewSet.as_view({'get': 'post_list', 'post': 'create_1'})),
     path('author/<str:author_uid>/posts/<str:post_id>/',
