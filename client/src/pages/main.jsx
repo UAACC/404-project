@@ -31,7 +31,7 @@ class Followers extends React.Component {
       `https://nofun.herokuapp.com/author/${id_digit}/followers/`
     );
     let followers = followerDoc.data?.items;
-    const FApis1 = followers.map(follower => {
+    const FApis1 = followers.map((follower) => {
       let auth = null;
       const domain = follower.split("/")[2];
       domains.map((d) => {
@@ -41,14 +41,14 @@ class Followers extends React.Component {
       });
       const config = {
         headers: {
-          "Authorization": auth
+          Authorization: auth,
         },
       };
       return axios.get(follower, config);
-    })
+    });
 
     let res = await Promise.all(FApis1);
-    res = res.map(d => d.data);
+    res = res.map((d) => d.data);
     console.log(res);
 
     this.setState({ followers: res });
@@ -58,7 +58,7 @@ class Followers extends React.Component {
       `https://nofun.herokuapp.com/author/${id_digit}/friends/`
     );
     let friends = friendDoc.data?.items;
-    const FApis2 = friends.map(friend => {
+    const FApis2 = friends.map((friend) => {
       let auth = null;
       const domain = friend.split("/")[2];
       domains.map((d) => {
@@ -68,14 +68,14 @@ class Followers extends React.Component {
       });
       const config = {
         headers: {
-          "Authorization": auth
+          Authorization: auth,
         },
       };
       return axios.get(friend, config);
-    })
+    });
 
     res = await Promise.all(FApis2);
-    res = res.map(d => d.data);
+    res = res.map((d) => d.data);
     console.log(res);
 
     this.setState({ friends: res });
@@ -87,7 +87,7 @@ class Followers extends React.Component {
       <div>
         <Header />
         <div
-          style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
+          style={{ marginLeft: "14%", marginRight: "5%", marginTop: "30px" }}
         >
           <Grid
             container
@@ -96,7 +96,7 @@ class Followers extends React.Component {
             justify="center"
             alignItems="flex-start"
           >
-            <Grid item xs={10} sm={8}>
+            <Grid item xs={10} sm={7}>
               <PostsScroll currCategory={currCategory} />
             </Grid>
             <Grid item xs={10} sm={4}>
@@ -107,10 +107,9 @@ class Followers extends React.Component {
                   this.setState({ currCategory: e.target.value })
                 }
                 style={{
-                  marginLeft: "3%",
                   marginRight: "3%",
                   marginTop: "3%",
-                  width: "100px",
+                  width: "200px",
                 }}
                 id="category"
                 label="category"
@@ -121,7 +120,16 @@ class Followers extends React.Component {
               <h7>Followers: {followers.length} person(s)</h7>
               {followers.map((f) => {
                 return (
-                  <Card style={{margin: "5px"}} onClick={() => window.location = "/authors/" + f.id.split("/")[2] + "/" + f.id.split("/")[4]}>
+                  <Card
+                    style={{ width: "300px" }}
+                    onClick={() =>
+                      (window.location =
+                        "/authors/" +
+                        f.id.split("/")[2] +
+                        "/" +
+                        f.id.split("/")[4])
+                    }
+                  >
                     <CardContent width={1}>
                       <Typography color="textSecondary">
                         {f.displayName}
@@ -134,8 +142,17 @@ class Followers extends React.Component {
               <h7>Friends: {friends.length} person(s)</h7>
               {friends.map((f) => {
                 return (
-                  <Card style={{margin: "5px"}} onClick={() => window.location = "/authors/" + f.id.split("/")[2] + "/" + f.id.split("/")[4]}>
-                    <CardContent  width={1}>
+                  <Card
+                    style={{ width: "300px" }}
+                    onClick={() =>
+                      (window.location =
+                        "/authors/" +
+                        f.id.split("/")[2] +
+                        "/" +
+                        f.id.split("/")[4])
+                    }
+                  >
+                    <CardContent width={1}>
                       <Typography color="textSecondary">
                         {f.displayName}
                       </Typography>
@@ -154,6 +171,6 @@ class Followers extends React.Component {
 // redux
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 export default connect(mapStateToProps)(Followers);

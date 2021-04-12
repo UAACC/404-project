@@ -19,7 +19,7 @@ class ProfilePage extends React.Component {
     const { domain, id } = this.props.match.params;
 
     let auth = null;
-    domains.map(d => {
+    domains.map((d) => {
       if (d.domain === domain) {
         auth = d.auth;
       }
@@ -27,9 +27,9 @@ class ProfilePage extends React.Component {
 
     const config = {
       headers: {
-        'Authorization': auth,
-      }
-    }
+        Authorization: auth,
+      },
+    };
 
     const doc = await axios.get("https://" + domain + "/author/" + id, config);
     console.log(doc.data);
@@ -42,23 +42,17 @@ class ProfilePage extends React.Component {
       <div>
         <Header />
         <div
-          style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
+          style={{ marginLeft: "15%", marginRight: "15%", marginTop: "30px" }}
         >
           {user && (
-            <Grid
-              container
-              spacing={3}
-              direction="horizenol"
-              justify="center"
-              alignItems="flex-start"
-            >
-              <Grid item sm={4}>
-                <Paper>
-                  <ProfileComponent user={user} domain={this.props.match.params.domain}/>
-                </Paper>
+            <Grid container spacing={3}>
+              <Grid item xs={4}>
+                <ProfileComponent
+                  user={user}
+                  domain={this.props.match.params.domain}
+                />
               </Grid>
-              <Grid item sm={8}>
-                <h3>My Post Stream</h3>
+              <Grid item xs={8}>
                 <Paper style={{ height: "710px", overflow: "auto" }}>
                   <PostsScroll user={user} />
                 </Paper>
@@ -73,7 +67,7 @@ class ProfilePage extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 
 export default connect(mapStateToProps)(ProfilePage);

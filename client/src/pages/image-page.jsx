@@ -15,7 +15,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import Header from "../components/Header";
 import { connect } from "react-redux";
 
-
 class ImageDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -39,7 +38,7 @@ class ImageDetail extends React.Component {
     const { currentUser, domains, userFriends } = this.props;
     const { domain, authorId, postId } = this.state;
     let auth = null;
-    domains.map(d => {
+    domains.map((d) => {
       if (d.domain === domain) {
         auth = d.auth;
       }
@@ -47,11 +46,12 @@ class ImageDetail extends React.Component {
 
     const config = {
       headers: {
-        "Authorization": auth,
+        Authorization: auth,
       },
     };
 
-    const post_id = "https://" + domain + "/author/" + authorId + "/posts/" + postId + "/";
+    const post_id =
+      "https://" + domain + "/author/" + authorId + "/posts/" + postId + "/";
 
     const doc = await axios.get(post_id, config);
 
@@ -63,23 +63,31 @@ class ImageDetail extends React.Component {
     }
 
     if (
-      (post?.visibility === "PUBLIC" || post?.visibility === "UNLISTED") ||
-      (post?.author === currentUser?.id || post?.author?.id === currentUser?.id ) ||
-      (post?.visibility === "FRIENDS" && (userFriends?.includes(post?.author) || userFriends?.includes(post?.author.id))) ||
-      (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
+      post?.visibility === "PUBLIC" ||
+      post?.visibility === "UNLISTED" ||
+      post?.author === currentUser?.id ||
+      post?.author?.id === currentUser?.id ||
+      (post?.visibility === "FRIENDS" &&
+        (userFriends?.includes(post?.author) ||
+          userFriends?.includes(post?.author.id))) ||
+      (post?.visibility !== "FRIENDS" &&
+        post?.visibility !== "UNLISTED" &&
+        JSON.parse(post?.visibility).includes(currentUser?.displayName))
     ) {
       this.setState({ content: post.content });
     }
   };
-
-
 
   render() {
     const { content } = this.state;
 
     return (
       <div>
-        <img src={content} alr="https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png" style={{width: "80%"}} />
+        <img
+          src={content}
+          alr="https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-1-scaled-1150x647.png"
+          style={{ width: "80%" }}
+        />
       </div>
     );
   }
@@ -91,7 +99,7 @@ class ImageDetail extends React.Component {
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
   userFriends: state.user.userFriends,
-  domains: state.domain.domains
+  domains: state.domain.domains,
 });
 
 export default connect(mapStateToProps)(ImageDetail);

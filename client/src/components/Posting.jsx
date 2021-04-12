@@ -43,35 +43,73 @@ export default function RecipeReviewCard(props) {
   const [expanded, setExpanded] = React.useState(false);
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} style={{ margin: "auto" }}>
       <CardActionArea onClick={() => props.handleClick()}>
-      <CardHeader
-        avatar={
-          <Avatar aria-label="recipe" style={{backgroundColor: "grey"}} className={classes.avatar}>
-          </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={props.post.title}
-        subheader={props.post.published.split("T")[0]}
-      />
-      
-        {
-          props.post.contentType.includes("image") && <CardMedia
-          className={classes.media}
-          image={props.post.content}
+        <CardHeader
+          avatar={
+            <Avatar
+              style={{ backgroundColor: "grey" }}
+              className={classes.avatar}
+            ></Avatar>
+          }
+          action={
+            <IconButton aria-label="settings">
+              <MoreVertIcon />
+            </IconButton>
+          }
+          title={props.post.title}
+          subheader={props.post.published.split("T")[0]}
         />
-        }
+
+        {props.post.contentType.includes("image") && (
+          <CardMedia
+            className={classes.media}
+            image={props.post.content}
+            style={{
+              paddingTop: "56.25%",
+              marginLeft: "5%",
+              marginRight: "5%",
+              maxWidth: "500px",
+            }}
+          />
+        )}
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
             {!props.post.contentType.includes("image") && props.post.content}
           </Typography>
         </CardContent>
-        <Typography style={{color: "blue", marginLeft: "10%", marginBottom: "5px"}}>
-          {(props.post.author.id === props.post.origin.split("/")[0]+"/"+props.post.origin.split("/")[1]+"/"+props.post.origin.split("/")[2]+"/"+props.post.origin.split("/")[3]+"/"+props.post.origin.split("/")[4] || props.post.author === props.post.origin.split("/")[0]+"/"+props.post.origin.split("/")[1]+"/"+props.post.origin.split("/")[2]+"/"+props.post.origin.split("/")[3]+"/"+props.post.origin.split("/")[4] ) ? "Original" : "Shared"}</Typography>
+        <Typography
+          variant="body2"
+          style={{
+            color: "green",
+            marginLeft: "3%",
+            marginBottom: "2%",
+            alignItems: "flex-end",
+          }}
+        >
+          {props.post.author.id ===
+            props.post.origin.split("/")[0] +
+              "/" +
+              props.post.origin.split("/")[1] +
+              "/" +
+              props.post.origin.split("/")[2] +
+              "/" +
+              props.post.origin.split("/")[3] +
+              "/" +
+              props.post.origin.split("/")[4] ||
+          props.post.author ===
+            props.post.origin.split("/")[0] +
+              "/" +
+              props.post.origin.split("/")[1] +
+              "/" +
+              props.post.origin.split("/")[2] +
+              "/" +
+              props.post.origin.split("/")[3] +
+              "/" +
+              props.post.origin.split("/")[4]
+            ? "Original"
+            : "Shared"}
+        </Typography>
       </CardActionArea>
     </Card>
   );

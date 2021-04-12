@@ -20,29 +20,32 @@ class PostsScroll extends React.Component {
     const { user, domains, currentUser, userFriends } = this.props;
 
     let auth = null;
-    domains.map(d => {
+    domains.map((d) => {
       if (d.domain === user.id.split("/")[2]) {
-        auth = d.auth
+        auth = d.auth;
       }
     });
 
     const config = {
       headers: {
-        'Authorization': auth,
-      }
-    }
+        Authorization: auth,
+      },
+    };
 
     const doc = await axios.get(user.id + "/posts/", config);
     const posts = doc.data;
-    
+
     const publicPosts = posts.filter((post) => {
       console.log(post);
       return (
-        (post?.visibility === "PUBLIC") ||
-        (post?.author === currentUser?.id || post?.author?.id === currentUser?.id) ||
+        post?.visibility === "PUBLIC" ||
+        post?.author === currentUser?.id ||
+        post?.author?.id === currentUser?.id ||
         (post?.visibility === "FRIENDS" && userFriends?.includes(user.id)) ||
-        (post?.visibility !== "FRIENDS" && post?.visibility !== "UNLISTED" && JSON.parse(post?.visibility).includes(currentUser?.displayName))
-      )
+        (post?.visibility !== "FRIENDS" &&
+          post?.visibility !== "UNLISTED" &&
+          JSON.parse(post?.visibility).includes(currentUser?.displayName))
+      );
     });
 
     this.setState({ posts: publicPosts });
@@ -60,7 +63,14 @@ class PostsScroll extends React.Component {
                 <Posting
                   post={post}
                   handleClick={() =>
-                    (window.location = "/posts/" + post.id.split("/")[2]+ "/" + post.id.split("/")[4]+ "/" +  post.id.split("/")[6] + "/")
+                    (window.location =
+                      "/posts/" +
+                      post.id.split("/")[2] +
+                      "/" +
+                      post.id.split("/")[4] +
+                      "/" +
+                      post.id.split("/")[6] +
+                      "/")
                   }
                 ></Posting>
               </Paper>
@@ -89,9 +99,11 @@ class PostsScroll extends React.Component {
                 </Button>
               </div>
             ) : (
-              <Typography variant="h7" style={{ marginLeft: 20 }}>
-                This author has not posted any content yet!
-              </Typography>
+              <div>
+                <Typography variant="h7" style={{ marginTop: 30 }}>
+                  This author has not posted any content yet!
+                </Typography>
+              </div>
             )}
           </center>
         )}
@@ -103,7 +115,7 @@ class PostsScroll extends React.Component {
 const mapStateToProps = (state) => ({
   domains: state.domain.domains,
   userFriends: state.user.userFriends,
-  currentUser: state.user.currentUser
+  currentUser: state.user.currentUser,
 });
 
 export default connect(mapStateToProps)(PostsScroll);
