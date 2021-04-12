@@ -950,6 +950,7 @@ class InboxViewSet(viewsets.ModelViewSet):
         # clear the inbox database and decline all the requests
         request_str = str(request)
         author_uuid = request_str.split("/")[2]
+        host = "https://nofun.herokuapp.com/"
         author_id = host + "author/" + author_uuid
         Inbox.objects.filter(author=author_id).delete()
         FriendRequest.objects.filter(
