@@ -33,15 +33,3 @@ structure: index.js, app.js /pages, /components, /assets
 Django
 library: Django REST framework
 
-### API:
-#### Author:
-<img src="https://miscellaneous-kay.s3.ca-central-1.amazonaws.com/Author.png" />
-
-#### POST
-<img src="https://miscellaneous-kay.s3.ca-central-1.amazonaws.com/post.png" />
-
-#### Comment & Like 
-<img src="https://miscellaneous-kay.s3.ca-central-1.amazonaws.com/Comment%26Like.png" />
-
-### friends
-<img src="https://miscellaneous-kay.s3.ca-central-1.amazonaws.com/friend-request.png" />
