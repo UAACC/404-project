@@ -962,7 +962,7 @@ class InboxViewSet(viewsets.ModelViewSet):
         host = "https://nofun.herokuapp.com/"
         author_id = host + "author/" + author_uuid
         request_body_data = request.data
-        Inbox.objects.create(author=author_id, items=request_body_data)
+        Inbox.objects.create(type=request.data['type'] ,author=author_id, items=request_body_data)
         return Response({
             "type": "inbox",
             "author": author_id,
