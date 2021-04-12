@@ -1,20 +1,33 @@
 # 404-project
+## Run online?
+frontend: https://social-distribution-app.herokuapp.com/<br/>
+backend: https://nofun.herokuapp.com/admin/<br/>
 
-## RUN LOCALLY?
-- // download node.js first, then open one terminal)
-- git clone https://github.com/UAACC/404-project.git
-- cd 404-project
-- npm install
-- npm run start
-- // open another terminal and go into the 404-project
-- pip3 install -r requirements.txt
-- python3 manage.py migrate
-- python3 manage.py migrate --run-syncdb
-- python3 manage.py runserver
-- // open http://localhost:3000
 
-## RUN ONLINE?
-https://social-distribution-app.herokuapp.com
+## Run locally?
+git clone https://github.com/UAACC/404-project.git frontend <br/>
+cd frontend<br/>
+git fetch<br/>
+git checkout frontend<br/>
+cd client<br/>
+npm install<br/>
+cd ..<br/>
+npm install<br/>
+npm run dev<br/>
+
+cd ..<br/>
+git clone https://github.com/UAACC/404-project.git backend<br/>
+cd backend<br/>
+git fetch<br/>
+git checkout backend<br/>
+// optional: use your VM<br/>
+python3 manage.py makemigrations<br/>
+python3 manage.py migrate<br/>
+python3 manage.py migrate --run-syncdb<br/>
+python3 manage.py runserver<br/>
+
+open frontend URL http://127.0.0.1:3000/<br/>
+open backend URL http:/127.0.0.1:8000/admin/<br/>
 
 ## Project1 - Tasks
 Yanlin - Frontend:  Main page, Post Detail page, Comment and header components <br />
