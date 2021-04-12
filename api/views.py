@@ -954,8 +954,7 @@ class InboxViewSet(viewsets.ModelViewSet):
         Inbox.objects.filter(author=author_id).delete()
         FriendRequest.objects.filter(
             object=author_id, status='R').update(status='D')
-        return Response({'Successfully clear the inbox. '})
-
+        return Response('Successfully clear the inbox.')
 
 # =====================================================================================================================================
 # =====================================================================================================================================
