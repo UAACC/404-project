@@ -47,3 +47,7 @@ structure: index.js, app.js /pages, /components, /assets
 Django
 library: Django REST framework
 
+## API documentations
+https://docs.google.com/document/d/1-ALGeKC2WyRux0hKx5JKX2xbHC6qUVyiySFOQevU79w/edit#
+
+
