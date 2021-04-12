@@ -701,43 +701,80 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         request = str(request)
         author_1_uuid = request.split("/")[2]
         author_2_uuid = request.split("/")[4]
+
         host = "https://nofun.herokuapp.com/"
         author_1_id = host + "author/" + author_1_uuid
         author_2_id = host + "author/" + author_2_uuid
         # current_user = Author.objects.get(id=author_1_id)
         # foreign_user = Author.objects.get(id=author_2_id)
-        if FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='R').exists():
-            return Response({
-                'is_follower': True,
-                'actor': author_2_id,
-                'object': author_1_id,
-                'status': 'R'
-            })
-        elif FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='A').exists():
-            return Response({
-                'is_follower': True,
-                'actor': author_2_id,
-                'object': author_1_id,
-                'status': 'A'
-            })
-        elif FriendRequest.objects.filter(object=author_2_id, actor=author_1_id, status='A').exists():
-            return Response({
-                'is_follower': True,
-                'actor': author_1_id,
-                'object': author_2_id,
-                'status': 'A'
-            })
+        for item in FriendRequest.objects.all():
+            if author_1_uuid in item["object"] and author_2_uuid in item["actor"] and item["status"] == 'R':
+                return Response({
+                    'is_follower': True,
+                    'actor': item["actor"],
+                    'object': item["object"],
+                    'status': 'R'
+                })
 
-        elif FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='D').exists():
-            return Response({
-                'is_follower': True,
-                'actor': author_1_id,
-                'object': author_2_id,
-                'status': 'D'
-            })
+            elif author_1_uuid in item["object"] and author_2_uuid in item["actor"] and item["status"] == 'A':
+                return Response({
+                    'is_follower': True,
+                    'actor': item["actor"],
+                    'object': item["object"],
+                    'status': 'A'
+                })
+
+            elif author_2_uuid in item["object"] and author_1_uuid in item["actor"] and item["status"] == 'A':
+                return Response({
+                    'is_follower': True,
+                    'actor': item["object"],
+                    'object': item["actor"],
+                    'status': 'A'
+                })
+
+            elif author_1_uuid in item["object"] and author_2_uuid in item["actor"] and item["status"] == 'D':
+                return Response({
+                    'is_follower': True,
+                    'actor': item["actor"],
+                    'object': item["object"],
+                    'status': 'D'
+                })
+
+        return Response({'is_follower': False})
+
+
+        # if FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='R').exists():
+        #     return Response({
+        #         'is_follower': True,
+        #         'actor': author_2_id,
+        #         'object': author_1_id,
+        #         'status': 'R'
+        #     })
+        # elif FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='A').exists():
+        #     return Response({
+        #         'is_follower': True,
+        #         'actor': author_2_id,
+        #         'object': author_1_id,
+        #         'status': 'A'
+        #     })
+        # elif FriendRequest.objects.filter(object=author_2_id, actor=author_1_id, status='A').exists():
+        #     return Response({
+        #         'is_follower': True,
+        #         'actor': author_1_id,
+        #         'object': author_2_id,
+        #         'status': 'A'
+        #     })
+
+        # elif FriendRequest.objects.filter(object=author_1_id, actor=author_2_id, status='D').exists():
+        #     return Response({
+        #         'is_follower': True,
+        #         'actor': author_1_id,
+        #         'object': author_2_id,
+        #         'status': 'D'
+        #     })
         
-        else:
-            return Response({'is_follower': False})
+        # else:
+            # return Response({'is_follower': False})
 
     def put_follower(self, request, *args, **kwargs):
         # check if author2 is author1's follower
