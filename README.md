@@ -33,7 +33,7 @@ open backend URL http:/127.0.0.1:8000/admin/<br/>
 ## Project1 Contributors- Tasks
 Yanlin - Frontend:  Main page, Post Detail page, Comment and header components <br />
 Peiran - Frontend: Signin page, Signup page, Main page, User Profile Page<br />
-Xutong - Backend: Friend Request, Comment and Like  API<br />
+Xutong - Backend: Friend Request, Comment and Like,API documentations <br />
 Dongheng - Backend: Post, Author API ,viedo demo and backend deploy<br />
 Qi Song - Frontend: All FRONT END  detail functions applications and connections to other group API and forntend deploy (main contributor) <br />
 
