@@ -1,0 +1,28 @@
+{
+    "name": "LiteracyNodeApp",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "server": "nodemon index.js",
+        "client": "npm run start --prefix client",
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "build": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
+        "heroku-postbuild": "npm run build"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@material-ui/lab": "^4.0.0-alpha.57",
+        "@octokit/core": "^3.4.0",
+        "concurrently": "^5.2.0",
+        "express": "^4.17.1",
+        "install": "^0.13.0",
+        "nodemon": "^2.0.4",
+        "npm": "^7.9.0",
+        "react-dropzone": "^11.3.2",
+        "react-markdown": "^5.0.3"
+    }
+}
