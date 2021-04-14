@@ -8,25 +8,24 @@ import HourglassEmptyIcon from "@material-ui/icons/HourglassEmpty";
 import axios from "axios";
 import { connect } from "react-redux";
 
-
 class PostsScroll extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
-      local: true
+      local: true,
     };
   }
 
   componentDidMount = async () => {
     let posts = [];
-  
-    const requests = this.props.domains?.map(domain => {
+
+    const requests = this.props.domains?.map((domain) => {
       const config = {
         headers: {
-          'Authorization': domain.auth,
-        }
-      }
+          Authorization: domain.auth,
+        },
+      };
       return axios.get("https://" + domain.domain + "/post-list/", config);
     });
 
@@ -53,17 +52,23 @@ class PostsScroll extends React.Component {
       <div className="row">
         {posts.length !== 0 ? (
           posts.map((post) => {
-            
             if (currCategory) {
               if (Array.isArray(post.categories)) {
                 if (post.categories.includes(currCategory)) {
                   return (
-                    <Grid item xm={12} sm={6}>
+                    <Grid item xm={12}>
                       <Paper style={{ overflow: "auto", marginTop: "2%" }}>
                         <Posting
                           post={post}
                           handleClick={() =>
-                            (window.location = "/posts/" + post.id.split("/")[2]+ "/" + post.id.split("/")[4]+ "/" +  post.id.split("/")[6] + "/")
+                            (window.location =
+                              "/posts/" +
+                              post.id.split("/")[2] +
+                              "/" +
+                              post.id.split("/")[4] +
+                              "/" +
+                              post.id.split("/")[6] +
+                              "/")
                           }
                         ></Posting>
                       </Paper>
@@ -76,12 +81,19 @@ class PostsScroll extends React.Component {
                 console.log(JSON.parse(post.categories));
                 if (JSON.parse(post.categories).includes(currCategory)) {
                   return (
-                    <Grid item xm={12} sm={6}>
+                    <Grid item xm={12}>
                       <Paper style={{ overflow: "auto", marginTop: "2%" }}>
                         <Posting
                           post={post}
                           handleClick={() =>
-                            (window.location = "/posts/" + post.id.split("/")[2]+ "/" + post.id.split("/")[4]+ "/" +  post.id.split("/")[6] + "/")
+                            (window.location =
+                              "/posts/" +
+                              post.id.split("/")[2] +
+                              "/" +
+                              post.id.split("/")[4] +
+                              "/" +
+                              post.id.split("/")[6] +
+                              "/")
                           }
                         ></Posting>
                       </Paper>
@@ -94,18 +106,26 @@ class PostsScroll extends React.Component {
                 return null;
               }
             } else {
-              return <Grid item xm={12} sm={6}>
-                <Paper style={{ overflow: "auto", marginTop: "2%" }}>
-                  <Posting
-                    post={post}
-                    handleClick={() =>
-                      (window.location = "/posts/" + post.id.split("/")[2]+ "/" + post.id.split("/")[4]+ "/" +  post.id.split("/")[6] + "/")
-                    }
-                  ></Posting>
-                </Paper>
-              </Grid>
+              return (
+                <Grid item xm={12}>
+                  <Paper style={{ overflow: "auto", marginTop: "2%" }}>
+                    <Posting
+                      post={post}
+                      handleClick={() =>
+                        (window.location =
+                          "/posts/" +
+                          post.id.split("/")[2] +
+                          "/" +
+                          post.id.split("/")[4] +
+                          "/" +
+                          post.id.split("/")[6] +
+                          "/")
+                      }
+                    ></Posting>
+                  </Paper>
+                </Grid>
+              );
             }
-            
           })
         ) : (
           <center>
