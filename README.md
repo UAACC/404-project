@@ -26,7 +26,7 @@ cd backend<br/>
 git fetch<br/>
 git checkout backend<br/>
 // optional: use your VM<br/>
-pip install -r requirements_backend.txt( only if you start with an empty virtual environments)
+pip install -r requirements_backend.txt( only if you start with an empty virtual environments, for any environments requirements issue you can also chekc with environment.yml which i use for my conda environment)
 python manage.py makemigrations<br/>
 python manage.py migrate<br/>
 python manage.py migrate --run-syncdb<br/>
