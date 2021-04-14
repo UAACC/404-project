@@ -44,7 +44,7 @@ Qi Song - Frontend: All FRONT END  detail functions applications and connections
 
 SPECIAL THANKS TO :
 TEAM 1
-
+Bowei Li	Weida Wang	Xuechun Qiu	Zihao Huang	Zijian Xi
 
 ## Frontend
 React
