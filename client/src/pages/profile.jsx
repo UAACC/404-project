@@ -39,7 +39,12 @@ class ProfilePage extends React.Component {
   render() {
     const { user } = this.state;
     return (
-      <div>
+      <div style={{
+        backgroundImage: `url("https://images.pexels.com/photos/747964/pexels-photo-747964.jpeg")`, 
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        height: window.innerHeight,
+      }}>
         <Header />
         <div
           style={{ marginLeft: "15%", marginRight: "15%", marginTop: "30px" }}
@@ -53,7 +58,7 @@ class ProfilePage extends React.Component {
                 />
               </Grid>
               <Grid item xs={8}>
-                <Paper style={{ height: "710px", overflow: "auto" }}>
+                <Paper >
                   <PostsScroll user={user} />
                 </Paper>
               </Grid>

@@ -10,7 +10,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
 
-class Followers extends React.Component {
+class MainPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -84,7 +84,12 @@ class Followers extends React.Component {
   render() {
     const { followers, friends, currCategory } = this.state;
     return (
-      <div>
+      <div style={{ 
+        backgroundImage: `url("https://images.pexels.com/photos/747964/pexels-photo-747964.jpeg")`, 
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        height: window.innerHeight,
+      }}>
         <Header />
         <div
           style={{ marginLeft: "14%", marginRight: "5%", marginTop: "30px" }}
@@ -100,7 +105,7 @@ class Followers extends React.Component {
               <PostsScroll currCategory={currCategory} />
             </Grid>
             <Grid item xs={10} sm={4}>
-              <h6>Search Posts by Category</h6>
+              <h6 style={{fontFamily: "monospace", fontSize: 20, color: "white"}}>Search Posts by Category</h6>
               <TextField
                 value={currCategory}
                 onChange={(e) =>
@@ -117,49 +122,53 @@ class Followers extends React.Component {
               />
               <br />
               <br />
-              <h7>Followers: {followers.length} person(s)</h7>
-              {followers.map((f) => {
-                return (
-                  <Card
-                    style={{ width: "300px" }}
-                    onClick={() =>
-                      (window.location =
-                        "/authors/" +
-                        f.id.split("/")[2] +
-                        "/" +
-                        f.id.split("/")[4])
-                    }
-                  >
-                    <CardContent width={1}>
-                      <Typography color="textSecondary">
-                        {f.displayName}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              <div id="followerDiv" style={{height: window.innerHeight * 0.3, overflow: "hidden", overflowY: "scroll", fontFamily: "monospace", fontSize: 20, color: "white" }}>
+                <h7>Followers: {followers.length} person(s)</h7>
+                {followers.map((f) => {
+                  return (
+                    <Card
+                      style={{ width: "300px" }}
+                      onClick={() =>
+                        (window.location =
+                          "/authors/" +
+                          f.id.split("/")[2] +
+                          "/" +
+                          f.id.split("/")[4])
+                      }
+                    >
+                      <CardContent width={1}>
+                        <Typography color="textSecondary">
+                          {f.displayName}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
               <br />
+              <div id="friendDiv" style={{height: window.innerHeight * 0.3, overflow: "hidden", overflowY: "scroll", fontFamily: "monospace", fontSize: 20, color: "white" }}>
               <h7>Friends: {friends.length} person(s)</h7>
-              {friends.map((f) => {
-                return (
-                  <Card
-                    style={{ width: "300px" }}
-                    onClick={() =>
-                      (window.location =
-                        "/authors/" +
-                        f.id.split("/")[2] +
-                        "/" +
-                        f.id.split("/")[4])
-                    }
-                  >
-                    <CardContent width={1}>
-                      <Typography color="textSecondary">
-                        {f.displayName}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                {friends.map((f) => {
+                  return (
+                    <Card
+                      style={{ width: "300px" }}
+                      onClick={() =>
+                        (window.location =
+                          "/authors/" +
+                          f.id.split("/")[2] +
+                          "/" +
+                          f.id.split("/")[4])
+                      }
+                    >
+                      <CardContent width={1}>
+                        <Typography color="textSecondary" >
+                          {f.displayName}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
             </Grid>
           </Grid>
         </div>
@@ -173,4 +182,5 @@ const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
   domains: state.domain.domains,
 });
-export default connect(mapStateToProps)(Followers);
+
+export default connect(mapStateToProps)(MainPage);

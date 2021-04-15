@@ -88,9 +88,9 @@ class Header extends React.Component {
     const { currentUser } = this.props;
 
     return (
-      <div className="container-fluid shadow p-2 mb-4">
-        <nav class="navbar navbar-expand-lg navbar-light">
-          <a className="navbar-brand" href="/">
+      <div className="shadow mb-4">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <a className="navbar-brand" href="/" style={{marginLeft: "10px"}}>
             Socialdistribution
           </a>
           <button
@@ -137,7 +137,7 @@ class Header extends React.Component {
               </li>
               {this.renderHeader()}
             </ul>
-            <form class="d-flex ms-auto">
+            <form class="d-flex ms-auto" style={{marginRight: "10px"}}>
               <input
                 class="form-control me-2"
                 type="search"

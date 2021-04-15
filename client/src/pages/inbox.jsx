@@ -69,7 +69,7 @@ class Inbox extends React.Component {
         "GET /users/" + github.split("/")[3] + "/events"
       );
     }
-
+    
     this.setState({ githubAcivities: doc?.data ?? [] });
   };
 
@@ -518,21 +518,16 @@ class Inbox extends React.Component {
         for (let i = 0; i <= pages; i++) {
           array5.push(i);
         }
-        return (
-          <div style={{ marginLeft: "10%", marginRight: "10%" }}>
-            {array5.map((page, i) => (
-              <Button
-                value={i + 1}
-                style={{ height: "30px" }}
-                color={i + 1 === githubPage ? "primary" : "default"}
-                variant="contained"
-                onClick={(e) => this.setState({ githubPage: i + 1 })}
-              >
-                {i + 1}
-              </Button>
-            ))}
-          </div>
-        );
+        return (array5.map((page, i) => (
+          <Button
+            value={i + 1}
+            color={i + 1 === githubPage ? "primary" : "default"}
+            variant="contained"
+            onClick={(e) => this.setState({ githubPage: i + 1 })}
+          >
+            {i + 1}
+          </Button>
+        )));
       default:
         return null;
     }
@@ -587,14 +582,21 @@ class Inbox extends React.Component {
     requests = requests.slice((requestpage - 1) * 10, requestpage * 10);
 
     return (
-      <div>
+      <div style={{
+        backgroundImage: `url("https://images.pexels.com/photos/747964/pexels-photo-747964.jpeg")`, 
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        height: window.innerHeight,
+      }}>
         <Header />
         <div
           style={{
-            marginLeft: "25%",
+            marginLeft: "15%",
             marginRight: "15%",
-            marginTop: "15px",
+            marginTop: "2%",
             display: "flex",
+            height: window.innerHeight * 0.8,
+            width: window.innerWidth * 0.8
           }}
         >
           <Tabs
@@ -605,19 +607,19 @@ class Inbox extends React.Component {
             variant="scrollable"
             style={{
               paddingRight: "2%",
+              fontFamily: "monospace", fontSize: 20, color: "black"
             }}
           >
-            <Tab label="posts" {...this.a11yProps(0)} />
-            <Tab label="comments" {...this.a11yProps(1)} />
-            <Tab label="likes" {...this.a11yProps(2)} />
-            <Tab label="Friend Requsets" {...this.a11yProps(3)} />
-            <Tab label="Github Activity" {...this.a11yProps(4)} />
+            <Tab label="posts" {...this.a11yProps(0)} style={{ backgroundColor: "#CCFFFF" }}/>
+            <Tab label="comments" {...this.a11yProps(1)} style={{ backgroundColor: "#CCFFFF" }}/>
+            <Tab label="likes" {...this.a11yProps(2)} style={{ backgroundColor: "#CCFFFF" }}/>
+            <Tab label="Friend Requsets" {...this.a11yProps(3)} style={{ backgroundColor: "#CCFFFF" }}/>
+            <Tab label="Github Activity" {...this.a11yProps(4)} style={{ backgroundColor: "#CCFFFF" }}/>
           </Tabs>
-
-          <TabPanel value={value} index={0}>
+          <TabPanel value={value} index={0} style={{overflowY: "scroll", position: "relative", left: "10%"}}>
             <Grid
               container
-              spacing={2}
+              spacing={5}
               direction="horizenol"
               alignItems="flex-start"
             >
@@ -665,7 +667,7 @@ class Inbox extends React.Component {
               </Grid>
             </Grid>
           </TabPanel>
-          <TabPanel value={value} index={1}>
+          <TabPanel value={value} index={1} style={{overflowY: "scroll", position: "relative", left: "10%"}}>
             <Grid
               container
               spacing={2}
@@ -710,7 +712,7 @@ class Inbox extends React.Component {
               </Grid>
             </Grid>
           </TabPanel>
-          <TabPanel value={value} index={2}>
+          <TabPanel value={value} index={2} style={{overflowY: "scroll", position: "relative", left: "10%"}}>
             <Grid
               container
               spacing={2}
@@ -753,7 +755,7 @@ class Inbox extends React.Component {
               </Grid>
             </Grid>
           </TabPanel>
-          <TabPanel value={value} index={3}>
+          <TabPanel value={value} index={3} style={{overflowY: "scroll", position: "relative", left: "10%"}}>
             <Grid>
               {requests?.length >= 1 ? (
                 requests.map((doc) => (
@@ -792,7 +794,7 @@ class Inbox extends React.Component {
               )}
             </Grid>
           </TabPanel>
-          <TabPanel value={value} index={4}>
+          <TabPanel value={value} index={4} style={{overflowY: "scroll"}}>
             <Grid
               container
               spacing={2}
@@ -828,25 +830,34 @@ class Inbox extends React.Component {
             </Grid>
           </TabPanel>
         </div>
-        {value !== 4 && (
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={this.handleClearInbox}
-            style={{
-              marginTop: "1%",
-              marginLeft: "26%",
-              marginBottom: "3%",
-            }}
-          >
-            Clear Inbox
-          </Button>
-        )}
         <div
           id="page"
-          style={{ display: "flex", flexDirection: "row", marginBottom: "5%" }}
+          style={{ display: "flex", flexDirection: "row",  bottom: 0, left: "5%" }}
         >
-          {this.renderPages()}
+          {value !== 4 && (
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={this.handleClearInbox}
+              style={{
+                position: "fixed",
+                right: "5%",
+                bottom: "3%"
+              }}
+            >
+              Clear Inbox
+            </Button>
+          )}
+          <div style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            position: "fixed",
+            left: "35%",
+            bottom: "3%"
+          }}>
+            {this.renderPages()}
+          </div>
         </div>
       </div>
     );

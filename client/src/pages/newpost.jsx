@@ -138,10 +138,15 @@ class Newpost extends React.Component {
       categories,
     } = this.state;
     return (
-      <div>
+      <div style={{
+        backgroundImage: `url("https://images.pexels.com/photos/747964/pexels-photo-747964.jpeg")`, 
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        height: window.innerHeight,
+      }}>
         <Header />
         <div
-          style={{ marginLeft: "10%", marginRight: "10%", marginTop: "30px" }}
+          style={{ marginLeft: "10%", marginRight: "10%", marginTop: "10%" }}
         >
           <Grid
             container

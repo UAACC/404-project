@@ -13,7 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { CardActionArea, requirePropFactory } from "@material-ui/core";
+import { CardActionArea } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,7 +43,7 @@ export default function RecipeReviewCard(props) {
   const [expanded, setExpanded] = React.useState(false);
 
   return (
-    <Card className={classes.root} style={{ margin: "auto" }}>
+    <Card className={classes.root} style={{ margin: "auto", backgroundImage: "linear-gradient(to right, #336699, #3399CC, #66FFFF)" }}>
       <CardActionArea onClick={() => props.handleClick()}>
         <CardHeader
           avatar={

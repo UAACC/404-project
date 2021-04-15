@@ -55,7 +55,7 @@ class PostsScroll extends React.Component {
     const { posts } = this.state;
     const { user, currentUser } = this.props;
     return (
-      <div className="row">
+      <div style={{height: window.innerHeight * 0.85, overflowY: "scroll"}}>
         {posts.length !== 0 ? (
           posts.map((post) => (
             <Grid item xm={12} sm={12}>
