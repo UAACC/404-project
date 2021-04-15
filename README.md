@@ -43,11 +43,11 @@ open backend URL http:/127.0.0.1:8000/admin/<br/>
 * Demo Video Link: https://www.youtube.com/watch?v=jYmuWyZ6V6I <br/>
 
 ## Contributors
-Yanlin Chen - Frontend Main page, Post Detail page, Comment and header components <br/>
-Peiran Yu- Signin page, Signup page, Main page, User Profile Page<br/>
-Xutong Li- Friend Request, Comment and Like, API documentations <br/>
-Dongheng Li- Post, Author API ,viedo demo and backend deploy<br/>
-Qi Song - All FRONT END  detail functions applications and connections to other group API and forntend deploy (main contributor) <br />
+* Yanlin Chen - Frontend Main page, Post Detail page, Comment and header components <br/>
+* Peiran Yu- Signin page, Signup page, Main page, User Profile Page<br/>
+* Xutong Li- Friend Request, Comment and Like, API documentations <br/>
+* Dongheng Li- Post, Author API ,viedo demo and backend deploy<br/>
+* Qi Song - All FRONT END  detail functions applications and connections to other group API and forntend deploy (main contributor) <br />
 
 
 
