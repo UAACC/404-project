@@ -36,7 +36,40 @@ class Newpost extends React.Component {
       unlisted: false,
       specificPeople: [],
       currPeople: "",
+      followers: []
     };
+  }
+
+  componentDidMount = async () => {
+    const { currentUser, domains } = this.props;
+    const id = currentUser.id;
+    const id_digit = id.split("/")[4];
+
+    const followerDoc = await axios.get(
+      `https://nofun.herokuapp.com/author/${id_digit}/followers/`
+    );
+    let followers = followerDoc.data?.items;
+    const FApis1 = followers.map((follower) => {
+      let auth = null;
+      const domain = follower.split("/")[2];
+      domains.map((d) => {
+        if (d.domain === domain) {
+          auth = d.auth;
+        }
+      });
+      const config = {
+        headers: {
+          Authorization: auth,
+        },
+      };
+      return axios.get(follower, config);
+    });
+
+    let res = await Promise.all(FApis1);
+    res = res.map((d) => d.data);
+    console.log(res);
+
+    this.setState({ followers: res });
   }
 
   checkValidation = () => {
@@ -73,7 +106,7 @@ class Newpost extends React.Component {
       return window.alert("You have not filed the form completely.");
     }
     const { domains, currentUser } = this.props;
-    const {
+    let {
       title,
       description,
       content,
@@ -82,6 +115,7 @@ class Newpost extends React.Component {
       specificPeople,
       unlisted,
       categories,
+      followers
     } = this.state;
 
     let auth = null;
@@ -118,6 +152,49 @@ class Newpost extends React.Component {
       config
     );
 
+    if (visibility === "PUBLIC" || visibility === "FRIENDS") {
+      auth = null;
+      domains.map((d) => {
+        if (d.domain.includes("t1")) {
+          auth = d.auth;
+        }
+      });
+
+      const config2 = {
+        headers: {
+          Authorization: auth,
+        },
+      };
+      
+      followers = followers.filter(f => f.id.includes("t1"));
+      console.log(followers);
+
+      const APIs = followers.map(f => {
+        return axios.post("https://social-distribution-t1.herokuapp.com/author/"+f.id.split("/")[4] + "/inbox/", {
+          remote: true,
+          author: {
+            displayName: currentUser.displayName,
+            id: currentUser.id,
+            github: currentUser.github,
+            url: currentUser.url,
+            host: currentUser.host
+          },
+          type: "post",
+          title,
+          description,
+          content,
+          contentType,
+          published: new Date(),
+          author: currentUser?.id,
+          categories: JSON.stringify(categories),
+          unlisted,
+          visibility
+        }, config2);
+      })
+
+      await Promise.all(APIs);
+    }
+    
     if (doc.data?.id) {
       window.location = `/posts/nofun.herokuapp.com/${
         currentUser?.id.split("/")[4]
@@ -662,6 +739,7 @@ class Newpost extends React.Component {
 
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
+  friends: state.user.friends,
   domains: state.domain.domains,
 });
 

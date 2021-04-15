@@ -170,7 +170,7 @@ class PostDetail extends React.Component {
 
     if (domain === "social-distribution-t1.herokuapp.com") {
       try {
-        const likedoc = await axios.post(
+        await axios.post(
           post.id + "/likes/",
           {
             displayName: currentUser.displayName,
@@ -182,8 +182,30 @@ class PostDetail extends React.Component {
           },
           config
         );
-        console.log("---team1 response---", likedoc);
-        window.alert("liked post in team1");
+
+        await axios.post("https://social-distribution-t1.herokuapp.com/author/"+ post.id.split("/")[4] + "/inbox/", {
+          remote: true,
+          author: {
+            displayName: currentUser.displayName,
+            id: currentUser.id,
+            github: currentUser.github,
+            url: currentUser.url,
+            host: currentUser.host
+          },
+          type: "Like",
+          object: post.id,
+          title: post.title,
+          description: post.description,
+          content: post.content,
+          contentType: post.contentType,
+          published: post.published,
+          author: post.author,
+          categories: post.categories,
+          unlisted: post.unlisted,
+          visibility: post.visibility
+        }, config);
+
+
         this.componentDidMount();
       } catch {
         window.alert("like team1 goes wrong, please try later");
