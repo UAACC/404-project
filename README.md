@@ -1,13 +1,17 @@
 # CMPUT404 Win21 Project (Team 20)
 
 ## Description
+CMPUT404-project-socialdistribution, a distributed social network.<br/>
+Professor's project repository: https://github.com/abramhindle/CMPUT404-project-socialdistribution<br/>
+See project.org (plain-text/org-mode) for a description of the project.<br/>
+
 
 ## Deployment
 * Frontend: https://social-distribution-app.herokuapp.com/signin<br/>
 * Backend: https://nofun.herokuapp.com/admin/<br/>
 
 
-## Run locally?
+## Installation
 git clone https://github.com/UAACC/404-project.git frontend<br/>
 cd frontend<br/>
 git fetch origin<br/>
@@ -33,23 +37,17 @@ open frontend URL http://127.0.0.1:3000/<br/>
 open backend URL http:/127.0.0.1:8000/admin/<br/>
 
 ## API documentations
-https://docs.google.com/document/d/1-ALGeKC2WyRux0hKx5JKX2xbHC6qUVyiySFOQevU79w/edit#
+* https://docs.google.com/document/d/1-ALGeKC2WyRux0hKx5JKX2xbHC6qUVyiySFOQevU79w/edit# <br/>
 
-## Project1 Contributors- Tasks
-Yanlin - Frontend:  Main page, Post Detail page, Comment and header components <br />
-Peiran - Frontend: Signin page, Signup page, Main page, User Profile Page<br />
-Xutong - Backend: Friend Request, Comment and Like, API documentations <br />
-Dongheng - Backend: Post, Author API ,viedo demo and backend deploy<br />
-Qi Song - Frontend: All FRONT END  detail functions applications and connections to other group API and forntend deploy (main contributor) <br />
+## Demo Video
+* Demo Video Link: https://www.youtube.com/watch?v=jYmuWyZ6V6I <br/>
 
-## Frontend
-React
-library: axios, redux
-structure: index.js, app.js /pages, /components, /assets
+## Contributors
+Yanlin Chen - Frontend Main page, Post Detail page, Comment and header components <br/>
+Peiran Yu- Signin page, Signup page, Main page, User Profile Page<br/>
+Xutong Li- Friend Request, Comment and Like, API documentations <br/>
+Dongheng Li- Post, Author API ,viedo demo and backend deploy<br/>
+Qi Song - All FRONT END  detail functions applications and connections to other group API and forntend deploy (main contributor) <br />
 
-
-## Backend
-Django
-library: Django REST framework
 
 
