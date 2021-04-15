@@ -71,7 +71,9 @@ class SignInPage extends React.Component {
 
   render() {
     return (
-      <Grid container component="main">
+      <Grid container component="main"  style={{
+        height: window.innerHeight
+      }}>
         <CssBaseline />
         <Grid item xs={false} md={7}>
           <div className="image"></div>

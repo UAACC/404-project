@@ -106,7 +106,9 @@ class SignUpPage extends React.Component {
 
   render() {
     return (
-      <Grid container component="main">
+      <Grid container component="main"  style={{
+        height: window.innerHeight
+      }}>
         <CssBaseline />
         <Grid item xs={false} md={7}>
           <div className="image"></div>
@@ -127,6 +129,7 @@ class SignUpPage extends React.Component {
                       name="displayName"
                       value={this.state.displayName}
                       onChange={this.handleChange}
+                      style={{color: "white"}}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -199,7 +202,7 @@ class SignUpPage extends React.Component {
                 >
                   <Grid item xs>
                     <Link href="/signin" variant="body2">
-                      {"Already have an account? Sign In"}
+                      Already have an account? Sign In
                     </Link>
                   </Grid>
                 </Grid>
