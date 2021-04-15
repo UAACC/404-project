@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { setCurrentUser } from "../redux/user/useractions";
 import axios from "axios";
-import "./style/header.css";
 
 
 class Header extends React.Component {

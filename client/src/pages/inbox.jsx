@@ -2,23 +2,17 @@ import React from "react";
 import "./style/common.css";
 import {
   CardActions,
-  CardContent,
   Card,
-  Typography,
   Button,
   Grid,
   Avatar,
 } from "@material-ui/core";
 import axios from "axios";
-import Badge from "@material-ui/core/Badge";
 import { connect } from "react-redux";
 import Header from "../components/Header";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
 import { Octokit } from "@octokit/core";
-import Pagination from "@material-ui/lab/Pagination";
 import { TabPanel } from "../assets/Tab";
 
 class Inbox extends React.Component {

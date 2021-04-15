@@ -9,7 +9,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import IconButton from "@material-ui/core/IconButton";
 import CommentIcon from "@material-ui/icons/Comment";
-import { Container, TextField, Avatar } from "@material-ui/core";
+import { Container, TextField } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Header from "../components/Header";
 import { connect } from "react-redux";
@@ -21,6 +21,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import ReactMarkdown from "react-markdown";
+
 
 class PostDetail extends React.Component {
   constructor(props) {

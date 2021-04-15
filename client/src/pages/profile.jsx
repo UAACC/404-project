@@ -8,6 +8,7 @@ import PostsScroll from "../components/UserPostsScroll";
 import axios from "axios";
 import Header from "../components/Header";
 
+
 class ProfilePage extends React.Component {
   constructor(props) {
     super(props);

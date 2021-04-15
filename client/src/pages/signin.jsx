@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import { setCurrentUser, setUserFriends } from "../redux/user/useractions";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
+
 class SignInPage extends React.Component {
   constructor(props) {
     super(props);

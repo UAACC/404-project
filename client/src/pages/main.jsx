@@ -1,14 +1,14 @@
 import React from "react";
-// redux
 import { connect } from "react-redux";
 import Header from "../components/Header";
 import "./style/common.css";
 import PostsScroll from "../components/PostsScroll";
-import { Grid, List, Paper, TextField } from "@material-ui/core";
+import { Grid, TextField } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
+
 
 class MainPage extends React.Component {
   constructor(props) {

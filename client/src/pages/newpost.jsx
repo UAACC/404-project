@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Header from "../components/Header";
 
+
 class Newpost extends React.Component {
   constructor(props) {
     super(props);
