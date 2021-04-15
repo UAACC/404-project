@@ -4,7 +4,6 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
@@ -125,7 +124,6 @@ class ProfileCard extends React.Component {
 
     const config = {
       headers: {
-        // Authorization: auth.split(" ")[1],
         Authorization: auth,
       },
     };

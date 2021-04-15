@@ -77,29 +77,6 @@ class CommentCard extends React.Component {
     this.componentDidMount();
   };
 
-  // handleDelete = async () => {
-  //   const { comment } = this.state;
-  //   const { domains } = this.props;
-
-  //   let auth = null;
-
-  //   domains?.map(d => {
-  //     if (d.domain === comment.author.split("/")[2]) {
-  //       auth = d.auth;
-  //     }
-  //   })
-
-  //   const config = {
-  //     headers: {
-  //       Authorization: auth,
-  //     },
-  //   };
-
-  //   await axios.delete(comment.id + "/", config);
-
-  //   this.props.handleClick();
-  // };
-
   render() {
     const { author, comment, likes } = this.state;
     const { currentUser } = this.props;
@@ -132,17 +109,6 @@ class CommentCard extends React.Component {
                     <FavoriteIcon color="secondary" size="large" />
                     {comment.author === currentUser?.id && likes.length}
                   </IconButton>
-                  {/* {currentUser && currentUser.id === comment.author ? (
-                    <div>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={this.handleDelete}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  ) : null} */}
                 </div>
               </div>
             </CardContent>
