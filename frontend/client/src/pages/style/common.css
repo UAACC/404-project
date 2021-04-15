@@ -1,0 +1,12 @@
+body {
+}
+
+#friendDiv:hover {
+  transform: scale(1.1);
+  transition-duration: 0.5s;
+}
+
+#followerDiv:hover {
+  transform: scale(1.1);
+  transition-duration: 0.5s;
+}
