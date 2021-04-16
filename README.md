@@ -23,7 +23,7 @@ See project.org (plain-text/org-mode) for a description of the project.<br/>
 * npm install<br/>
 * npm run start<br/>
 * Open frontend URL: http://127.0.0.1:3000/ <br/>
-* 
+
 ### Run Backend Locally:
 * git clone https://github.com/UAACC/404-project.git backend<br/>
 * cd backend<br/>
@@ -42,6 +42,9 @@ See project.org (plain-text/org-mode) for a description of the project.<br/>
 
 ## Demo Video
 * Demo Video Link: https://www.youtube.com/watch?v=jYmuWyZ6V6I <br/>
+
+## About AJAX
+* Our AJAX Wiki Link: https://github.com/UAACC/404-project/wiki/About-AJAX <br/>
 
 ## Contributors
 * Yanlin Chen - Frontend Main page, Post Detail page, Comment and header components, Video Demo <br/>
