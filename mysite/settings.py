@@ -85,23 +85,23 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dch30urm2aqt68',#database name
-        'USER': 'dsfbnnllbwqfiw', #username
-        'PASSWORD': '55878a139cfe3e1a414b0ffd3aff7ad15a548c742ca52defaf9e261277920f4e', 
-        'HOST': 'ec2-54-145-249-177.compute-1.amazonaws.com', 
-        'PORT': '5432',  
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': 'mydatabase',
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'dch30urm2aqt68',#database name
+#         'USER': 'dsfbnnllbwqfiw', #username
+#         'PASSWORD': '55878a139cfe3e1a414b0ffd3aff7ad15a548c742ca52defaf9e261277920f4e', 
+#         'HOST': 'ec2-54-145-249-177.compute-1.amazonaws.com', 
+#         'PORT': '5432',  
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
+    }
+}
 
 
 
