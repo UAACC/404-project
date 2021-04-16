@@ -15,31 +15,34 @@ See project.org (plain-text/org-mode) for a description of the project.<br/>
 ## Installation
 
 ### Run Frontend Locally:
-* git clone https://github.com/UAACC/404-project.git frontend<br/>
-* cd frontend<br/>
-* git fetch origin<br/>
-* git checkout frontend<br/>
-* cd client<br/>
-* npm install<br/>
-* npm run start<br/>
-* Open frontend URL: http://127.0.0.1:3000/ <br/>
+* $ git clone https://github.com/UAACC/404-project.git frontend<br/>
+* $ cd frontend<br/>
+* $ git fetch origin<br/>
+* $ git checkout frontend<br/>
+* $ cd client<br/>
+* $ npm install<br/>
+* $ npm run start<br/>
+* $ Open frontend URL: http://127.0.0.1:3000/ <br/>
 
 ### Run Backend Locally:
-* git clone https://github.com/UAACC/404-project.git backend<br/>
-* cd backend<br/>
-* git fetch<br/>
-* git checkout backend<br/>
+* $ git clone https://github.com/UAACC/404-project.git backend<br/>
+* $ cd backend<br/>
+* $ git fetch<br/>
+* $ git checkout backend<br/>
 // optional: use your VM<br/>
-* pip install -r requirements.txt
-* python manage.py makemigrations<br/>
-* python manage.py migrate<br/>
-* python manage.py migrate --run-syncdb<br/>
-* python manage.py runserver<br/>
-* Open backend URL: http:/127.0.0.1:8000/admin/ <br/>
+* $ pip install -r requirements.txt
+* $ python manage.py makemigrations<br/>
+* $ python manage.py migrate<br/>
+* $ python manage.py migrate --run-syncdb<br/>
+* $ python manage.py runserver<br/>
+* $ Open backend URL: http:/127.0.0.1:8000/admin/ <br/>
 // We use local database when you run backend locally, it's different with our deployed backend, so create superuser by: python manage.py createsuperuser
 
 ## API documentation
 * API Documentation: https://github.com/UAACC/404-project/wiki/API-Documentation <br/>
+
+## Run Test
+* $ python manage.py test
 
 ## Demo Video
 * Demo Video Link: https://www.youtube.com/watch?v=jYmuWyZ6V6I <br/>
