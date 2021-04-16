@@ -36,7 +36,7 @@ See project.org (plain-text/org-mode) for a description of the project.<br/>
 * python manage.py migrate --run-syncdb<br/>
 * python manage.py runserver<br/>
 * Open backend URL: http:/127.0.0.1:8000/admin/ <br/>
-* We use local database when you run backend locally, it's different with our deployed backend, so create superuser by: python manage.py createsuperuser
+// We use local database when you run backend locally, it's different with our deployed backend, so create superuser by: python manage.py createsuperuser
 
 ## API documentation
 * API Documentation: https://github.com/UAACC/404-project/wiki/API-Documentation <br/>
