@@ -12,32 +12,32 @@ See project.org (plain-text/org-mode) for a description of the project.<br/>
 
 
 ## Installation
-git clone https://github.com/UAACC/404-project.git frontend<br/>
-cd frontend<br/>
-git fetch origin<br/>
-git checkout frontend<br/>
-cd client<br/>
-npm install<br/>
-npm run start<br/>
 
+### Run Frontend Locally:
+* git clone https://github.com/UAACC/404-project.git frontend<br/>
+* cd frontend<br/>
+* git fetch origin<br/>
+* git checkout frontend<br/>
+* cd client<br/>
+* npm install<br/>
+* npm run start<br/>
+* Open frontend URL http://127.0.0.1:3000/ <br/>
 
-cd ..<br/>
-git clone https://github.com/UAACC/404-project.git backend<br/>
-cd backend<br/>
-git fetch<br/>
-git checkout backend<br/>
+### Run Backend Locally:
+* git clone https://github.com/UAACC/404-project.git backend<br/>
+* cd backend<br/>
+* git fetch<br/>
+* git checkout backend<br/>
 // optional: use your VM<br/>
-pip install -r requirements.txt
-python manage.py makemigrations<br/>
-python manage.py migrate<br/>
-python manage.py migrate --run-syncdb<br/>
-python manage.py runserver<br/>
+* pip install -r requirements.txt
+* python manage.py makemigrations<br/>
+* python manage.py migrate<br/>
+* python manage.py migrate --run-syncdb<br/>
+* python manage.py runserver<br/>
+* open backend URL http:/127.0.0.1:8000/admin/ <br/>
 
-open frontend URL http://127.0.0.1:3000/<br/>
-open backend URL http:/127.0.0.1:8000/admin/<br/>
-
-## API documentations
-* https://docs.google.com/document/d/1-ALGeKC2WyRux0hKx5JKX2xbHC6qUVyiySFOQevU79w/edit# <br/>
+## API documentation
+* API Documentation: https://github.com/UAACC/404-project/wiki/API-Documentation <br/>
 
 ## Demo Video
 * Demo Video Link: https://www.youtube.com/watch?v=jYmuWyZ6V6I <br/>
