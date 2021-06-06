@@ -54,7 +54,7 @@ See project.org (plain-text/org-mode) for a description of the project.<br/>
 * Yanlin Chen - Frontend Main page, Post Detail page, Comment and header components, Video Demo <br/>
 * Peiran Yu- Signin page, Signup page, Main page, User Profile Page <br/>
 * Xutong Li- Friend Request/Follower, Comment and Likes/Liked, API documentations, Test <br/>
-* Dongheng Li- Post, Author API ,and backend deploy,admin page, authenticationsAPI documentations, <br/>
+* Dongheng Li- Post, Author API ,and backend deploy,admin page, authentications, API documentations, <br/>
 * Qi Song - FRONT END detail functions applications and connections to other group API and forntend deploy <br/>
 
 
